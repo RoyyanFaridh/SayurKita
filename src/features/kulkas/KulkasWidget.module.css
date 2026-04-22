@@ -1,0 +1,192 @@
+/* ─────────────────────────────────────────────
+   Card Container
+   FIX: width 420px → max-width saja,
+   biar flexible di semua ukuran container
+───────────────────────────────────────────── */
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-neutral-50);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  width: 100%;
+  max-width: 420px;
+  box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
+}
+
+/* ─────────────────────────────────────────────
+   Title
+   FIX: clamp() semua literal values
+───────────────────────────────────────────── */
+.title {
+  font-family: var(--font-display);
+  /* 1.1rem → fluid → 1.875rem (= text-3xl) */
+  font-size: clamp(1.1rem, 5.5vw, 1.875rem);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--space-6) 0;
+}
+
+/* ─────────────────────────────────────────────
+   List
+───────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+/* ─────────────────────────────────────────────
+   Item Name
+   FIX: clamp() literal values
+───────────────────────────────────────────── */
+.itemName {
+  /* 0.875rem → fluid → 1rem (= text-base) */
+  font-size: clamp(0.875rem, 4vw, 1rem);
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────
+   Badge
+   FIX: clamp() literal values
+───────────────────────────────────────────── */
+.badge {
+  /* 0.7rem → fluid → 0.8125rem (= text-sm) */
+  font-size: clamp(0.7rem, 3vw, 0.8125rem);
+  font-weight: var(--font-semibold);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.badgeMauExp {
+  background: var(--color-red-100);
+  color: var(--color-red-500);
+}
+
+.badgeWarning {
+  background: var(--color-amber-100);
+  color: var(--color-amber-600);
+}
+
+.badgeSegar {
+  background: var(--color-forest-100);
+  color: var(--color-forest-600);
+}
+
+/* ─────────────────────────────────────────────
+   Resep Card
+───────────────────────────────────────────── */
+.resepCard {
+  background: var(--color-forest-900);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.resepLabel {
+  /* FIX: literal values */
+  font-size: clamp(0.7rem, 3vw, 0.8125rem);
+  color: var(--text-on-dark-muted);
+  line-height: 1.4;
+}
+
+.resepRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.resepName {
+  /* FIX: literal values */
+  font-size: clamp(0.875rem, 4vw, 1rem);
+  font-weight: var(--font-semibold);
+  color: var(--accent-primary);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────
+   Responsive — 768px
+   FIX: override clamp dengan fixed values —
+   vw relatif ke viewport, bukan lebar widget,
+   jadi di widget kecil hasilnya masih kegedean
+───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .card {
+    padding: var(--space-4);
+  }
+
+  .title {
+    font-size: 0.95rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .itemName  { font-size: 0.8rem; }
+  .badge     { font-size: 0.65rem; padding: 2px 8px; }
+  .resepLabel { font-size: 0.65rem; }
+  .resepName  { font-size: 0.8rem; }
+}
+
+/* ─────────────────────────────────────────────
+   Responsive — 480px
+───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .card {
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+  }
+
+  .title {
+    font-size: 0.85rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .item {
+    padding-block: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .itemName   { font-size: 0.75rem; }
+  .badge      { font-size: 0.6rem; padding: 2px 6px; }
+
+  .resepCard {
+    padding: var(--space-2) var(--space-3);
+    margin-top: var(--space-3);
+    gap: var(--space-1);
+  }
+
+  .resepLabel { font-size: 0.6rem; }
+  .resepName  { font-size: 0.75rem; }
+}

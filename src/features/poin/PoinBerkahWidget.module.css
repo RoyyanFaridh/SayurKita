@@ -1,0 +1,56 @@
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-neutral-50);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 200px;
+  max-width: 240px;
+}
+
+.label {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+.value {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  line-height: var(--leading-tight);
+}
+
+.tambah {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.streak {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.hari {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: var(--font-bold);
+}
+
+.aktif {
+  background: var(--color-amber-500);
+  color: var(--color-forest-950);
+}
+
+.nonaktif {
+  background: var(--color-neutral-100);
+  color: var(--text-muted);
+}

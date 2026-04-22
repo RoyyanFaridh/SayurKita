@@ -1,0 +1,243 @@
+/* ─────────────────────────────────────────────
+   Navbar Base
+───────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+/* Subtle elevation saat halaman di-scroll */
+.navScrolled {
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* ─────────────────────────────────────────────
+   Inner Layout
+───────────────────────────────────────────── */
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+/* ─────────────────────────────────────────────
+   Logo
+───────────────────────────────────────────── */
+.logo {
+  font-family: var(--font-body);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  text-decoration: none;
+  /* Pastikan logo tidak tertekan oleh flex siblings */
+  flex-shrink: 0;
+}
+
+.logoAccent {
+  color: var(--accent-primary);
+}
+
+/* ─────────────────────────────────────────────
+   Desktop Nav Links
+───────────────────────────────────────────── */
+.links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.links a {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.links a:hover {
+  color: var(--text-primary);
+}
+
+/* ─────────────────────────────────────────────
+   Desktop Auth
+───────────────────────────────────────────── */
+.auth {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.masuk {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.masuk:hover {
+  color: var(--text-primary);
+}
+
+/* ─────────────────────────────────────────────
+   Hamburger Button
+   — hidden di desktop, tampil di mobile
+───────────────────────────────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;   /* minimum 44px touch target (Apple HIG) */
+  height: 44px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: var(--radius-md);
+  transition: background var(--duration-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hamburger:hover {
+  background: var(--color-forest-50);
+}
+
+.bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition:
+    transform 0.3s var(--ease-out),
+    opacity   0.3s var(--ease-out),
+    width     0.3s var(--ease-out);
+  transform-origin: center;
+}
+
+/* Animasi bar → X */
+.hamburgerOpen .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburgerOpen .bar:nth-child(2) {
+  opacity: 0;
+  width: 0;
+}
+.hamburgerOpen .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.mobileMenu {
+  position: fixed;
+  top: 64px;   
+  left: 0;
+  right: 0;
+  z-index: calc(var(--z-sticky) - 1);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-6) var(--space-4) var(--space-8);
+
+  /* Animasi: opacity + translate */
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition:
+    opacity   0.25s var(--ease-out),
+    transform 0.25s var(--ease-out);
+}
+
+.mobileMenuOpen {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.mobileLinks {
+  list-style: none;
+  margin: 0 0 var(--space-6) 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobileLinks li {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mobileLinks li:last-child {
+  border-bottom: none;
+}
+
+.mobileLinks a {
+  display: block;
+  /* 52px tinggi — comfortable touch target */
+  padding: var(--space-4) var(--space-2);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.mobileLinks a:hover,
+.mobileLinks a:active {
+  color: var(--accent-primary);
+}
+
+.mobileAuth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mobileBtn {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 64px 0 0 0;
+  z-index: calc(var(--z-sticky) - 2);
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s var(--ease-out) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .links,
+  .auth {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobileMenu,
+  .backdrop {
+    display: none !important;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
