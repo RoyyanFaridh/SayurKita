@@ -20,7 +20,7 @@ export default function Hero() {
 
         <div className={styles.copy}>
           <span className={styles.badge}>
-            <Dot /> {HERO.badge}
+            {HERO.badge}
           </span>
 
           <h1 className={styles.headline}>
