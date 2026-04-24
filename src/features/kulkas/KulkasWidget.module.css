@@ -1,8 +1,3 @@
-/* ─────────────────────────────────────────────
-   Card Container
-   FIX: width 420px → max-width saja,
-   biar flexible di semua ukuran container
-───────────────────────────────────────────── */
 .card {
   background: var(--color-white);
   border: 1px solid var(--color-neutral-50);
@@ -14,10 +9,6 @@
   box-sizing: border-box;
 }
 
-/* ─────────────────────────────────────────────
-   Title
-   FIX: clamp() semua literal values
-───────────────────────────────────────────── */
 .title {
   font-family: var(--font-display);
   /* 1.1rem → fluid → 1.875rem (= text-3xl) */
@@ -27,9 +18,6 @@
   margin: 0 0 var(--space-6) 0;
 }
 
-/* ─────────────────────────────────────────────
-   List
-───────────────────────────────────────────── */
 .list {
   display: flex;
   flex-direction: column;
@@ -52,10 +40,6 @@
   border-bottom: none;
 }
 
-/* ─────────────────────────────────────────────
-   Item Name
-   FIX: clamp() literal values
-───────────────────────────────────────────── */
 .itemName {
   /* 0.875rem → fluid → 1rem (= text-base) */
   font-size: clamp(0.875rem, 4vw, 1rem);
@@ -67,10 +51,6 @@
   white-space: nowrap;
 }
 
-/* ─────────────────────────────────────────────
-   Badge
-   FIX: clamp() literal values
-───────────────────────────────────────────── */
 .badge {
   /* 0.7rem → fluid → 0.8125rem (= text-sm) */
   font-size: clamp(0.7rem, 3vw, 0.8125rem);
@@ -97,9 +77,6 @@
   color: var(--color-forest-600);
 }
 
-/* ─────────────────────────────────────────────
-   Resep Card
-───────────────────────────────────────────── */
 .resepCard {
   background: var(--color-forest-900);
   border-radius: var(--radius-lg);
@@ -111,7 +88,6 @@
 }
 
 .resepLabel {
-  /* FIX: literal values */
   font-size: clamp(0.7rem, 3vw, 0.8125rem);
   color: var(--text-on-dark-muted);
   line-height: 1.4;
@@ -137,12 +113,6 @@
   white-space: nowrap;
 }
 
-/* ─────────────────────────────────────────────
-   Responsive — 768px
-   FIX: override clamp dengan fixed values —
-   vw relatif ke viewport, bukan lebar widget,
-   jadi di widget kecil hasilnya masih kegedean
-───────────────────────────────────────────── */
 @media (max-width: 768px) {
   .card {
     padding: var(--space-4);
@@ -159,9 +129,6 @@
   .resepName  { font-size: 0.8rem; }
 }
 
-/* ─────────────────────────────────────────────
-   Responsive — 480px
-───────────────────────────────────────────── */
 @media (max-width: 480px) {
   .card {
     padding: var(--space-3);

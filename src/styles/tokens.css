@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,800;1,900&display=swap');
 
 :root {
-
   --color-forest-950: #091710;
   --color-forest-900: #163323;
   --color-forest-800: #1E4730;
@@ -19,17 +18,17 @@
   --color-lime-50:  #F4FAE8;
   --color-lime-text: #3D6B0F;
 
-  --color-amber-600:  #C47D0C;
-  --color-amber-500:  #F5A623;
-  --color-amber-400:  #F7B84B;
-  --color-amber-300:  #FAD07D;
-  --color-amber-100:  #FEF3D7;
-  --color-amber-50:   #FFFBEF;
+  --color-amber-600: #C47D0C;
+  --color-amber-500: #F5A623;
+  --color-amber-400: #F7B84B;
+  --color-amber-300: #FAD07D;
+  --color-amber-100: #FEF3D7;
+  --color-amber-50:  #FFFBEF;
 
-  --color-red-700:    #7A1F18;
-  --color-red-500:    #D43B2F;
-  --color-red-100:    #FCE8E6;
-  --color-red-50:     #FEF4F3;
+  --color-red-700: #7A1F18;
+  --color-red-500: #D43B2F;
+  --color-red-100: #FCE8E6;
+  --color-red-50:  #FEF4F3;
 
   --color-yellow-700: #7A5400;
   --color-yellow-500: #D4A017;
@@ -48,24 +47,23 @@
   --color-neutral-800: #232F2A;
   --color-neutral-900: #151E1A;
 
---color-pastel-pink:   #FFD6E0;
---color-pastel-red:    #FFB3B3;
---color-pastel-yellow: #FFF3B0;
---color-pastel-blue:   #B3D9FF;
---color-pastel-green:  #B8F0C8;
---color-pastel-orange: #FFD4A8;
---color-pastel-purple: #E0BBFF;
---color-pastel-teal:   #B3EEE8;
+  --color-pastel-pink:   #FFD6E0;
+  --color-pastel-red:    #FFB3B3;
+  --color-pastel-yellow: #FFF3B0;
+  --color-pastel-blue:   #B3D9FF;
+  --color-pastel-green:  #B8F0C8;
+  --color-pastel-orange: #FFD4A8;
+  --color-pastel-purple: #E0BBFF;
+  --color-pastel-teal:   #B3EEE8;
 
-/* Text pair-nya */
---color-pastel-pink-text:   #8B2A44;
---color-pastel-red-text:    #8B2020;
---color-pastel-yellow-text: #7A5400;
---color-pastel-blue-text:   #1A4F8B;
---color-pastel-green-text:  #1A6B35;
---color-pastel-orange-text: #8B4500;
---color-pastel-purple-text: #5B2A8B;
---color-pastel-teal-text:   #1A6B63;
+  --color-pastel-pink-text:   #8B2A44;
+  --color-pastel-red-text:    #8B2020;
+  --color-pastel-yellow-text: #7A5400;
+  --color-pastel-blue-text:   #1A4F8B;
+  --color-pastel-green-text:  #1A6B35;
+  --color-pastel-orange-text: #8B4500;
+  --color-pastel-purple-text: #5B2A8B;
+  --color-pastel-teal-text:   #1A6B63;
 
   --bg-base:          var(--color-white);
   --bg-alt:           var(--color-neutral-50);
@@ -124,11 +122,12 @@
   --font-display: 'Fraunces', serif;
   --font-body:    'Poppins', sans-serif;
 
-  --text-compact-xs: 0.65rem;
-  --text-compact-sm: 0.75rem;
-  --text-compact-base: 0.85rem;
-  --text-compact-lg: 1rem;
-  --text-compact-xl: 1.15rem;
+  --text-compact-xs:   0.625rem;
+  --text-compact-sm:   0.6875rem;
+  --text-compact-base: 0.75rem;
+  --text-compact-lg:   0.8125rem;
+  --text-compact-xl:   0.875rem;
+
   --text-xs:   0.6875rem;
   --text-sm:   0.8125rem;
   --text-base: 1rem;
@@ -139,6 +138,21 @@
   --text-4xl:  2.25rem;
   --text-5xl:  3rem;
   --text-6xl:  3.75rem;
+  --text-7xl:  4.5rem;
+  --text-8xl:  6rem;
+  --text-9xl:  8rem;
+
+  --text-fluid-xs:      clamp(0.6875rem, 0.9vw,  0.8125rem);
+  --text-fluid-sm:      clamp(0.8125rem, 1vw,    1rem);
+  --text-fluid-base:    clamp(1rem,      1.1vw,  1.125rem);
+  --text-fluid-lg:      clamp(1.125rem,  1.3vw,  1.375rem);
+  --text-fluid-xl:      clamp(1.25rem,   1.6vw,  1.75rem);
+  --text-fluid-2xl:     clamp(1.5rem,    2vw,    2.25rem);
+  --text-fluid-3xl:     clamp(1.875rem,  2.8vw,  3rem);
+  --text-fluid-4xl:     clamp(2.25rem,   3.5vw,  4rem);
+  --text-fluid-5xl:     clamp(2.5rem,    4.5vw,  5rem);
+  --text-fluid-hero:    clamp(3rem,      6.5vw,  7rem);
+  --text-fluid-display: clamp(4rem,      8vw,    9rem);
 
   --font-regular:   400;
   --font-medium:    500;
@@ -157,23 +171,45 @@
   --tracking-wide:    0.06em;
   --tracking-wider:   0.12em;
 
-  --space-1:  0.25rem;
-  --space-2:  0.5rem;
-  --space-3:  0.75rem;
-  --space-4:  1rem;
-  --space-5:  1.25rem;
-  --space-6:  1.5rem;
-  --space-8:  2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
-  --space-24: 6rem;
-  --space-32: 8rem;
+  --space-px:  0.0625rem;
+  --space-0-5: 0.125rem;
+  --space-1:   0.25rem;
+  --space-1-5: 0.375rem;
+  --space-2:   0.5rem;
+  --space-2-5: 0.625rem;
+  --space-3:   0.75rem;
+  --space-3-5: 0.875rem;
+  --space-4:   1rem;
+  --space-5:   1.25rem;
+  --space-6:   1.5rem;
+  --space-7:   1.75rem;
+  --space-8:   2rem;
+  --space-9:   2.25rem;
+  --space-10:  2.5rem;
+  --space-11:  2.75rem;
+  --space-12:  3rem;
+  --space-14:  3.5rem;
+  --space-16:  4rem;
+  --space-20:  5rem;
+  --space-24:  6rem;
+  --space-28:  7rem;
+  --space-32:  8rem;
+  --space-36:  9rem;
+  --space-40:  10rem;
+  --space-44:  11rem;
+  --space-48:  12rem;
+  --space-52:  13rem;
+  --space-56:  14rem;
+  --space-60:  15rem;
+  --space-64:  16rem;
+  --space-72:  18rem;
+  --space-80:  20rem;
+  --space-96:  24rem;
 
-  --section-py:    var(--space-20);
-  --container-px:  var(--space-6);
-  --container-max: 96rem;
+  --section-py:     clamp(4rem, 8vw, 10rem);
+  --section-py-lg:  clamp(5rem, 10vw, 12rem);
+  --container-px:   clamp(1.25rem, 5vw, 6rem);
+  --container-max:  96rem;
 
   --radius-xs:   0.25rem;
   --radius-sm:   0.375rem;

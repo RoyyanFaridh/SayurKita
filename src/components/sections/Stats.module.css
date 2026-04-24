@@ -1,0 +1,124 @@
+.section {
+  background: var(--color-forest-900);
+  /* padding-block: var(--space-16); */
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  position: relative;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-10);
+  position: relative;
+}
+
+.item:first-child {
+  padding-left: 0;
+}
+
+.item:last-child {
+  padding-right: 0;
+}
+
+.divider {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 60%;
+  background: var(--color-forest-700);
+}
+
+.valueRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.value {
+  font-family: var(--font-body);
+  font-size: clamp(2.5rem, 4vw, 3.75rem);
+  font-weight: var(--font-bold);
+  color: var(--color-white);
+  line-height: 1;
+  letter-spacing: var(--tracking-tight);
+}
+
+.unit {
+  font-family: var(--font-body);
+  font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+  font-weight: var(--font-semibold);
+  color: var(--accent-primary);
+  line-height: 1;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: clamp(0.8125rem, 1vw, 0.9375rem);
+  color: var(--color-forest-300);
+  line-height: var(--leading-normal);
+  margin: 0;
+  max-width: 28ch;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-block: var(--space-12);
+  }
+
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .item {
+    padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--color-forest-700);
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .item:first-child {
+    padding-top: 0;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .valueRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    min-width: 120px;
+    flex-shrink: 0;
+  }
+
+  .value {
+    font-size: clamp(2rem, 8vw, 2.5rem);
+  }
+
+  .label {
+    max-width: 100%;
+    font-size: var(--text-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .valueRow {
+    min-width: 100px;
+  }
+}

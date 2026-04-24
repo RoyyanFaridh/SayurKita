@@ -62,6 +62,15 @@ export default function Hero() {
 
 
         <div className={styles.widgetWrap}>
+          <div className={styles.decoBlob} />
+          <div className={styles.decoBlobAmber} />
+          <div className={styles.decoRing} />
+          <div className={styles.decoRingOuter} />
+          <div className={`${styles.decoDot} ${styles['decoDot--1']}`} />
+          <div className={`${styles.decoDot} ${styles['decoDot--2']}`} />
+          <div className={`${styles.decoDot} ${styles['decoDot--3']}`} />
+          <div className={`${styles.decoDot} ${styles['decoDot--4']}`} />
+          <div className={`${styles.decoDot} ${styles['decoDot--5']}`} />
 
           <div className={styles.poinCardWrap}>
             <PoinBerkahWidget data={POIN_BERKAH_HERO} />
