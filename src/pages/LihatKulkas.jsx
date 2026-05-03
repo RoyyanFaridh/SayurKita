@@ -28,7 +28,7 @@ export default function LihatKulkas() {
   const [search,   setSearch]   = useState('')
   const [kategori, setKategori] = useState('Semua')
   const [sortBy,   setSortBy]   = useState('exp')
-  const [modal,    setModal]    = useState(null) // null | 'add' | item
+  const [modal,    setModal]    = useState(null)
 
   const filtered = ITEMS
     .filter(i => (
@@ -54,7 +54,6 @@ export default function LihatKulkas() {
 
       <div className={styles.body}>
 
-        {/* Mobile heading — hanya tampil di ≤640px */}
         <div className={styles.mobileHeading}>
           <div>
             <h1 className={styles.mobileTitle}>Lihat Kulkas</h1>
