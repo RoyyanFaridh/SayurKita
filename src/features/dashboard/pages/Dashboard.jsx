@@ -1,10 +1,10 @@
 import styles from './Dashboard.module.css'
-import AlertsSection from '../features/dashboard/AlertsSection'
-import StatsGrid from '../features/dashboard/StatsGrid'
-import KulkasDashWidget from '../features/dashboard/KulkasDashWidget'
-import ResepWidget from '../features/dashboard/ResepWidget'
-import SurplusDashWidget from '../features/dashboard/SurplusDashWidget'
-import PostingWidget from '../features/dashboard/PostingWidget'
+import AlertsSection from '../components/AlertsSection'
+import StatsGrid from '../components/StatsGrid'
+import KulkasDashWidget from '../components/KulkasDashWidget'
+import ResepWidget from '../components/ResepWidget'
+import SurplusDashWidget from '../components/SurplusDashWidget'
+import PostingWidget from '../components/PostingWidget'
 
 // Nanti ganti dari auth context
 const USER = {

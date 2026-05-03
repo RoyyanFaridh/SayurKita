@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 
-import KulkasTopbar        from '../features/kulkas/KulkasTopbar'
-import KulkasSummaryStrip  from '../features/kulkas/KulkasSummaryStrip'
-import KulkasAlertBanner   from '../features/kulkas/KulkasAlertBanner'
-import KulkasToolbar       from '../features/kulkas/KulkasToolbar'
-import KulkasItemList      from '../features/kulkas/KulkasItemList'
-import KulkasResepAI       from '../features/kulkas/KulkasResepAI'
-import KulkasModal         from '../features/kulkas/KulkasModal'
+import KulkasTopbar        from '../components/KulkasTopbar'
+import KulkasSummaryStrip  from '../components/KulkasSummaryStrip'
+import KulkasAlertBanner   from '../components/KulkasAlertBanner'
+import KulkasToolbar       from '../components/KulkasToolbar'
+import KulkasItemList      from '../components/KulkasItemList'
+import KulkasResepAI       from '../components/KulkasResepAI'
+import KulkasModal         from '../components/KulkasModal'
 
 import styles from './LihatKulkas.module.css'
 
