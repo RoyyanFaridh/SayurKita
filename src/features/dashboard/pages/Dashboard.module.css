@@ -1,0 +1,144 @@
+/* ── Desktop topbar ── */
+.topbar {
+  background: var(--bg-surface-1);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: var(--space-4) var(--space-7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-raised);
+}
+
+.greeting { font-size: var(--text-compact-base); color: var(--text-muted); }
+
+.name {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+  line-height: var(--leading-snug);
+}
+
+.sub {
+  font-size: var(--text-compact-sm);
+  color: var(--text-muted);
+  margin-top: var(--space-0-5);
+}
+
+.topbarRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-compact-lg);
+  color: var(--text-muted);
+  width: 220px;
+  cursor: text;
+  user-select: none;
+}
+
+.notifBtn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.notifBtn:hover { background: var(--bg-surface-3); }
+
+.notifDot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--color-red-500);
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--bg-surface-1);
+}
+
+/* ── Page body ── */
+.body {
+  padding: var(--space-6) var(--space-7) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Mobile greeting — hidden on desktop */
+.mobileGreeting { display: none; }
+
+/* ── Two-column grid ── */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .twoCol { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .topbar { display: none; }
+
+  .body {
+    padding: 0 0 var(--space-8);
+    gap: var(--space-4);
+  }
+
+  .mobileGreeting {
+    display: block;
+    background: var(--bg-dark);
+    padding: var(--space-4) var(--space-4) var(--space-5);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  }
+
+  .greetSm {
+    font-size: var(--text-compact-sm);
+    color: var(--text-on-dark-muted);
+  }
+
+  .greetName {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--text-on-dark);
+    line-height: var(--leading-snug);
+  }
+
+  .greetSub {
+    font-size: var(--text-compact-xs);
+    color: var(--text-on-dark-faint);
+    margin-top: var(--space-0-5);
+  }
+
+  /* Body padding on mobile */
+  .body > :not(.mobileGreeting) {
+    padding-inline: var(--space-4);
+  }
+}

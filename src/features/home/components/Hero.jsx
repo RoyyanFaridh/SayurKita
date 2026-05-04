@@ -1,7 +1,7 @@
-import { HERO, KULKAS_ITEMS, POIN_BERKAH_HERO, SURPLUS_HERO } from '../../data/content';
-import KulkasWidget from '../../features/kulkas/KulkasWidget';
-import SurplusWidget from '../../features/selamatkan/SurplusWidget';
-import PoinBerkahWidget from '../../features/poin/PoinBerkahWidget';
+import { HERO, KULKAS_ITEMS, POIN_BERKAH_HERO, SURPLUS_HERO } from '../../../data/content';
+import KulkasWidget from '../../kulkas/components/KulkasWidget';
+import SurplusWidget from '../../selamatkan/components/SurplusWidget';
+import PoinBerkahWidget from '../../poin/components/PoinBerkahWidget';
 import styles from './Hero.module.css';
 import { Dot } from 'lucide-react';
 

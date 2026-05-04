@@ -1,0 +1,36 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--bg-danger-subtle);
+  border: 1px solid var(--border-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-compact-lg);
+  color: var(--text-danger);
+}
+
+.icon { flex-shrink: 0; }
+
+.banner span { flex: 1; }
+
+.btn {
+  flex-shrink: 0;
+  background: var(--color-danger-500);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1-5) var(--space-4);
+  font-size: var(--text-compact-base);
+  font-weight: var(--font-medium);
+  font-family: var(--font-body);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover { opacity: 0.85; }
+
+@media (max-width: 480px) {
+  .banner { flex-wrap: wrap; gap: var(--space-2); }
+}
