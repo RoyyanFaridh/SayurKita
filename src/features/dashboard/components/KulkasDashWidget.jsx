@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import styles from './KulkasDashWidget.module.css'
 
 const ITEMS = [
   { id: 1, name: 'Bayam segar', expLabel: 'Besok!', expType: 'danger' },
@@ -9,20 +8,51 @@ const ITEMS = [
   { id: 4, name: 'Santan Kara', expLabel: '12 hari', expType: 'fresh' },
 ]
 
+const badgeStyle = {
+  danger:  { background: 'var(--bg-danger-subtle)',  color: 'var(--text-danger)' },
+  warning: { background: 'var(--bg-warning-subtle)', color: 'var(--text-warning)' },
+  ok:      { background: 'var(--bg-success-subtle)', color: 'var(--text-success)' },
+  fresh:   { background: 'var(--bg-success-subtle)', color: 'var(--text-success)' },
+}
+
 export default function KulkasDashWidget() {
   return (
-    <div className={styles.card}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Lihat Kulkas</h2>
-        <Link to="/kulkas" className={styles.link}>
+    <div
+      className="rounded-md overflow-hidden p-4 border"
+      style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subsub)', boxShadow: 'var(--shadow-xs)' }}
+    >
+      <div
+        className="flex justify-between items-center pb-2.5 mb-2.5 border-b"
+        style={{ borderColor: 'var(--border-subtle)' }}
+      >
+        <h2 className="text-compact-lg font-semibold leading-snug m-0" style={{ color: 'var(--text-primary)' }}>
+          Lihat Kulkas
+        </h2>
+        <Link
+          to="/kulkas"
+          className="inline-flex items-center gap-1 text-compact-base font-medium transition-colors duration-150"
+          style={{ color: 'var(--text-brand)' }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--brand-green-light)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-brand)'}
+        >
           Lihat semua <ArrowRight size={14} strokeWidth={2} />
         </Link>
       </div>
-      <ul className={styles.list}>
-        {ITEMS.map(({ id, name, expLabel, expType }) => (
-          <li key={id} className={styles.row}>
-            <span className={styles.name}>{name}</span>
-            <span className={`${styles.badge} ${styles[expType]}`}>{expLabel}</span>
+
+      <ul>
+        {ITEMS.map(({ id, name, expLabel, expType }, i) => (
+          <li
+            key={id}
+            className="flex justify-between items-center py-4"
+            style={{ borderBottom: i < ITEMS.length - 1 ? '1px solid var(--border-subsub)' : 'none' }}
+          >
+            <span className="text-compact-base" style={{ color: 'var(--text-primary)' }}>{name}</span>
+            <span
+              className="text-compact-sm font-medium px-3 py-1 rounded-full"
+              style={badgeStyle[expType]}
+            >
+              {expLabel}
+            </span>
           </li>
         ))}
       </ul>
