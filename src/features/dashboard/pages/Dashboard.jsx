@@ -25,7 +25,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           <div
-            className="flex items-center gap-2 rounded-md px-3 py-2 text-compact-lg cursor-text select-none w-[220px] border"
+            className="flex items-center gap-2 rounded-md px-3 py-2 text-compact-lg cursor-text select-none w-55 border"
             style={{ background: 'var(--bg-alt)', borderColor: 'var(--border-default)', color: 'var(--text-muted)' }}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -46,7 +46,7 @@ export default function Dashboard() {
               <path d="M7.5 15a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" />
             </svg>
             <span
-              className="absolute top-[7px] right-[7px] w-[7px] h-[7px] rounded-full border-[1.5px]"
+              className="absolute top-1.75 right-1.75 w-1.75 h-1.75 rounded-full border-[1.5px]"
               style={{ background: 'var(--color-danger-500)', borderColor: 'white' }}
             />
           </button>

@@ -2,7 +2,7 @@ import { Refrigerator, Plus } from 'lucide-react'
 
 export default function KulkasTopbar({ totalItems, onTambah }) {
   return (
-    <div className="sticky top-0 z-[10] flex items-center justify-between border-b border-neutral-100 bg-white px-7 py-4 max-sm:hidden">
+    <div className="sticky top-0 z-10 flex items-center justify-between border-b border-neutral-100 bg-white px-7 py-4 max-sm:hidden">
       <div className="flex items-center gap-3">
         <Refrigerator
           size={18}

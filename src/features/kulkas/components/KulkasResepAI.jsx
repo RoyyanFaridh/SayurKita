@@ -55,7 +55,7 @@ export default function KulkasResepAI() {
           <li
             key={r.id}
             className={`relative flex cursor-pointer items-center justify-between gap-2.5 rounded-md px-3 py-2.5 transition-colors duration-fast ease-out hover:bg-primary-50 ${
-              r.featured ? 'bg-primary-50 before:absolute before:bottom-[6px] before:left-0 before:top-[6px] before:w-[3px] before:rounded-full before:bg-secondary-500' : ''
+              r.featured ? 'bg-primary-50 before:absolute before:bottom-[6px] before:left-0 before:top-[6px] before:w-0.75 before:rounded-full before:bg-secondary-500' : ''
             }`}
           >
             <div className="min-w-0 flex-1">

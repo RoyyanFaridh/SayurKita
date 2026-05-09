@@ -17,7 +17,7 @@ const kondisiConfig = {
 
 export default function KulkasWidget({ items }) {
   return (
-    <div className="w-full max-w-[420px] rounded-xl border border-neutral-50 bg-white p-6 shadow-sm max-md:p-4 max-[480px]:rounded-lg max-[480px]:p-3">
+    <div className="w-full max-w-105 rounded-xl border border-neutral-50 bg-white p-6 shadow-sm max-md:p-4 max-[480px]:rounded-lg max-[480px]:p-3">
       <p className="mb-6 font-display text-[clamp(1.1rem,5.5vw,1.875rem)] font-bold text-neutral-900 max-md:mb-3 max-md:text-[0.95rem] max-[480px]:mb-2 max-[480px]:text-[0.85rem]">
         LihatKulkas
       </p>
@@ -28,7 +28,7 @@ export default function KulkasWidget({ items }) {
             key={i}
             className="flex min-w-0 items-center justify-between gap-3 border-b border-neutral-100 py-4 last:border-b-0 max-md:gap-2 max-[480px]:py-2"
           >
-            <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[clamp(0.875rem,4vw,1rem)] text-neutral-900 max-md:text-[0.8rem] max-[480px]:text-[0.75rem]">
+            <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[clamp(0.875rem,4vw,1rem)] text-neutral-900 max-md:text-[0.8rem] max-[480px]:text-compact-base">
               {item.nama}
             </span>
 
@@ -47,7 +47,7 @@ export default function KulkasWidget({ items }) {
         </span>
 
         <div className="flex min-w-0 items-center justify-between gap-3">
-          <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[clamp(0.875rem,4vw,1rem)] font-semibold text-secondary-500 max-md:text-[0.8rem] max-[480px]:text-[0.75rem]">
+          <span className="min-w-0 flex-1 truncate whitespace-nowrap text-[clamp(0.875rem,4vw,1rem)] font-semibold text-secondary-500 max-md:text-[0.8rem] max-[480px]:text-compact-base">
             Sayur Bening Bayam Tahu
           </span>
 

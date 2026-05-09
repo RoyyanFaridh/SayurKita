@@ -29,7 +29,7 @@ export default function SurplusDashWidget() {
           </h2>
           <p className="flex items-center gap-1.5 text-compact-sm mt-0.5 m-0" style={{ color: 'var(--text-muted)' }}>
             <span
-              className="inline-block w-[7px] h-[7px] rounded-full shrink-0"
+              className="inline-block w-1.75 h-1.75 rounded-full shrink-0"
               style={{
                 background: 'var(--color-danger-500)',
                 animation: 'pulse 1.6s ease-in-out infinite',

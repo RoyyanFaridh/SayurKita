@@ -44,7 +44,7 @@ export default function ResepWidget() {
           >
             {r.featured && (
               <span
-                className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full"
+                className="absolute left-0 top-1.5 bottom-1.5 w-0.75 rounded-full"
                 style={{ background: 'var(--accent-primary)' }}
               />
             )}

@@ -5,11 +5,11 @@ export default function KulkasModal({ item, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[400] flex items-center justify-center bg-[var(--bg-overlay)] p-4 animate-in fade-in duration-fast"
+      className="fixed inset-0 z-400 flex items-center justify-center bg-(--bg-overlay) p-4 animate-in fade-in duration-fast"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[440px] rounded-xl bg-white shadow-xl animate-in slide-in-from-bottom-3 duration-normal"
+        className="w-full max-w-110 rounded-xl bg-white shadow-xl animate-in slide-in-from-bottom-3 duration-normal"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-neutral-100 px-5 pb-4 pt-5">

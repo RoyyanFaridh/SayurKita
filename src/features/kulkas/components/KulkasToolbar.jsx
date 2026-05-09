@@ -12,7 +12,7 @@ export default function KulkasToolbar({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <div className="relative min-w-[180px] flex-1">
+      <div className="relative min-w-45 flex-1">
         <Search
           size={13}
           strokeWidth={2}
