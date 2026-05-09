@@ -1,0 +1,77 @@
+// Static data — nanti dari API + geolocation
+
+export const SURPLUS_ITEMS = [
+  {
+    id: 1,
+    nama: 'Nasi Kotak Sisa Acara RT',
+    deskripsi: 'Tersisa dari acara rapat RT kemarin. Masih sangat layak makan, lauk rendang dan ayam goreng.',
+    pemilik: 'Sari Dewi',
+    lokasi: 'Jl. Mawar No. 12, Baciro',
+    jarak: '0.4 km',
+    waktu: '30 mnt lalu',
+    jumlah: '10 box',
+    kondisi: 'segar',
+    kategori: 'Makanan Matang',
+    foto: null,
+  },
+  {
+    id: 2,
+    nama: 'Rendang Sisa Lebaran',
+    deskripsi: 'Rendang buatan sendiri, sudah dimasak kemarin. Masih enak, belum dihangatkan.',
+    pemilik: 'Sri Rahayu',
+    lokasi: 'Perumahan Asri Blok C, Condongcatur',
+    jarak: '1.2 km',
+    waktu: '1 jam lalu',
+    jumlah: '2 porsi',
+    kondisi: 'segar',
+    kategori: 'Makanan Matang',
+    foto: null,
+  },
+  {
+    id: 3,
+    nama: 'Sayur Bayam & Wortel',
+    deskripsi: 'Sisa masak siang, belum layu. Perlu segera dikonsumsi hari ini.',
+    pemilik: 'Joko Santoso',
+    lokasi: 'Jl. Kaliurang KM 6.5',
+    jarak: '2.1 km',
+    waktu: '2 jam lalu',
+    jumlah: 'Cukup untuk 3 orang',
+    kondisi: 'mau-habis',
+    kategori: 'Sayuran',
+    foto: null,
+  },
+  {
+    id: 4,
+    nama: 'Tempe Goreng',
+    deskripsi: 'Goreng terlalu banyak untuk sarapan. Masih crispy, belum dingin.',
+    pemilik: 'Aminah',
+    lokasi: 'Kotagede, Yogyakarta',
+    jarak: '3.0 km',
+    waktu: '3 jam lalu',
+    jumlah: '15 potong',
+    kondisi: 'segar',
+    kategori: 'Lauk',
+    foto: null,
+  },
+  {
+    id: 5,
+    nama: 'Buah Pisang Matang',
+    deskripsi: 'Pisang kepok sudah matang sekali, perlu segera digunakan. Cocok untuk pisang goreng.',
+    pemilik: 'Budi Hartono',
+    lokasi: 'Jl. Solo, Maguwoharjo',
+    jarak: '4.3 km',
+    waktu: '4 jam lalu',
+    jumlah: '1 sisir (12 buah)',
+    kondisi: 'segera',
+    kategori: 'Buah',
+    foto: null,
+  },
+]
+
+export const KONDISI_MAP = {
+  'segar':     { label: 'Segar',        color: 'success' },
+  'mau-habis': { label: 'Segera ambil', color: 'warning' },
+  'segera':    { label: 'Hari ini!',    color: 'danger'  },
+}
+
+export const KATEGORI_FILTER = ['Semua', 'Makanan Matang', 'Sayuran', 'Lauk', 'Buah']
