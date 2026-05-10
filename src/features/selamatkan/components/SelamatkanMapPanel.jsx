@@ -1,5 +1,6 @@
 import { MapPin, Navigation } from 'lucide-react'
 import { KONDISI_MAP } from '../selamatkanData'
+import { Map, AdvancedMarker } from '@vis.gl/react-google-maps'
 
 const MARKER_CLS = {
   success: 'text-success-500',
@@ -13,120 +14,102 @@ const DOT_CLS = {
   danger:  'bg-danger-500',
 }
 
-const PSEUDO_POS = [
-  { top: '30%', left: '62%' },
-  { top: '55%', left: '40%' },
-  { top: '70%', left: '65%' },
-  { top: '25%', left: '35%' },
-  { top: '60%', left: '25%' },
-]
+const PIN_BG = {
+  success: '#22c55e',
+  warning: '#f59e0b',
+  danger:  '#ef4444',
+}
 
-export default function SelamatkanMapPanel({ items, radius }) {
+const DEFAULT_CENTER = { lat: -7.7956, lng: 110.3695 }
+
+export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate, locating }) {
+  const center = userCoords ?? DEFAULT_CENTER
+
   return (
-    <div className="bg-white border border-[var(--border-subtle)] rounded-xl
-                    shadow-[var(--shadow-xs)] overflow-hidden flex flex-col
-                    sticky top-[calc(64px+1rem)]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3
-                      border-b border-[var(--border-subtle)]">
-        <h2 className="text-[0.8125rem] font-semibold text-[var(--text-primary)]">
-          Peta Sekitarmu
-        </h2>
-        <button className="inline-flex items-center gap-1.5 px-2.5 py-1
-                           bg-[var(--bg-subtle)] border border-[var(--border-subtle)]
-                           rounded-lg text-[0.6875rem] font-medium font-[var(--font-body)]
-                           text-[var(--text-brand)] cursor-pointer
-                           transition-colors duration-150 hover:bg-primary-100">
-          <Navigation size={13} strokeWidth={2} /> Lokasiku
+    <div className="bg-white border border-(--border-subtle) rounded-xl shadow-(--shadow-xs) overflow-hidden flex flex-col sticky top-20">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-(--border-subtle)">
+        <h2 className="text-(--text-compact-lg) font-semibold text-(--text-primary)">Peta Sekitarmu</h2>
+        <button
+          onClick={onLocate}
+          disabled={locating}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-(--bg-subtle) border border-(--border-subtle) rounded-lg text-(--text-compact-sm) font-medium text-(--text-brand) cursor-pointer transition-colors duration-150 hover:bg-primary-100 disabled:opacity-50"
+        >
+          <Navigation size={13} strokeWidth={2} />
+          {locating ? 'Mencari...' : 'Lokasiku'}
         </button>
       </div>
 
-      {/* Map placeholder */}
-      <div className="relative">
-        <div className="h-[240px] bg-primary-50 relative overflow-hidden">
-          {/* Grid SVG */}
-          <svg className="absolute inset-0 text-primary-300" width="100%" height="100%">
-            <defs>
-              <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-                <path d="M 32 0 L 0 0 0 32" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
+      <div className="h-60">
+        <Map
+          mapId="b9ea8f23872bbcd4a9eddc22"
+          style={{ width: '100%', height: '100%' }}
+          defaultCenter={center}
+          center={center}
+          defaultZoom={14}
+          gestureHandling="greedy"
+          disableDefaultUI
+          zoomControl={false}
+          mapTypeControl={false}
+          scaleControl={false}
+          streetViewControl={false}
+          rotateControl={false}
+          fullscreenControl={false}
+        >
+          <AdvancedMarker position={center}>
+            <div className="relative flex items-center justify-center">
+              <div className="w-3.5 h-3.5 rounded-full bg-primary-600 border-2 border-white shadow-sm z-10" />
+              <div className="absolute w-7 h-7 rounded-full bg-primary-600/20 animate-ping" />
+            </div>
+          </AdvancedMarker>
 
-          {/* Radius ring */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                          w-[160px] h-[160px] rounded-full
-                          border-2 border-dashed border-primary-300
-                          bg-primary-600/5" />
-
-          {/* User pin */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-                          flex items-center justify-center">
-            <div className="w-3.5 h-3.5 rounded-full bg-primary-600 border-2 border-white
-                            shadow-sm z-10" />
-            <div className="absolute w-[30px] h-[30px] rounded-full bg-primary-600/20
-                            animate-ping" />
-          </div>
-
-          {/* Item markers */}
-          {items.map((item, i) => {
+          {items.map(item => {
+            if (!item.lat || !item.lng) return null
             const color = KONDISI_MAP[item.kondisi]?.color ?? 'success'
-            const pos   = PSEUDO_POS[i % PSEUDO_POS.length]
             return (
-              <div key={item.id}
-                className={`absolute -translate-x-1/2 -translate-y-full
-                            drop-shadow-sm ${MARKER_CLS[color]}`}
-                style={pos}>
-                <MapPin size={16} strokeWidth={2} />
-              </div>
+              <AdvancedMarker
+                key={item.id}
+                position={{ lat: item.lat, lng: item.lng }}
+                title={item.nama}
+              >
+                <MapPin
+                  size={20}
+                  strokeWidth={2}
+                  className={`${MARKER_CLS[color]} drop-shadow-sm`}
+                  fill={PIN_BG[color]}
+                />
+              </AdvancedMarker>
             )
           })}
-        </div>
-
-        <p className="px-3 py-1.5 text-[0.625rem] text-[var(--text-muted)] text-center
-                      bg-[var(--bg-alt)] border-t border-[var(--border-subtle)]">
-          Menampilkan radius <strong>{radius} km</strong> · Google Maps akan diintegrasikan
-        </p>
+        </Map>
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 px-4 py-2.5
-                      border-b border-[var(--border-subtle)]">
+      <p className="px-3 py-1.5 text-(--text-compact-xs) text-(--text-muted) text-center bg-(--bg-alt) border-t border-(--border-subtle)">
+        Menampilkan radius <strong>{radius} km</strong>
+      </p>
+
+      <div className="flex items-center gap-4 px-4 py-2.5 border-b border-(--border-subtle)">
         {[
-          { color: 'success', label: 'Segar'       },
+          { color: 'success', label: 'Segar' },
           { color: 'warning', label: 'Segera ambil' },
-          { color: 'danger',  label: 'Hari ini!'   },
+          { color: 'danger',  label: 'Hari ini!' },
         ].map(({ color, label }) => (
-          <div key={color} className="flex items-center gap-1.5 text-[0.625rem] text-[var(--text-muted)]">
+          <div key={color} className="flex items-center gap-1.5 text-(--text-compact-xs) text-(--text-muted)">
             <span className={`w-2 h-2 rounded-full shrink-0 ${DOT_CLS[color]}`} />
             {label}
           </div>
         ))}
       </div>
 
-      {/* Quick list */}
       <div className="px-4 py-3 flex flex-col gap-1">
-        <p className="text-[0.6875rem] font-semibold text-[var(--text-muted)]
-                      uppercase tracking-[0.06em] mb-1">
-          Terdekat
-        </p>
+        <p className="text-(--text-compact-sm) font-semibold text-(--text-muted) uppercase tracking-wide mb-1">Terdekat</p>
         {items.slice(0, 3).map(item => {
           const color = KONDISI_MAP[item.kondisi]?.color ?? 'success'
           return (
-            <div key={item.id}
-              className="flex items-center gap-2.5 px-2 py-2 rounded-lg
-                         cursor-pointer transition-colors duration-75
-                         hover:bg-[var(--bg-alt)]">
+            <div key={item.id} className="flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors duration-75 hover:bg-(--bg-alt)">
               <span className={`w-2 h-2 rounded-full shrink-0 ${DOT_CLS[color]}`} />
               <div className="min-w-0">
-                <p className="text-[0.75rem] font-medium text-[var(--text-primary)]
-                               truncate">
-                  {item.nama}
-                </p>
-                <p className="text-[0.625rem] text-[var(--text-muted)]">
-                  {item.jarak} · {item.pemilik}
-                </p>
+                <p className="text-(--text-compact-base) font-medium text-(--text-primary) truncate">{item.nama}</p>
+                <p className="text-(--text-compact-xs) text-(--text-muted)">{item.jarak} · {item.pemilik}</p>
               </div>
             </div>
           )

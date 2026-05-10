@@ -1,5 +1,3 @@
-// Static data — nanti dari API + geolocation
-
 export const SURPLUS_ITEMS = [
   {
     id: 1,
@@ -12,7 +10,7 @@ export const SURPLUS_ITEMS = [
     jumlah: '10 box',
     kondisi: 'segar',
     kategori: 'Makanan Matang',
-    foto: null,
+    lat: -7.7920, lng: 110.3751,
   },
   {
     id: 2,
@@ -25,7 +23,7 @@ export const SURPLUS_ITEMS = [
     jumlah: '2 porsi',
     kondisi: 'segar',
     kategori: 'Makanan Matang',
-    foto: null,
+    lat: -7.7843, lng: 110.3812,
   },
   {
     id: 3,
@@ -38,7 +36,7 @@ export const SURPLUS_ITEMS = [
     jumlah: 'Cukup untuk 3 orang',
     kondisi: 'mau-habis',
     kategori: 'Sayuran',
-    foto: null,
+    lat: -7.7734, lng: 110.3880,
   },
   {
     id: 4,
@@ -51,7 +49,7 @@ export const SURPLUS_ITEMS = [
     jumlah: '15 potong',
     kondisi: 'segar',
     kategori: 'Lauk',
-    foto: null,
+    lat: -7.8103, lng: 110.4012,
   },
   {
     id: 5,
@@ -64,7 +62,7 @@ export const SURPLUS_ITEMS = [
     jumlah: '1 sisir (12 buah)',
     kondisi: 'segera',
     kategori: 'Buah',
-    foto: null,
+    lat: -7.7891, lng: 110.4102,
   },
 ]
 
