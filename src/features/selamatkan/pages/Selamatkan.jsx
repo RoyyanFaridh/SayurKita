@@ -72,7 +72,7 @@ export default function Selamatkan() {
         <div className="hidden max-sm:flex items-center justify-between bg-(--bg-dark) px-4 pt-4 pb-5 rounded-b-2xl">
           <div>
             <h1 className="text-xl font-bold text-white leading-snug">Selamatkan!</h1>
-            <p className="text-(--text-compact-xs) text-white/35 mt-0.5">
+            <p className="text-(--text-compact-xs) mt-0.5">
               {SURPLUS_ITEMS.length} surplus aktif di sekitarmu
             </p>
           </div>

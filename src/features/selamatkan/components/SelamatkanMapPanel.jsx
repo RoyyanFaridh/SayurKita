@@ -28,11 +28,11 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
   return (
     <div className="bg-white border border-(--border-subtle) rounded-xl shadow-(--shadow-xs) overflow-hidden flex flex-col sticky top-20">
       <div className="flex items-center justify-between px-4 py-3 border-b border-(--border-subtle)">
-        <h2 className="text-(--text-compact-lg) font-semibold text-(--text-primary)">Peta Sekitarmu</h2>
+        <h2 className="text-(--text-compact-lg) font-semibold">Peta Sekitarmu</h2>
         <button
           onClick={onLocate}
           disabled={locating}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-(--bg-subtle) border border-(--border-subtle) rounded-lg text-(--text-compact-sm) font-medium text-(--text-brand) cursor-pointer transition-colors duration-150 hover:bg-primary-100 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-(--bg-subtle) border border-(--border-subtle) rounded-lg text-(--text-compact-sm) font-medium cursor-pointer transition-colors duration-150 hover:bg-primary-100 disabled:opacity-50"
         >
           <Navigation size={13} strokeWidth={2} />
           {locating ? 'Mencari...' : 'Lokasiku'}
@@ -83,7 +83,7 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
         </Map>
       </div>
 
-      <p className="px-3 py-1.5 text-(--text-compact-xs) text-(--text-muted) text-center bg-(--bg-alt) border-t border-(--border-subtle)">
+      <p className="px-3 py-1.5 text-(--text-compact-xs) text-center bg-(--bg-alt) border-t border-(--border-subtle)">
         Menampilkan radius <strong>{radius} km</strong>
       </p>
 
@@ -93,7 +93,7 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
           { color: 'warning', label: 'Segera ambil' },
           { color: 'danger',  label: 'Hari ini!' },
         ].map(({ color, label }) => (
-          <div key={color} className="flex items-center gap-1.5 text-(--text-compact-xs) text-(--text-muted)">
+          <div key={color} className="flex items-center gap-1.5 text-(--text-compact-xs)">
             <span className={`w-2 h-2 rounded-full shrink-0 ${DOT_CLS[color]}`} />
             {label}
           </div>
@@ -101,15 +101,15 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
       </div>
 
       <div className="px-4 py-3 flex flex-col gap-1">
-        <p className="text-(--text-compact-sm) font-semibold text-(--text-muted) uppercase tracking-wide mb-1">Terdekat</p>
+        <p className="text-(--text-compact-sm) font-semibold uppercase tracking-wide mb-1">Terdekat</p>
         {items.slice(0, 3).map(item => {
           const color = KONDISI_MAP[item.kondisi]?.color ?? 'success'
           return (
             <div key={item.id} className="flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-colors duration-75 hover:bg-(--bg-alt)">
               <span className={`w-2 h-2 rounded-full shrink-0 ${DOT_CLS[color]}`} />
               <div className="min-w-0">
-                <p className="text-(--text-compact-base) font-medium text-(--text-primary) truncate">{item.nama}</p>
-                <p className="text-(--text-compact-xs) text-(--text-muted)">{item.jarak} · {item.pemilik}</p>
+                <p className="text-(--text-compact-base) font-medium truncate">{item.nama}</p>
+                <p className="text-(--text-compact-xs)">{item.jarak} · {item.pemilik}</p>
               </div>
             </div>
           )
