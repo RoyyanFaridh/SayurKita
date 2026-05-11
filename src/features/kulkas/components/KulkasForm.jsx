@@ -221,7 +221,6 @@ export default function KulkasForm({ item }) {
           </div>
         </div>
       )}
-
     </div>
   )
 }
