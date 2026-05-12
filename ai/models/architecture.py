@@ -11,6 +11,7 @@ def buat_model(num_ingredients=2938, num_recipes=800):
     input_layer = tf.keras.layers.Input(shape=(num_ingredients,), name="input_bahan")
     
     # Hidden layer 1
+    
     x = tf.keras.layers.Dense(512, activation='relu', name="hidden_1")(input_layer)
     x = tf.keras.layers.Dropout(0.3, name="dropout_1")(x)
     
