@@ -571,3 +571,15 @@ h1, h2, h3, h4, h5, h6 {
 .divider--dark {
   background: var(--border-dark);
 }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+.gm-style-cc,          
+.gm-ui-hover-effect,   
+a[href*="maps.google.com"],  
+a[href*="google.com/maps"] {  
+  display: none !important;
+}
