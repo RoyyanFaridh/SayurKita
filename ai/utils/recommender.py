@@ -11,7 +11,7 @@ class RecipeRecommender:
         with open(data_path, 'r', encoding='utf-8') as f:
             self.recipes = json.load(f)
         
-        # Ekstrak teks bahan dari setiap resep (prioritaskan 'Ingredients Cleaned')
+ 
         self.recipe_texts = []
         self.valid_indices = []
         for i, r in enumerate(self.recipes):
@@ -45,15 +45,13 @@ class RecipeRecommender:
         """
         if not ingredients:
             return []
-        
-        # Vektorisasi input user
+
         user_text = ' '.join(ingredients).lower()
         user_vector = self.vectorizer.transform([user_text])
         
-        # Cosine similarity dengan semua resep
+
         similarities = cosine_similarity(user_vector, self.recipe_vectors)[0]
         
-        # Urutkan indeks berdasarkan similarity tertinggi
         top_indices = similarities.argsort()[-top_k:][::-1]
         
         results = []
@@ -73,5 +71,4 @@ class RecipeRecommender:
         
         return results
 
-# Instance global untuk digunakan oleh FastAPI
 recommender = RecipeRecommender()
