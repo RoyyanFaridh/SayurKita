@@ -1,10 +1,35 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import GoogleIcon from '../components/GoogleIcon';
 
 export default function Login() {
-  const [remember, setRemember] = useState(false);
+  const navigate = useNavigate();
+  const [remember, setRemember]       = useState(false);
+  const [identifier, setIdentifier]   = useState('');
+  const [password, setPassword]       = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // const res = await fetch('http://localhost:5000/api/auth/login', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ identifier, password })
+    // });
+    // const data = await res.json();
+    // if (res.ok) {
+    //   localStorage.setItem('token', data.token);
+    //   navigate('/dashboard');
+    // } else {
+    //   alert(data.message || 'Login gagal');
+    // }
+
+    // hapus ini setelah backend
+    localStorage.setItem('token', 'dummy-token');
+    navigate('/dashboard');
+  };
 
   return (
     <AuthLayout
@@ -34,7 +59,7 @@ export default function Login() {
           </p>
         </div>
 
-        <form className="flex flex-col gap-5" onSubmit={e => e.preventDefault()}>
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
 
           <AuthInput
             id="identifier"
@@ -42,6 +67,8 @@ export default function Login() {
             type="text"
             placeholder="you@example.com atau 08xx"
             autoComplete="username"
+            value={identifier}
+            onChange={e => setIdentifier(e.target.value)}
           />
 
           <AuthInput
@@ -50,6 +77,8 @@ export default function Login() {
             type="password"
             placeholder="••••••••"
             autoComplete="current-password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
             rightLabel={
               <a href="/forgot-password" className="no-underline hover:underline hover:text-(--accent-primary)">
                 Lupa password?
@@ -93,7 +122,7 @@ export default function Login() {
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
           >
             <GoogleIcon />
-              Masuk dengan Google
+            Masuk dengan Google
           </button>
 
         </form>

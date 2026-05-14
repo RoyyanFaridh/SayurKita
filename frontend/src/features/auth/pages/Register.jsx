@@ -21,7 +21,23 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm]   = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!agreed) return alert('Harap setujui syarat & ketentuan');
+    if (password !== confirm) return alert('Password tidak sama');
+
+    // const res = await fetch('http://localhost:5000/api/auth/register', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ nama, phone, email, password })
+    // });
+    // const data = await res.json();
+    // if (res.ok) {
+    //   navigate(`/verify?phone=${encodeURIComponent(phone)}`);
+    // } else {
+    //   alert(data.message || 'Registrasi gagal');
+    // }
+
+    // hapus ini setelah backend
     navigate(`/verify?phone=${encodeURIComponent(phone)}`);
   };
 
