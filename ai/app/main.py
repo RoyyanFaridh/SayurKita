@@ -1,4 +1,4 @@
-# app/main.py
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ from utils.fraud import cek_aksi
 
 app = FastAPI()
 
-# izin CORS untuk frontend
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ------------------------- Model Request/Response -------------------------
+
 class RekomendasiRequest(BaseModel):
     ingredients: List[str]
     expired: Optional[List[int]] = None
@@ -51,7 +51,7 @@ class FraudResponse(BaseModel):
     allowed: bool
     message: str
 
-# ------------------------- Endpoint -------------------------
+
 @app.get("/")
 def root():
     return {"message": "SayurKita AI Service", "status": "running"}
