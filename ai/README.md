@@ -1,12 +1,7 @@
-# AI API SayurKita
+# SayurKita AI Service – Dokumentasi untuk Full Stack
 
-## Run Service
+## Menjalankan Service
 ```bash
 cd ai
-python -m pip install -r requirements.txt
+pip install -r ai/requirements.
 python app/main.py
-```
-
-## API Docs & Base URL
-- Docs: http://localhost:8003/docs
-- Base URL: http://localhost:8003
