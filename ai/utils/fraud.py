@@ -1,7 +1,6 @@
-# utils/fraud.py
+
 from datetime import datetime, date
 
-# simpan data aksi user di memori
 aksi_user = {}   # {user_id: {"count": int, "last": datetime, "hari": date}}
 
 def cek_aksi(user_id, aksi):
