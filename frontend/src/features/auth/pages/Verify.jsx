@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import StepIndicator from '../components/StepIndicator';
@@ -12,12 +13,15 @@ const steps = [
   { num: 3, label: 'Selesai',        done: false, active: false },
 ];
 
-export default function Verify({ phone = '812-3456-7890', onBack, onDone }) {
+export default function Verify({ onBack, onDone }) {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(TIMER_START);
   const [canResend, setCanResend] = useState(false);
   const [loading, setLoading] = useState(false);
   const inputRefs = useRef([]);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const phone = searchParams.get('phone') ?? '';
 
   useEffect(() => {
     if (timer <= 0) { setCanResend(true); return; }
@@ -58,10 +62,26 @@ export default function Verify({ phone = '812-3456-7890', onBack, onDone }) {
     inputRefs.current[0]?.focus();
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (otp.join('').length < OTP_LENGTH) return;
     setLoading(true);
-    setTimeout(() => { setLoading(false); onDone?.(); }, 1200);
+
+    // const res = await fetch('http://localhost:5000/api/auth/verify-otp', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ phone, otp: otp.join('') })
+    // });
+    // const data = await res.json();
+    // setLoading(false);
+    // if (res.ok) {
+    //   navigate('/success');
+    // } else {
+    //   alert(data.message || 'Kode OTP salah');
+    // }
+
+    // hapus ini setelah backend
+    setLoading(false);
+    navigate('/success');
   };
 
   const isFilled = otp.every(d => d !== '');
