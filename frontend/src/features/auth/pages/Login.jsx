@@ -10,24 +10,26 @@ export default function Login() {
   const [identifier, setIdentifier]   = useState('');
   const [password, setPassword]       = useState('');
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  //   const res = await fetch('http://localhost:5000/api/auth/login', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ identifier, password })
-  //   });
+    // const res = await fetch('http://localhost:5000/api/auth/login', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({ identifier, password })
+    // });
+    // const data = await res.json();
+    // if (res.ok) {
+    //   localStorage.setItem('token', data.token);
+    //   navigate('/dashboard');
+    // } else {
+    //   alert(data.message || 'Login gagal');
+    // }
 
-  //   const data = await res.json();
-
-  //   if (res.ok) {
-  //     localStorage.setItem('token', data.token);
-  //     navigate('/dashboard');
-  //   } else {
-  //     alert(data.message || 'Login gagal');
-  //   }
-  // };
+    // hapus ini setelah backend
+    localStorage.setItem('token', 'dummy-token');
+    navigate('/dashboard');
+  };
 
   return (
     <AuthLayout

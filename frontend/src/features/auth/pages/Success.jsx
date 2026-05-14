@@ -2,9 +2,17 @@ import { useNavigate } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import StepIndicator from '../components/StepIndicator';
+import { useState, useEffect } from 'react';
 
 export default function Success() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    if (countdown <= 0) { navigate('/dashboard'); return; }
+    const id = setTimeout(() => setCountdown(c => c - 1), 1000);
+    return () => clearTimeout(id);
+  }, [countdown]);
   
   const steps = [
     { num: 1, label: 'Daftar diri',   done: true,  active: false },
@@ -106,7 +114,7 @@ export default function Success() {
             onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#112A1C')}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--color-forest-900)')}
           >
-            Masuk ke dashboard
+            Masuk ke dashboard ({countdown})
           </button>
 
         </div>
