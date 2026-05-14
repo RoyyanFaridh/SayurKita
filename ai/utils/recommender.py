@@ -29,13 +29,13 @@ class RecipeRecommender:
         print(f"TF-IDF Recommender siap. {len(self.valid_indices)} resep valid, "
               f"dimensi vektor: {self.recipe_vectors.shape[1]}")
     
-    def recommend(self, ingredients, expired=None, top_k=5):
+    def recommend(self, user_ingredients, expired=None, top_k=5):
         """
         Rekomendasi resep berdasarkan bahan yang dimiliki.
         
         Args:
-            ingredients: list of str, contoh ['string']
-            expired: optional list of int, panjang harus sama dengan ingredients,
+            user_ingredients: list of str, contoh ['string']
+            expired: optional list of int, panjang harus sama dengan user_ingredients,
                      sisa hari expired (belum digunakan untuk similarity, 
                      tapi disediakan untuk pengembangan prioritas bahan)
             top_k: int, jumlah rekomendasi yang diminta
@@ -43,14 +43,20 @@ class RecipeRecommender:
         Returns:
             list of dict: setiap dict berisi id, name, ingredients, match_score
         """
-        if not ingredients:
+        if not user_ingredients:
             return []
 
-        user_text = ' '.join(ingredients).lower()
+        user_text = ' '.join(user_ingredients).lower()
         user_vector = self.vectorizer.transform([user_text])
         
 
         similarities = cosine_similarity(user_vector, self.recipe_vectors)[0]
+
+        # prioritas bahan hampir expired
+        if expired and len(expired) > 0:
+            avg_expired = sum(expired) / len(expired)
+            urgency_boost = 1 + ((30 - avg_expired) / 30)
+            similarities = similarities * urgency_boost
         
         top_indices = similarities.argsort()[-top_k:][::-1]
         
@@ -66,7 +72,7 @@ class RecipeRecommender:
                 "id": original_idx,
                 "name": recipe.get('Title Cleaned', recipe.get('Title', 'Resep')),
                 "ingredients": recipe.get('Ingredients Cleaned', recipe.get('Ingredients', '')),
-                "match_score": float(similarities[idx])   
+                "match_score": round(float(similarities[idx]), 4)   
             })
         
         return results
