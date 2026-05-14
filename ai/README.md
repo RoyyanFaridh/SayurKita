@@ -1,13 +1,11 @@
-# AI Service SayurKita
+# Service API
 
-## Fungsi
-- API rekomendasi resep
-- TF-IDF matching
-- Ekspor model TensorFlow
+### Menjalankan Service
 
-## Cara Jalankan
 ```bash
-cd ai-service
+cd ai
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+python app/main.py
 
+- **URL:** http://localhost:8003
+- **Docs:**http://calhost:8003/docs
