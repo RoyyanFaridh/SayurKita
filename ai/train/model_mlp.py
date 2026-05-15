@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.layers import (Dense, Dropout, Input, Layer)
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.utils import register_keras_serializable
 
 # CUSTOM LAYER
 class IngredientsImportanceLayer(Layer):
@@ -12,10 +13,10 @@ class IngredientsImportanceLayer(Layer):
         return inputs * self.factor
 
 # CUSTOM LOSS FUNCTION
+@register_keras_serializable()
 def custom_recipe_loss(y_true, y_pred):
-    bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
-    penalty = 0.01 * tf.reduce_mean(y_pred)
-    return bce + penalty
+    loss = tf.keras.losses.sparse_categorical_crossentropy(y_true, y_pred)
+    return tf.reduce_mean(loss)
 
 # CUSTOM CALLBACK
 class TrainingLogger(Callback):
@@ -27,19 +28,17 @@ class TrainingLogger(Callback):
         )
 
 # function build model mlp
-def build_mlp_model(input_dim=5000):
+def build_mlp_model(input_dim=5000, num_classes=8):
     input_layer = Input(shape=(input_dim,))
     x = IngredientsImportanceLayer()(input_layer)
 
-    x = Dense(256, activation='relu')(x)
-    x = Dropout(0.3)(x)
-
     x = Dense(128, activation='relu')(x)
-    x = Dropout(0.2)(x)
+    x = Dropout(0.4)(x)
 
     x = Dense(64, activation='relu')(x)
+    x = Dropout(0.3)(x)
 
-    output_layer = Dense(1, activation='sigmoid')(x)
+    output_layer = Dense(num_classes, activation='softmax')(x)
 
     # buat model
     model = Model(inputs=input_layer, outputs=output_layer)
