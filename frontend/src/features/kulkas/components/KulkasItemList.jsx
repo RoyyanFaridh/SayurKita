@@ -62,10 +62,6 @@ export default function KulkasItemList({ items, onEdit }) {
                 Kadaluwarsa
               </th>
 
-              <th className="whitespace-nowrap border-b border-neutral-100 bg-neutral-50 px-4 py-3 text-left text-compact-sm font-semibold text-neutral-400">
-                Status
-              </th>
-
               <th className="whitespace-nowrap border-b border-neutral-100 bg-neutral-50 px-4 py-3 text-left text-compact-sm font-semibold text-neutral-400"></th>
             </tr>
           </thead>
@@ -92,10 +88,6 @@ export default function KulkasItemList({ items, onEdit }) {
 
                 <td className="px-4 py-3 align-middle text-compact-base text-neutral-600">
                   {item.expLabel}
-                </td>
-
-                <td className="px-4 py-3 align-middle text-compact-base text-neutral-600">
-                  <Badge expType={item.expType} />
                 </td>
 
                 <td className="whitespace-nowrap px-4 py-3 text-right align-middle text-compact-base text-neutral-600">
@@ -137,7 +129,6 @@ export default function KulkasItemList({ items, onEdit }) {
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <Badge expType={item.expType} />
 
                 <button
                   className="rounded-sm border border-neutral-200 bg-transparent px-3 py-1 text-compact-sm font-medium text-neutral-600 transition-all duration-fast ease-out hover:border-neutral-300 hover:bg-neutral-100 hover:text-neutral-900"
