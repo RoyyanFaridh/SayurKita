@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import StepIndicator from '../components/StepIndicator';
+import { API_AUTH } from '../../../config/api';
 
 const OTP_LENGTH = 6;
 const TIMER_START = 60;
@@ -13,15 +14,22 @@ const steps = [
   { num: 3, label: 'Selesai',        done: false, active: false },
 ];
 
-export default function Verify({ onBack, onDone }) {
+export default function Verify() {
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
   const [timer, setTimer] = useState(TIMER_START);
   const [canResend, setCanResend] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const phone = searchParams.get('phone') ?? '';
+
+  useEffect(() => {
+    if (!phone.trim()) {
+      navigate('/register', { replace: true });
+    }
+  }, [phone, navigate]);
 
   useEffect(() => {
     if (timer <= 0) { setCanResend(true); return; }
@@ -55,33 +63,54 @@ export default function Verify({ onBack, onDone }) {
     inputRefs.current[Math.min(pasted.length, OTP_LENGTH - 1)]?.focus();
   };
 
-  const handleResend = () => {
-    setTimer(TIMER_START);
-    setCanResend(false);
-    setOtp(Array(OTP_LENGTH).fill(''));
-    inputRefs.current[0]?.focus();
+  const goBack = () => navigate('/register');
+
+  const handleResend = async () => {
+    if (!canResend || !phone.trim()) return;
+    setResending(true);
+    try {
+      const res = await fetch(`${API_AUTH}/resend-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.message || 'Gagal mengirim ulang OTP');
+        return;
+      }
+      setTimer(TIMER_START);
+      setCanResend(false);
+      setOtp(Array(OTP_LENGTH).fill(''));
+      inputRefs.current[0]?.focus();
+      alert('OTP baru dikirim (cek juga console server untuk kode demo).');
+    } catch {
+      alert('Tidak dapat menghubungi server.');
+    } finally {
+      setResending(false);
+    }
   };
 
   const handleVerify = async () => {
     if (otp.join('').length < OTP_LENGTH) return;
     setLoading(true);
-
-    // const res = await fetch('http://localhost:5000/api/auth/verify-otp', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ phone, otp: otp.join('') })
-    // });
-    // const data = await res.json();
-    // setLoading(false);
-    // if (res.ok) {
-    //   navigate('/success');
-    // } else {
-    //   alert(data.message || 'Kode OTP salah');
-    // }
-
-    // hapus ini setelah backend
-    setLoading(false);
-    navigate('/success');
+    try {
+      const res = await fetch(`${API_AUTH}/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otpCode: otp.join('') }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        navigate('/success');
+      } else {
+        alert(data.message || 'Kode OTP salah');
+      }
+    } catch {
+      alert('Tidak dapat menghubungi server. Pastikan backend berjalan.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isFilled = otp.every(d => d !== '');
@@ -172,7 +201,7 @@ export default function Verify({ onBack, onDone }) {
 
           <button
             type="button"
-            onClick={onBack}
+            onClick={goBack}
             className="text-sm font-semibold"
             style={{ background: 'none', border: 'none', color: 'var(--accent-primary)' }}
           >
@@ -195,6 +224,18 @@ export default function Verify({ onBack, onDone }) {
             {formatted}
           </span>
         </div>
+
+        {canResend && (
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resending}
+            className="text-sm font-semibold self-start disabled:opacity-50"
+            style={{ background: 'none', border: 'none', color: 'var(--accent-primary)' }}
+          >
+            {resending ? 'Mengirim…' : 'Kirim ulang OTP'}
+          </button>
+        )}
 
         <div className="flex flex-col gap-3">
           <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
@@ -227,7 +268,8 @@ export default function Verify({ onBack, onDone }) {
         <div className="flex gap-3 max-[640px]:flex-col-reverse">
 
           <button
-            onClick={onBack}
+            type="button"
+            onClick={goBack}
             className="flex-1 h-13 text-base font-semibold rounded-lg border-[1.5px]"
             style={{
               background: '#ffffff',
@@ -240,6 +282,7 @@ export default function Verify({ onBack, onDone }) {
           </button>
 
           <button
+            type="button"
             onClick={handleVerify}
             disabled={!isFilled || loading}
             className="flex-2 h-13 text-base font-semibold rounded-lg flex items-center justify-center disabled:opacity-45 disabled:cursor-not-allowed"

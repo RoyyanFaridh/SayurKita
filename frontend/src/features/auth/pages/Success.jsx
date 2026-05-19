@@ -9,10 +9,13 @@ export default function Success() {
   const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
-    if (countdown <= 0) { navigate('/dashboard'); return; }
+    if (countdown <= 0) {
+      navigate('/login?registered=1', { replace: true });
+      return;
+    }
     const id = setTimeout(() => setCountdown(c => c - 1), 1000);
     return () => clearTimeout(id);
-  }, [countdown]);
+  }, [countdown, navigate]);
   
   const steps = [
     { num: 1, label: 'Daftar diri',   done: true,  active: false },
@@ -95,16 +98,16 @@ export default function Success() {
               lineHeight: 1.2,
             }}
           >
-            Akun berhasil dibuat
+            Akun berhasil diverifikasi
           </h2>
 
           <p className="text-sm leading-[1.7] max-w-[38ch] m-0" style={{ color: 'var(--text-secondary)' }}>
-            Selamat datang di SayurKita. Akunmu sudah aktif sehingga siap posting, klaim, dan kumpulkan Poin Berkah
+            Selamat datang di SayurKita. Masuk dengan email atau nomor HP dan password untuk melanjutkan ke dashboard.
           </p>
 
           <button
             type="button"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/login?registered=1')}
             className="w-full h-13 border-none rounded-lg cursor-pointer font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99]"
             style={{
               backgroundColor: 'var(--color-forest-900)',
@@ -114,7 +117,7 @@ export default function Success() {
             onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#112A1C')}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'var(--color-forest-900)')}
           >
-            Masuk ke dashboard ({countdown})
+            Lanjut ke halaman masuk ({countdown})
           </button>
 
         </div>

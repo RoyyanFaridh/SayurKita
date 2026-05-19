@@ -1,34 +1,45 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import GoogleIcon from '../components/GoogleIcon';
+import { API_AUTH } from '../../../config/api';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [remember, setRemember]       = useState(false);
   const [identifier, setIdentifier]   = useState('');
   const [password, setPassword]       = useState('');
+  const [submitting, setSubmitting]   = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('registered') === '1') {
+      alert('Registrasi berhasil. Silakan masuk dengan email atau nomor HP dan password Anda.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // const res = await fetch('http://localhost:5000/api/auth/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ identifier, password })
-    // });
-    // const data = await res.json();
-    // if (res.ok) {
-    //   localStorage.setItem('token', data.token);
-    //   navigate('/dashboard');
-    // } else {
-    //   alert(data.message || 'Login gagal');
-    // }
-
-    // hapus ini setelah backend
-    localStorage.setItem('token', 'dummy-token');
-    navigate('/dashboard');
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_AUTH}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.token) {
+        localStorage.setItem('token', data.token);
+        navigate('/dashboard');
+      } else {
+        alert(data.message || 'Login gagal');
+      }
+    } catch {
+      alert('Tidak dapat menghubungi server. Pastikan backend berjalan.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -100,12 +111,13 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full h-13 rounded-lg font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99]"
+            disabled={submitting}
+            className="w-full h-13 rounded-lg font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: 'var(--color-primary-900)', color: '#ffffff', fontFamily: 'Poppins, sans-serif' }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-800)'}
             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-900)'}
           >
-            Masuk
+            {submitting ? 'Memproses…' : 'Masuk'}
           </button>
 
           <div className="flex items-center gap-3">

@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import StepIndicator from '../components/StepIndicator';
+import { API_AUTH } from '../../../config/api';
 
 const steps = [
   { num: 1, label: 'Daftar diri',    done: false, active: true  },
   { num: 2, label: 'Verifikasi HP',  done: false, active: false },
   { num: 3, label: 'Selesai',        done: false, active: false },
 ];
-
-const ACTIVE = 1;
 
 export default function Register() {
   const navigate = useNavigate();
@@ -20,25 +19,30 @@ export default function Register() {
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm]   = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!agreed) return alert('Harap setujui syarat & ketentuan');
     if (password !== confirm) return alert('Password tidak sama');
 
-    // const res = await fetch('http://localhost:5000/api/auth/register', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ nama, phone, email, password })
-    // });
-    // const data = await res.json();
-    // if (res.ok) {
-    //   navigate(`/verify?phone=${encodeURIComponent(phone)}`);
-    // } else {
-    //   alert(data.message || 'Registrasi gagal');
-    // }
-
-    // hapus ini setelah backend
-    navigate(`/verify?phone=${encodeURIComponent(phone)}`);
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_AUTH}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: nama, phone, email, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        navigate(`/verify?phone=${encodeURIComponent(phone)}`);
+      } else {
+        alert(data.message || 'Registrasi gagal');
+      }
+    } catch {
+      alert('Tidak dapat menghubungi server. Pastikan backend berjalan.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -147,12 +151,13 @@ export default function Register() {
           <button
             type="button"
             onClick={handleSubmit}
-            className="w-full h-13 rounded-lg font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99]"
+            disabled={submitting}
+            className="w-full h-13 rounded-lg font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: 'var(--color-primary-900)', color: '#ffffff', fontFamily: 'Poppins, sans-serif' }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-800)'}
             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-900)'}
           >
-            Lanjut
+            {submitting ? 'Memproses…' : 'Lanjut'}
           </button>
 
         </div>
