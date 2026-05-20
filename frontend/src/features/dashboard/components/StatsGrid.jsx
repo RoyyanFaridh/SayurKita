@@ -1,23 +1,19 @@
 import { Refrigerator, Clock, TrendingUp, Leaf } from 'lucide-react'
 
-const STATS = [
+// Template statis — value & badge akan di-override oleh prop `stats` dari Dashboard
+const STAT_TEMPLATES = [
   {
     id: 'kulkas',
     label: 'Bahan di kulkas',
-    value: '6',
     valueUnit: 'bahan',
-    badge: '+2 bahan',
     badgeType: 'green',
-    noteType: 'danger',
     Icon: Refrigerator,
     iconType: 'green',
   },
   {
     id: 'posting',
     label: 'Posting aktif',
-    value: '1',
     valueUnit: 'postingan',
-    badge: '47 mnt tersisa',
     badgeType: 'amber',
     Icon: Clock,
     iconType: 'amber',
@@ -25,9 +21,7 @@ const STATS = [
   {
     id: 'surplus',
     label: 'Surplus diselamatkan',
-    value: '12',
     valueUnit: 'surplus',
-    badge: '+2 April ini',
     badgeType: 'teal',
     Icon: TrendingUp,
     iconType: 'teal',
@@ -35,9 +29,7 @@ const STATS = [
   {
     id: 'karbon',
     label: 'Karbon diselamatkan',
-    value: '2',
-    valueUnit: 'kg',
-    badge: 'April ini',
+    valueUnit: 'kg CO₂',
     badgeType: 'lime',
     Icon: Leaf,
     iconType: 'lime',
@@ -59,10 +51,37 @@ const badgeStyle = {
   red:   { background: 'var(--bg-danger-subtle)',    color: 'var(--text-danger)' },
 }
 
-export default function StatsGrid() {
+/**
+ * @param {{ stats?: { totalBahanKulkas: number, postingAktif: number, surplusDiselamatkan: number, karbonDiselamatkan: number } }} props
+ */
+export default function StatsGrid({ stats }) {
+  // Map data API ke setiap card berdasarkan urutan template
+  const resolvedStats = [
+    {
+      ...STAT_TEMPLATES[0],
+      value: stats ? String(stats.totalBahanKulkas) : '—',
+      badge: stats ? `${stats.totalBahanKulkas} bahan` : '...',
+    },
+    {
+      ...STAT_TEMPLATES[1],
+      value: stats ? String(stats.postingAktif) : '—',
+      badge: stats?.postingAktif === 0 ? 'Belum ada posting' : `${stats.postingAktif} aktif`,
+    },
+    {
+      ...STAT_TEMPLATES[2],
+      value: stats ? String(stats.surplusDiselamatkan) : '—',
+      badge: stats?.surplusDiselamatkan > 0 ? `+${stats.surplusDiselamatkan} total` : 'Mulai selamatkan!',
+    },
+    {
+      ...STAT_TEMPLATES[3],
+      value: stats ? String(stats.karbonDiselamatkan) : '—',
+      badge: 'Estimasi dampak',
+    },
+  ]
+
   return (
     <div className="grid grid-cols-4 gap-2.5 max-[900px]:grid-cols-2 max-[400px]:gap-2">
-      {STATS.map(({ id, Icon, iconType, value, valueUnit, label, badge, badgeType, note, noteType }) => (
+      {resolvedStats.map(({ id, Icon, iconType, value, valueUnit, label, badge, badgeType, note, noteType }) => (
         <div
           key={id}
           className="flex flex-col gap-2 rounded-md p-3.5 border transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-sm max-[400px]:p-3"

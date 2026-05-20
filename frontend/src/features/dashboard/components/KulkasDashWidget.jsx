@@ -1,21 +1,20 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 
-const ITEMS = [
-  { id: 1, name: 'Bayam segar', expLabel: 'Besok!', expType: 'danger' },
-  { id: 2, name: 'Tahu putih',  expLabel: '2 hari',  expType: 'warning' },
-  { id: 3, name: 'Tempe',       expLabel: '5 hari',  expType: 'ok' },
-  { id: 4, name: 'Santan Kara', expLabel: '12 hari', expType: 'fresh' },
-]
-
 const badgeStyle = {
+  expired: { background: 'var(--bg-danger-subtle)',  color: 'var(--text-danger)' },
   danger:  { background: 'var(--bg-danger-subtle)',  color: 'var(--text-danger)' },
   warning: { background: 'var(--bg-warning-subtle)', color: 'var(--text-warning)' },
   ok:      { background: 'var(--bg-success-subtle)', color: 'var(--text-success)' },
   fresh:   { background: 'var(--bg-success-subtle)', color: 'var(--text-success)' },
 }
 
-export default function KulkasDashWidget() {
+/**
+ * @param {{ items?: Array<{ id: string, nama: string, jumlah: string, expStatus: string, expLabel: string }> }} props
+ */
+export default function KulkasDashWidget({ items }) {
+  const list = items ?? []
+
   return (
     <div
       className="rounded-md overflow-hidden p-4 border"
@@ -39,23 +38,36 @@ export default function KulkasDashWidget() {
         </Link>
       </div>
 
-      <ul>
-        {ITEMS.map(({ id, name, expLabel, expType }, i) => (
-          <li
-            key={id}
-            className="flex justify-between items-center py-4"
-            style={{ borderBottom: i < ITEMS.length - 1 ? '1px solid var(--border-subsub)' : 'none' }}
-          >
-            <span className="text-compact-base" style={{ color: 'var(--text-primary)' }}>{name}</span>
-            <span
-              className="text-compact-sm font-medium px-3 py-1 rounded-full"
-              style={badgeStyle[expType]}
+      {list.length === 0 ? (
+        <p className="text-compact-sm py-4 text-center" style={{ color: 'var(--text-muted)' }}>
+          Kulkas masih kosong. <Link to="/kulkas" style={{ color: 'var(--text-brand)' }}>Tambah bahan →</Link>
+        </p>
+      ) : (
+        <ul>
+          {list.map(({ id, nama, jumlah, expStatus, expLabel }, i) => (
+            <li
+              key={id}
+              className="flex justify-between items-center py-4"
+              style={{ borderBottom: i < list.length - 1 ? '1px solid var(--border-subsub)' : 'none' }}
             >
-              {expLabel}
-            </span>
-          </li>
-        ))}
-      </ul>
+              <div>
+                <span className="text-compact-base" style={{ color: 'var(--text-primary)' }}>{nama}</span>
+                {jumlah && (
+                  <span className="ml-1.5 text-compact-sm" style={{ color: 'var(--text-muted)' }}>
+                    · {jumlah}
+                  </span>
+                )}
+              </div>
+              <span
+                className="text-compact-sm font-medium px-3 py-1 rounded-full"
+                style={badgeStyle[expStatus] ?? badgeStyle.ok}
+              >
+                {expLabel}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

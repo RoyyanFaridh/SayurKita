@@ -1,19 +1,6 @@
-<<<<<<< Updated upstream
-// import { Navigate, Outlet } from 'react-router-dom'
-
-// export default function ProtectedRoute() {
-//   const token = localStorage.getItem('token')
-
-//   if (!token) {
-//     return <Navigate to="/login" replace />
-//   }
-
-//   return <Outlet />
-// }
-=======
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { API_AUTH } from '../../config/api';
+import { API_ORIGIN } from '../../config/api';
 
 export default function ProtectedRoute() {
   const [status, setStatus] = useState('loading');
@@ -27,7 +14,7 @@ export default function ProtectedRoute() {
 
     let cancelled = false;
 
-    fetch(`${API_AUTH}/me`, {
+    fetch(`${API_ORIGIN}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
@@ -67,4 +54,3 @@ export default function ProtectedRoute() {
 
   return <Outlet />;
 }
->>>>>>> Stashed changes

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, Sparkles, AlertCircle, Loader } from "lucide-react";
+import { ArrowRight, Sparkles, AlertCircle, Loader2 } from "lucide-react";
 import { API_ORIGIN } from "../../../config/api";
 
 export default function KulkasResepAI({ ingredients = [] }) {
@@ -8,12 +8,8 @@ export default function KulkasResepAI({ ingredients = [] }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (ingredients && ingredients.length > 0) {
-      fetchRecommendations();
-    } else {
-      setRecommendations([]);
-      setError("");
-    }
+    // Kita panggil fetch tiap kali array ingredients berubah (kulkas di-update)
+    fetchRecommendations();
   }, [ingredients]);
 
   async function fetchRecommendations() {
@@ -21,76 +17,50 @@ export default function KulkasResepAI({ ingredients = [] }) {
       setLoading(true);
       setError("");
 
-      // Ambil nama-nama bahan dari ingredients
-      const ingredientNames = ingredients
-        .map((item) => item.nama)
-        .filter(Boolean);
-
-      if (ingredientNames.length === 0) {
-        setRecommendations([]);
-        return;
-      }
-
       const token = localStorage.getItem("token");
 
-      // Kirim request ke proxy /api/recommend di Node.js
-      const response = await fetch(`${API_ORIGIN}/api/recommend`, {
+      // Kirim request ke endpoint /api/recommend/dashboard yang membaca langsung DB
+      const response = await fetch(`${API_ORIGIN}/api/recommend/dashboard`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify({
-          ingredients: ingredientNames,
-          top_k: 3, // Ambil 3 rekomendasi teratas
-        }),
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        setError(
-          data.message ||
-            "Gagal mendapatkan rekomendasi resep. Pastikan layanan AI aktif.",
-        );
-        setRecommendations([]);
-        return;
+        if (response.status === 502) {
+          throw new Error('Gagal memuat rekomendasi otomatis, server AI sedang beristirahat.');
+        }
+        throw new Error("Gagal mendapatkan rekomendasi resep.");
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      // Transform response dari AI ke format UI
-      // Handle kedua format: dari FastAPI atau format lama
-      const resepList = (data.recommendations || data.data || data || [])
-        .slice(0, 3)
-        .map((resep, idx) => {
-          // Support format FastAPI (name, ingredients, match_score)
-          // Support format lama (nama, bahan, waktu)
-          const namaResep = resep.nama || resep.name || "Resep tanpa judul";
-          const bahanResep = resep.bahan || resep.ingredients || [];
-          const waktuResep = resep.waktu || resep.time || "—";
+      let rawRecipes = [];
+      if (Array.isArray(result)) {
+        rawRecipes = result;
+      } else if (result.data && Array.isArray(result.data)) {
+        rawRecipes = result.data;
+      } else if (result.data && Array.isArray(result.data.recipes)) {
+        rawRecipes = result.data.recipes;
+      } else if (Array.isArray(result.recipes)) {
+        rawRecipes = result.recipes;
+      }
 
-          // Parse ingredients jika string (dari FastAPI)
-          let bahanArray = bahanResep;
-          if (typeof bahanResep === "string") {
-            bahanArray = bahanResep
-              .split(",")
-              .map((b) => b.trim())
-              .filter(Boolean);
-          }
+      // Ambil 3 resep teratas dan mapping
+      const formatted = rawRecipes.slice(0, 3).map((r, idx) => ({
+        id: r.id || idx,
+        name: r.name || r.title || "Resep tanpa judul",
+        ingredients: r.ingredients || r.bahan || "Resep lainnya",
+        match_score: r.match_score,
+        featured: idx === 0,
+      }));
 
-          return {
-            id: resep.id || idx,
-            nama: namaResep,
-            bahan: bahanArray,
-            waktu: waktuResep,
-            featured: idx === 0,
-          };
-        });
-
-      setRecommendations(resepList);
+      setRecommendations(formatted);
     } catch (err) {
       console.error("Fetch recommendations error:", err);
-      setError("Terjadi kesalahan saat memuat rekomendasi resep");
+      setError(err.message || "Terjadi kesalahan saat memuat rekomendasi resep");
       setRecommendations([]);
     } finally {
       setLoading(false);
@@ -101,7 +71,7 @@ export default function KulkasResepAI({ ingredients = [] }) {
     return (
       <div className="overflow-hidden rounded-md border border-neutral-100 bg-white p-4 shadow-xs">
         <div className="flex items-center justify-center gap-2 py-8">
-          <Loader size={16} className="animate-spin text-secondary-600" />
+          <Loader2 size={16} className="animate-spin text-secondary-600" />
           <p className="text-compact-base text-neutral-600">
             Mencari resep terbaik untuk bahan mu...
           </p>
@@ -157,7 +127,7 @@ export default function KulkasResepAI({ ingredients = [] }) {
         <div className="flex items-center gap-2.5 px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg">
           <AlertCircle size={16} className="text-neutral-500 shrink-0" />
           <p className="text-compact-sm text-neutral-600">
-            Tambahkan bahan ke kulkas untuk mendapatkan rekomendasi resep
+            Belum ada resep yang bisa direkomendasikan dari bahan di kulkas.
           </p>
         </div>
       </div>
@@ -178,7 +148,7 @@ export default function KulkasResepAI({ ingredients = [] }) {
             </h2>
 
             <p className="mt-0.5 text-compact-sm text-neutral-400">
-              Saran dari bahan yang akan kadaluwarsa
+              Saran resep untuk bahan-bahanmu
             </p>
           </div>
         </div>
@@ -205,14 +175,18 @@ export default function KulkasResepAI({ ingredients = [] }) {
                   r.featured ? "font-bold" : "font-medium"
                 }`}
               >
-                {r.nama}
+                <span className="capitalize">{r.name}</span>
+                {r.match_score != null && (
+                  <span 
+                    className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-secondary-50 text-secondary-600 border border-secondary-100"
+                  >
+                    {(r.match_score * 100).toFixed(0)}% Match
+                  </span>
+                )}
               </p>
 
-              <p className="mt-0.5 text-compact-sm text-neutral-600">
-                {Array.isArray(r.bahan) && r.bahan.length > 0
-                  ? r.bahan.slice(0, 2).join(" · ")
-                  : "Resep lainnya"}{" "}
-                · {r.waktu}
+              <p className="mt-0.5 text-compact-sm text-neutral-600 truncate">
+                {r.ingredients}
               </p>
             </div>
 
