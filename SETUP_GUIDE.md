@@ -133,6 +133,18 @@ cd d:\SayurKita\frontend
 npm install
 ```
 
+### 3.4 Setup Environment Variables
+
+Buat file `.env` di folder `frontend/`:
+
+```env
+VITE_API_URL="http://localhost:5000"
+```
+
+Catatan:
+- Jika backend menggunakan port berbeda (misalnya 5001), sesuaikan nilai VITE_API_URL
+- Jangan commit .env ke git
+
 ### 3.3 Start Development Server
 
 ```bash

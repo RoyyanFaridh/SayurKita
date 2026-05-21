@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AlertsSection from "../components/AlertsSection";
 import StatsGrid from "../components/StatsGrid";
-import ExpiryAlertWidget from "../components/ExpiryAlertWidget";
-import IngredientSummaryWidget from "../components/IngredientSummaryWidget";
+// import ExpiryAlertWidget from "../components/ExpiryAlertWidget";
+// import IngredientSummaryWidget from "../components/IngredientSummaryWidget";
 import KulkasDashWidget from "../components/KulkasDashWidget";
 import ResepWidget from "../components/ResepWidget";
 import SurplusDashWidget from "../components/SurplusDashWidget";
@@ -56,7 +56,14 @@ async function reverseGeocode(lat, lng) {
   }
 }
 
-// ─── Komponen ─────────────────────────────────────────────────────────────────
+function getGreeting() {
+  const hour = new Date().getHours()
+  if (hour < 11) return 'Selamat pagi,'
+  if (hour < 15) return 'Selamat siang,'
+  if (hour < 18) return 'Selamat sore,'
+  return 'Selamat malam,'
+}
+
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading]             = useState(true);
@@ -98,9 +105,8 @@ export default function Dashboard() {
 
         const json = await res.json();
 
-        // Respons: { success: true, data: { user, stats, kulkasPreview } }
         if (!cancelled && json?.success && json?.data) {
-          setDashboardData(json.data);          // json.data sudah berisi { user, stats, kulkasPreview }
+          setDashboardData(json.data);        
         } else if (!cancelled) {
           setFetchError(true);
         }
@@ -116,7 +122,6 @@ export default function Dashboard() {
     return () => { cancelled = true; };
   }, [navigate]);
 
-  // ─── Deteksi Lokasi ───────────────────────────────────────────────────────
   const handleLocate = useCallback(async () => {
     if (!navigator.geolocation) {
       setLocation("Lokasi tidak tersedia");
@@ -138,7 +143,6 @@ export default function Dashboard() {
 
   useEffect(() => { handleLocate(); }, [handleLocate]);
 
-  // ─── Derived values — selalu aman meski dashboardData masih null ──────────
   const userName        = dashboardData?.user?.name ?? "…";
   const statsData       = dashboardData?.stats       ?? null;
   const kulkasPreview   = Array.isArray(dashboardData?.kulkasPreview)
@@ -152,7 +156,6 @@ export default function Dashboard() {
     </span>
   ) : location;
 
-  // ─── Loading Screen ───────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -164,7 +167,6 @@ export default function Dashboard() {
     );
   }
 
-  // ─── Error Screen ─────────────────────────────────────────────────────────
   if (fetchError) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -182,26 +184,17 @@ export default function Dashboard() {
     );
   }
 
-  // ─── Main Render ─────────────────────────────────────────────────────────
   return (
     <>
-      {/* Header Desktop */}
       <div className="bg-white border-b border-(--border-subtle) flex items-center justify-between px-7 py-4 sticky top-0 z-10 max-[640px]:hidden">
         <div>
-          <p className="text-compact-base text-(--text-muted)">Selamat pagi,</p>
+          <p className="text-compact-base text-(--text-muted)">{getGreeting()}</p>
           <h1 className="text-xl font-bold leading-snug text-(--text-primary)">{userName}</h1>
-          <p className="text-compact-sm mt-0.5 text-(--text-muted)">
+          <p className="text-compact-sm mt-1 text-(--text-muted)">
             {DEFAULT_DATE} · {locationDisplay}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 rounded-md px-3 py-2 text-compact-lg cursor-text select-none w-55 border bg-(--bg-alt) border-(--border-default) text-(--text-muted)">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-              <line x1="9.5" y1="9.5" x2="12" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <span>Cari bahan, resep, selamatkan…</span>
-          </div>
           <button
             className="relative w-9 h-9 rounded-md border flex items-center justify-center cursor-pointer transition-colors duration-150 bg-(--bg-alt) border-(--border-default) text-(--text-secondary) hover:bg-(--bg-surface-3)"
             aria-label="Notifikasi"
@@ -222,23 +215,19 @@ export default function Dashboard() {
         <div className="hidden max-[640px]:block px-4 pt-4 pb-5 rounded-b-xl bg-(--bg-dark)">
           <p className="text-compact-sm text-(--text-on-dark-muted)">Selamat pagi,</p>
           <h1 className="text-xl font-bold leading-snug text-(--text-on-dark)">{userName}</h1>
-          <p className="text-compact-xs mt-0.5 text-(--text-on-dark-faint)">
+          <p className="text-compact-xs mt-1 text-(--text-on-dark-faint)">
             {DEFAULT_DATE} · {locationDisplay}
           </p>
         </div>
 
         <div className="max-[640px]:px-4"><AlertsSection /></div>
-        <div className="max-[640px]:px-4"><IngredientSummaryWidget /></div>
-        <div className="max-[640px]:px-4"><ExpiryAlertWidget /></div>
 
-        {/* StatsGrid — data riil atau null (komponen handle fallback-nya sendiri) */}
         <div className="max-[640px]:px-4">
           <StatsGrid stats={statsData} />
         </div>
 
         <div className="grid grid-cols-2 gap-5 max-[900px]:grid-cols-1 max-[640px]:px-4">
           <div className="flex flex-col gap-5">
-            {/* KulkasDashWidget — sudah dijamin array (tidak pernah null/undefined) */}
             <KulkasDashWidget items={kulkasPreview} />
             <ResepWidget />
           </div>

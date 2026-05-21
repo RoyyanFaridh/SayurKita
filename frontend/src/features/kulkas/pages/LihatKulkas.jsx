@@ -4,7 +4,6 @@ import { API_ORIGIN } from "../../../config/api";
 
 import KulkasTopbar from "../components/KulkasTopbar";
 import KulkasSummaryStrip from "../components/KulkasSummaryStrip";
-import KulkasAlertBanner from "../components/KulkasAlertBanner";
 import KulkasToolbar from "../components/KulkasToolbar";
 import KulkasItemList from "../components/KulkasItemList";
 import KulkasResepAI from "../components/KulkasResepAI";
@@ -101,17 +100,12 @@ export default function LihatKulkas() {
   }
 
   async function handleSaveModal(data, action) {
-    // Refresh data setelah save
     await fetchIngredients();
     setModal(null);
   }
 
   const filtered = items
-    .filter(
-      (i) =>
-        (kategori === "Semua" || i.kategori === kategori) &&
-        i.nama.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter(i => i.nama.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) =>
       sortBy === "exp"
         ? EXP_ORDER[a.expType] - EXP_ORDER[b.expType]
@@ -119,11 +113,12 @@ export default function LihatKulkas() {
     );
 
   const counts = {
-    danger: items.filter((i) => i.expType === "danger").length,
+    total:   items.length,
+    danger:  items.filter((i) => i.expType === "danger").length,
     warning: items.filter((i) => i.expType === "warning").length,
-    ok: items.filter((i) => i.expType === "ok").length,
-    fresh: items.filter((i) => i.expType === "fresh").length,
-  };
+    ok:      items.filter((i) => i.expType === "ok").length,
+    fresh:   items.filter((i) => i.expType === "fresh").length,
+  }
 
   if (loading) {
     return (
@@ -164,7 +159,7 @@ export default function LihatKulkas() {
               Lihat Kulkas
             </h1>
 
-            <p className="mt-0.5 text-compact-xs text-white/35">
+            <p className="mt-1 text-compact-xs text-white/35">
               {items.length} bahan tersimpan
             </p>
           </div>
@@ -179,10 +174,6 @@ export default function LihatKulkas() {
 
         <div className="max-sm:px-4">
           <KulkasSummaryStrip counts={counts} />
-        </div>
-
-        <div className="max-sm:px-4">
-          <KulkasAlertBanner count={counts.danger} />
         </div>
 
         <div className="max-sm:px-4">

@@ -1,71 +1,59 @@
+import { useState, useEffect } from 'react'
 import { Refrigerator, Clock, TrendingUp, Leaf } from 'lucide-react'
+import { API_ORIGIN } from '../../../config/api'
 
-// Template statis — value & badge akan di-override oleh prop `stats` dari Dashboard
 const STAT_TEMPLATES = [
-  {
-    id: 'kulkas',
-    label: 'Bahan di kulkas',
-    valueUnit: 'bahan',
-    badgeType: 'green',
-    Icon: Refrigerator,
-    iconType: 'green',
-  },
-  {
-    id: 'posting',
-    label: 'Posting aktif',
-    valueUnit: 'postingan',
-    badgeType: 'amber',
-    Icon: Clock,
-    iconType: 'amber',
-  },
-  {
-    id: 'surplus',
-    label: 'Surplus diselamatkan',
-    valueUnit: 'surplus',
-    badgeType: 'teal',
-    Icon: TrendingUp,
-    iconType: 'teal',
-  },
-  {
-    id: 'karbon',
-    label: 'Karbon diselamatkan',
-    valueUnit: 'kg CO₂',
-    badgeType: 'lime',
-    Icon: Leaf,
-    iconType: 'lime',
-  },
+  { id: 'kulkas',  label: 'Bahan di kulkas',       valueUnit: 'bahan',    badgeType: 'green', Icon: Refrigerator, iconType: 'green' },
+  { id: 'posting', label: 'Posting aktif',          valueUnit: 'postingan', badgeType: 'amber', Icon: Clock,        iconType: 'amber' },
+  { id: 'surplus', label: 'Surplus diselamatkan',   valueUnit: 'surplus',  badgeType: 'teal',  Icon: TrendingUp,   iconType: 'teal'  },
+  { id: 'karbon',  label: 'Karbon diselamatkan',    valueUnit: 'kg CO₂',   badgeType: 'lime',  Icon: Leaf,         iconType: 'lime'  },
 ]
 
 const iconStyle = {
-  green: { background: 'var(--bg-success-subtle)',   color: 'var(--text-success)' },
-  amber: { background: 'var(--bg-secondary-subtle)', color: 'var(--color-secondary-600)' },
-  teal:  { background: 'var(--bg-subtle)',            color: 'var(--text-brand)' },
-  lime:  { background: 'var(--bg-success-subtle)',   color: 'var(--text-success)' },
+  green: { background: 'var(--bg-success-subtle)',    color: 'var(--text-success)' },
+  amber: { background: 'var(--bg-secondary-subtle)',  color: 'var(--color-secondary-600)' },
+  teal:  { background: 'var(--bg-subtle)',             color: 'var(--text-brand)' },
+  lime:  { background: 'var(--bg-success-subtle)',    color: 'var(--text-success)' },
 }
 
 const badgeStyle = {
-  green: { background: 'var(--bg-success-subtle)',   color: 'var(--text-success)' },
-  amber: { background: 'var(--bg-secondary-subtle)', color: 'var(--color-secondary-600)' },
-  teal:  { background: 'var(--bg-subtle)',            color: 'var(--text-brand)' },
-  lime:  { background: 'var(--bg-success-subtle)',   color: 'var(--text-success)' },
-  red:   { background: 'var(--bg-danger-subtle)',    color: 'var(--text-danger)' },
+  green: { background: 'var(--bg-success-subtle)',    color: 'var(--text-success)' },
+  amber: { background: 'var(--bg-secondary-subtle)',  color: 'var(--color-secondary-600)' },
+  teal:  { background: 'var(--bg-subtle)',             color: 'var(--text-brand)' },
+  lime:  { background: 'var(--bg-success-subtle)',    color: 'var(--text-success)' },
+  red:   { background: 'var(--bg-danger-subtle)',     color: 'var(--color-danger-800)' },
 }
 
-/**
- * @param {{ stats?: { totalBahanKulkas: number, postingAktif: number, surplusDiselamatkan: number, karbonDiselamatkan: number } }} props
- */
 export default function StatsGrid({ stats }) {
-  // Map data API ke setiap card berdasarkan urutan template
+  const [kulkasSummary, setKulkasSummary] = useState(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+
+    fetch(`${API_ORIGIN}/api/ingredients/stats/summary`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.data) setKulkasSummary(data.data) })
+      .catch(console.error)
+  }, [])
+
   const resolvedStats = [
     {
       ...STAT_TEMPLATES[0],
       value: stats ? String(stats.totalBahanKulkas) : '—',
-      badge: stats ? `${stats.totalBahanKulkas} bahan` : '...',
+      badge: kulkasSummary
+        ? kulkasSummary.critical > 0
+          ? `${kulkasSummary.critical} bahan kritis`
+          : 'Semua aman'
+        : stats ? `${stats.totalBahanKulkas} bahan` : '...',
+      badgeType: kulkasSummary?.critical > 0 ? 'red' : 'green',
     },
     {
       ...STAT_TEMPLATES[1],
       value: stats ? String(stats.postingAktif) : '—',
-      badge: stats?.postingAktif === 0 ? 'Belum ada posting' : `${stats.postingAktif} aktif`,
+      badge: stats?.postingAktif === 0 ? 'Belum ada posting' : `${stats?.postingAktif ?? '...'} aktif`,
     },
     {
       ...STAT_TEMPLATES[2],
@@ -118,7 +106,7 @@ export default function StatsGrid({ stats }) {
           {note && (
             <p
               className="text-compact-xs m-0"
-              style={{ color: noteType === 'danger' ? 'var(--text-danger)' : 'var(--text-muted)' }}
+              style={{ color: noteType === 'danger' ? 'var(--color-danger-800)' : 'var(--text-muted)' }}
             >
               {note}
             </p>

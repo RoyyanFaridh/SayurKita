@@ -1,11 +1,11 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo, useImperativeHandle, forwardRef } from 'react'
 import {
   Refrigerator, Snowflake, ThermometerSun,
   Calendar, Flame, Beef, Droplets, Wheat, Package,
 } from 'lucide-react'
-import { INGREDIENTS_MAP } from '../ingredientsMaster'
 import { API_ORIGIN } from '../../../config/api'
 import IngredientCombobox from './IngredientCombobox'
+import { fetchIngredientsMaster, INGREDIENTS_MAP as _map } from '../ingredientsMaster'
 
 const STORAGE_OPTIONS = [
   { value: 'kulkas',  label: 'Kulkas',     icon: Refrigerator,   field: 'umur_kulkas'  },
@@ -14,8 +14,8 @@ const STORAGE_OPTIONS = [
 ]
 
 const BELI_OPTIONS = [
-  { value: 0, label: 'Hari ini'    },
-  { value: 1, label: 'Kemarin'     },
+  { value: 0, label: 'Hari ini'         },
+  { value: 1, label: 'Kemarin'          },
   { value: 7, label: 'Satu minggu lalu' },
 ]
 
@@ -49,21 +49,27 @@ function formatExp(dateStr) {
   return                 { label: `${diff} hari lagi`, sublabel: 'Masih aman disimpan',         color: 'fresh'   }
 }
 
-const inputCls = 'w-full px-3 py-2.5 bg-(--bg-alt) border border-(--border-default) rounded-xl text-compact-lg text-(--text-primary) box-border transition-colors duration-150 focus:outline-none focus:border-(--border-brand)'
-const beliChipBase = 'px-3.5 py-1.5 rounded-full border text-compact-base font-medium cursor-pointer whitespace-nowrap transition-all duration-150'
-const beliChipIdle = 'bg-(--bg-alt) border-(--border-default) text-(--text-secondary) hover:border-(--border-brand) hover:text-(--text-brand)'
-const beliChipActive = 'bg-primary-900 border-primary-900 text-white'
+const inputCls      = 'w-full px-3 py-2.5 bg-(--bg-alt) border border-(--border-default) rounded-md text-compact-lg text-(--text-primary) box-border transition-colors duration-150 focus:outline-none focus:border-(--border-brand)'
+const beliChipBase   = 'px-3.5 py-1.5 rounded-md border text-compact-base font-medium cursor-pointer whitespace-nowrap transition-all duration-150'
+const beliChipIdle   = 'bg-(--bg-alt) border-(--border-default) text-(--text-secondary) hover:border-(--border-brand) hover:text-(--text-brand)'
+const beliChipActive = 'bg-(--bg-subtle) border-(--border-brand) text-(--text-brand)'
 
-export default function KulkasForm({ item, onSave, isLoading = false }) {
-  const [nama,        setNama]        = useState(item?.nama   || '')
-  const [jumlah,      setJumlah]      = useState(item?.jumlah || '')
+const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = false }, ref) {
+  const [nama,        setNama]        = useState(item?.nama    || '')
+  const [jumlah,      setJumlah]      = useState(item?.jumlah  || '')
   const [storage,     setStorage]     = useState(item?.storage || 'kulkas')
   const [beliMode,    setBeliMode]    = useState('preset')
   const [beliDaysAgo, setBeliDaysAgo] = useState(0)
   const [beliCustom,  setBeliCustom]  = useState('')
   const [error,       setError]       = useState('')
 
-  const master = INGREDIENTS_MAP[nama] ?? null
+  const [masterMap, setMasterMap] = useState(_map)
+
+  useEffect(() => {
+    fetchIngredientsMaster().then(setMasterMap)
+  }, [])
+
+  const master = masterMap[nama] ?? null
 
   const expDate = useMemo(() => {
     const daysAgo = beliMode === 'custom' && beliCustom
@@ -91,7 +97,6 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
   async function handleSubmit() {
     setError('')
 
-    // Validasi
     if (!nama) {
       setError('Nama bahan harus diisi')
       return
@@ -108,28 +113,28 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
         return
       }
 
-      const beliDateValue = beliMode === 'custom' && beliCustom 
+      const beliDateValue = beliMode === 'custom' && beliCustom
         ? new Date(beliCustom).toISOString()
         : new Date(Date.now() - beliDaysAgo * 86400000).toISOString()
 
       const payload = {
         nama,
-        kategori: 'Lainnya',
-        jumlah: jumlah || '-',
+        kategori: master?.kategori || 'Lainnya',
+        jumlah:   jumlah || '-',
         storage,
         beliDate: beliDateValue,
-        expDate: new Date(expDate).toISOString(),
+        expDate:  new Date(expDate).toISOString(),
       }
 
-      const method = item?.id ? 'PUT' : 'POST'
-      const url = item?.id 
+      const method = item?.id ? 'PUT'  : 'POST'
+      const url    = item?.id
         ? `${API_ORIGIN}/api/ingredients/${item.id}`
         : `${API_ORIGIN}/api/ingredients`
 
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type':  'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
@@ -142,19 +147,19 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
         return
       }
 
-      if (onSave) {
-        onSave(data.data)
-      }
+      if (onSave) onSave(data.data)
     } catch (err) {
       console.error('Submit error:', err)
       setError('Terjadi kesalahan. Silakan coba lagi.')
     }
   }
 
+  useImperativeHandle(ref, () => ({ submit: handleSubmit }))
+
   return (
     <>
       {error && (
-        <div className="mx-5 mt-4 px-4 py-2.5 bg-danger-50 border border-danger-200 rounded-lg">
+        <div className="mx-5 mt-4 px-4 py-2.5 bg-danger-50 border border-danger-200 rounded-md">
           <p className="text-compact-sm text-danger-600">{error}</p>
         </div>
       )}
@@ -167,12 +172,10 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
         </div>
 
         {master && expInfo && (
-          <div className={`rounded-xl px-4 py-3 flex items-start gap-3 ${ESTIMASI_META[expInfo.color].cls}`}>
+          <div className={`rounded-md px-4 py-3 flex items-start gap-3 ${ESTIMASI_META[expInfo.color].cls}`}>
             <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${ESTIMASI_META[expInfo.color].dot}`} />
             <div className="flex flex-col gap-0.5">
-              <p className="text-compact-base font-semibold">
-                <span className="font-bold">{expInfo.label}</span>
-              </p>
+              <p className="text-compact-base font-bold">{expInfo.label}</p>
               <p className="text-compact-sm opacity-80">{expInfo.sublabel}</p>
               <p className="text-compact-xs opacity-60 mt-0.5">
                 <span className="capitalize font-medium">{nama}</span>{' '}
@@ -195,16 +198,16 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
                   type="button"
                   disabled={unavail}
                   onClick={() => !unavail && setStorage(value)}
-                  className={`flex flex-col items-center gap-1.5 py-3.5 px-2 border rounded-xl cursor-pointer transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${
+                  className={`flex flex-col items-center gap-1.5 py-3.5 px-2 border rounded-md cursor-pointer transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${
                     active
-                      ? 'bg-(--bg-subtle) border-primary-900 shadow-[0_0_0_2px_var(--color-primary-100)]'
+                      ? 'bg-(--bg-subtle) border-(--border-brand) shadow-[0_0_0_2px_var(--color-primary-100)]'
                       : 'bg-(--bg-alt) border-(--border-default) hover:border-(--border-brand) hover:bg-(--bg-subtle)'
                   }`}
                 >
-                  <Icon size={18} strokeWidth={1.5} className={active ? 'text-primary-900' : 'text-(--text-brand)'} />
+                  <Icon size={18} strokeWidth={1.5} className={active ? 'text-(--text-brand)' : 'text-(--text-muted)'} />
                   <span className="text-compact-base font-semibold text-(--text-primary)">{label}</span>
                   {master && umur ? (
-                    <span className={`text-compact-xs px-2 py-px rounded-full ${active ? 'bg-primary-100 text-primary-700' : 'bg-(--bg-surface-3) text-(--text-muted)'}`}>
+                    <span className={`text-compact-xs px-2 py-px rounded-full ${active ? 'bg-(--bg-subtle) text-(--text-brand)' : 'bg-(--bg-surface-3) text-(--text-muted)'}`}>
                       {umur} hari
                     </span>
                   ) : unavail ? (
@@ -254,7 +257,7 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
             Jumlah
             <span className="text-compact-sm font-normal text-(--text-muted)">(opsional)</span>
           </label>
-          <div className="flex items-center gap-2 bg-(--bg-alt) border border-(--border-default) rounded-xl px-3 focus-within:border-(--border-brand) transition-colors duration-150">
+          <div className="flex items-center gap-2 bg-(--bg-alt) border border-(--border-default) rounded-md px-3 focus-within:border-(--border-brand) transition-colors duration-150">
             <Package size={13} strokeWidth={2} className="text-(--text-muted) shrink-0" />
             <input
               className="flex-1 border-0 bg-transparent py-2.5 text-compact-lg text-(--text-primary) min-w-0 placeholder:text-(--text-muted) focus:outline-none"
@@ -266,7 +269,7 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
         </div>
 
         {hasNutrition && (
-          <div className="border border-(--border-subtle) rounded-xl overflow-hidden">
+          <div className="border border-(--border-subtle) rounded-md overflow-hidden">
             <div className="px-4 py-2.5 bg-(--bg-alt) border-b border-(--border-subtle)">
               <p className="text-compact-xs font-semibold text-(--text-muted) uppercase tracking-wide">
                 Info Gizi per 100 g
@@ -294,21 +297,10 @@ export default function KulkasForm({ item, onSave, isLoading = false }) {
             </div>
           </div>
         )}
-      </div>
 
-      {/* Render tombol submit hanya jika dipanggil dari modal */}
-      {onSave && (
-        <div className="px-5 py-4 border-t border-(--border-subtle) flex gap-2">
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={isLoading || !nama}
-            className="flex-1 px-5 py-2 bg-secondary-500 text-primary-900 border-0 rounded-xl text-compact-lg font-semibold cursor-pointer transition-colors duration-150 hover:bg-secondary-400 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Menyimpan...' : 'Simpan Bahan'}
-          </button>
-        </div>
-      )}
+      </div>
     </>
   )
-}
+})
+
+export default KulkasForm

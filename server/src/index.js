@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const ingredientRoutes = require("./routes/ingredientRoutes");
+const ingredientsMasterRoutes = require('./routes/ingredientMasterRoutes')
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const recommendRoutes = require("./routes/recommendRoutes");
 
@@ -26,6 +27,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/ingredients", ingredientRoutes);
+app.use('/api/ingredients-master', ingredientsMasterRoutes)
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/recommend", recommendRoutes);
 

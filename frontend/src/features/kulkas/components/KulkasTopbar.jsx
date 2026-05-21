@@ -15,7 +15,7 @@ export default function KulkasTopbar({ totalItems, onTambah }) {
             Lihat Kulkas
           </h1>
 
-          <p className="mt-0.5 text-compact-sm text-neutral-400">
+          <p className="mt-1 text-compact-sm text-neutral-400">
             {totalItems} bahan tersimpan
           </p>
         </div>
