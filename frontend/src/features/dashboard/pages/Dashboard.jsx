@@ -10,7 +10,6 @@ import SurplusDashWidget from "../components/SurplusDashWidget";
 import PostingWidget from "../components/PostingWidget";
 import { API_ORIGIN } from "../../../config/api";
 
-const DEFAULT_DATE = "Hari ini";
 const GMAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? "";
 
 // ─── Lokasi helpers ───────────────────────────────────────────────────────────
@@ -35,6 +34,17 @@ function guessCityFromCoords(lat, lng) {
   }
   return nearest.name;
 }
+
+function getFormattedDate() {
+  return new Date().toLocaleDateString('id-ID', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+const DEFAULT_DATE = getFormattedDate()
 
 async function reverseGeocode(lat, lng) {
   if (!GMAPS_API_KEY) return guessCityFromCoords(lat, lng);

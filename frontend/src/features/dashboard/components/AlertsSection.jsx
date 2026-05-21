@@ -54,7 +54,7 @@ export default function AlertsSection() {
           >
             <span className="w-2 h-2 rounded-full shrink-0" style={c.dot} />
             <div className="flex-1 min-w-0">
-              <p className="text-compact-lg font-semibold truncate m-0" style={c.title}>{title}</p>
+              <p className="text-compact-lg font-semibold capitalize truncate m-0" style={c.title}>{title}</p>
               <p className="text-compact-sm mt-0.5 m-0 max-[480px]:hidden" style={c.sub}>
                 Jangan biarkan terbuang! Masak sekarang dengan ide resep AI.
               </p>

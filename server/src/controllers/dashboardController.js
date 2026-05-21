@@ -4,16 +4,6 @@ const prisma = new PrismaClient();
 
 const TODAY_CRITICAL_DAYS = 3;
 
-/**
- * GET /api/dashboard/summary
- * Menyuplai semua data yang dibutuhkan halaman Dashboard secara real-time.
- * Terproteksi oleh authMiddleware (req.userId sudah diisi sebelum fungsi ini dipanggil).
- *
- * Response mencakup:
- *  - user         : sapaan dinamis (name, points)
- *  - stats        : totalBahanKulkas, postingAktif, surplusDiselamatkan, karbonDiselamatkan
- *  - kulkasPreview: maksimal 5 bahan terakhir ditambahkan beserta status kedaluwarsa
- */
 const getDashboardSummary = async (req, res) => {
   try {
     const userId = req.userId;
@@ -46,12 +36,14 @@ const getDashboardSummary = async (req, res) => {
 
     const totalBahanKulkas = allIngredients.length;
 
-    // ─── 3. Agregasi aman / kritis (logika sama dengan getIngredientsSummary) ─
+    // ─── 3. Agregasi expired / kritis / aman ─────────────────────────────────
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     let safe = 0;
     let critical = 0;
+    let warning = 0;
+    let expired = 0;
 
     for (const item of allIngredients) {
       const expDate = new Date(item.expDate);
@@ -60,15 +52,18 @@ const getDashboardSummary = async (req, res) => {
         (expDate - today) / (1000 * 60 * 60 * 24),
       );
 
-      if (daysRemaining <= TODAY_CRITICAL_DAYS) {
+      if (daysRemaining < 0) {
+        expired++;
+      } else if (daysRemaining <= 1) {
         critical++;
+      } else if (daysRemaining <= 3) {
+        warning++;
       } else {
         safe++;
       }
     }
 
     // ─── 4. Kulkas Preview — 5 bahan terbaru (diurutkan createdAt DESC) ──────
-    // Ambil dari data yang sudah ada di memory agar tidak double-query.
     const kulkasPreviewRaw = [...allIngredients]
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
       .slice(0, 5);
@@ -111,19 +106,16 @@ const getDashboardSummary = async (req, res) => {
         storage: item.storage,
         expDate: item.expDate,
         daysRemaining,
-        expStatus,  // "expired" | "danger" | "warning" | "ok" | "fresh"
-        expLabel,   // Label tampilan untuk badge, cth: "Besok!", "3 hari", dll.
+        expStatus,
+        expLabel,
       };
     });
 
     // ─── 5. Placeholder stats (model Surplus belum dibuat) ───────────────────
-    // Ketika model Surplus sudah tersedia, ganti bagian ini dengan query nyata.
     const postingAktif = 0;
     const surplusDiselamatkan = user.points > 0
-      ? Math.floor(user.points / 10) // estimasi: 10 poin per surplus
+      ? Math.floor(user.points / 10)
       : 0;
-
-    // Estimasi karbon: setiap 1 bahan di kulkas mewakili ~0.5 kg CO2 yang diselamatkan
     const karbonDiselamatkan = parseFloat((totalBahanKulkas * 0.5).toFixed(1));
 
     // ─── 6. Susun response ───────────────────────────────────────────────────
@@ -137,10 +129,12 @@ const getDashboardSummary = async (req, res) => {
         stats: {
           totalBahanKulkas,
           safe,
+          warning,
           critical,
-          postingAktif,          // placeholder — model Surplus belum ada
-          surplusDiselamatkan,   // placeholder — estimasi dari poin
-          karbonDiselamatkan,    // placeholder — estimasi dari total bahan
+          expired,
+          postingAktif,
+          surplusDiselamatkan,
+          karbonDiselamatkan,
         },
         kulkasPreview,
       },

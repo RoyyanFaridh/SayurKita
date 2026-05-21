@@ -7,48 +7,53 @@ export default function ResepWidget() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    const fetchRecommendations = async () => {
-      try {
-        setLoading(true)
-        setError(null)
+  async function fetchRecommendations() {
+    try {
+      setLoading(true)
+      setError(null)
 
-        const token = localStorage.getItem('token')
+      const token = localStorage.getItem('token')
 
-        const response = await fetch(`${API_ORIGIN}/api/recommend/dashboard`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {})
-          }
-        })
+      const response = await fetch(`${API_ORIGIN}/api/recommend/dashboard`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      })
 
-        if (!response.ok) {
-          if (response.status === 502) {
-            throw new Error('Gagal memuat rekomendasi otomatis, server AI sedang beristirahat.')
-          }
-          throw new Error('Gagal memuat rekomendasi.')
+      if (!response.ok) {
+        if (response.status === 502) {
+          throw new Error('Server AI sedang beristirahat, coba lagi nanti.')
         }
-
-        const result = await response.json()
-        console.log("ISI RESPONS DARI BACKEND AI:", result);
-        
-        if (Array.isArray(result)) {
-          setRecipes(result)
-        } else if (result.data && Array.isArray(result.data)) {
-          setRecipes(result.data)
-        } else {
-          setRecipes([])
-        }
-      } catch (err) {
-        setError(err.message || 'Gagal memuat rekomendasi otomatis, server AI sedang beristirahat.')
-      } finally {
-        setLoading(false)
+        throw new Error('Gagal memuat rekomendasi.')
       }
-    }
 
-    fetchRecommendations()
-  }, [])
+      const result = await response.json()
+
+      let rawRecipes = []
+      if (Array.isArray(result)) rawRecipes = result
+      else if (result.data && Array.isArray(result.data)) rawRecipes = result.data
+      else if (result.data && Array.isArray(result.data.recipes)) rawRecipes = result.data.recipes
+      else if (Array.isArray(result.recipes)) rawRecipes = result.recipes
+
+      const formatted = rawRecipes.slice(0, 3).map((r, idx) => ({
+        id: r.id || idx,
+        name: r.name || r.title || 'Resep tanpa judul',
+        ingredients: r.ingredients || r.bahan || r.description || '',
+        match_score: r.match_score,
+        featured: idx === 0,
+      }))
+
+      setRecipes(formatted)
+    } catch (err) {
+      setError(err.message || 'Gagal memuat rekomendasi otomatis.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchRecommendations() }, [])
 
   return (
     <div
@@ -64,7 +69,7 @@ export default function ResepWidget() {
             Resep Rekomendasi AI
           </h2>
           <p className="text-compact-sm mt-0.5 m-0" style={{ color: 'var(--text-muted)' }}>
-            Saran resep dari bahan yang akan basi:
+            Saran resep dari bahan yang akan basi
           </p>
         </div>
         <button
@@ -93,6 +98,13 @@ export default function ResepWidget() {
             <p className="text-compact-sm text-center m-0" style={{ color: 'var(--text-secondary)' }}>
               {error}
             </p>
+            <button
+              onClick={fetchRecommendations}
+              className="mt-2 w-full py-1.5 rounded-md text-compact-sm font-medium border border-(--border-default) bg-transparent cursor-pointer transition-colors duration-150 hover:bg-(--bg-surface-3)"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Coba lagi
+            </button>
           </div>
         ) : recipes.length === 0 ? (
           <div
@@ -105,57 +117,46 @@ export default function ResepWidget() {
           </div>
         ) : (
           <ul className="flex flex-col gap-1 p-0 m-0 list-none">
-            {recipes.map((r, index) => {
-              const isFeatured = index === 0 // Jadikan item pertama sebagai featured
-              return (
-                <li
-                  key={r.id || index}
-                  className="group relative flex justify-between items-center gap-2.5 px-3 py-2.5 rounded-md cursor-pointer transition-colors duration-150"
-                  style={{ background: isFeatured ? 'var(--bg-subtle)' : 'transparent' }}
-                  onMouseEnter={e => {
-                    if (!isFeatured) e.currentTarget.style.background = 'var(--bg-subtle)'
-                  }}
-                  onMouseLeave={e => {
-                    if (!isFeatured) e.currentTarget.style.background = 'transparent'
-                  }}
-                >
-                  {isFeatured && (
-                    <span
-                      className="absolute left-0 top-1.5 bottom-1.5 w-0.75 rounded-full"
-                      style={{ background: 'var(--accent-primary)' }}
-                    />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className="text-compact-lg m-0"
-                      style={{ color: 'var(--text-primary)', fontWeight: isFeatured ? 700 : 500 }}
-                    >
-                      <span className="capitalize">{r.name || r.title}</span>
-                      {r.match_score != null && (
-                        <span 
-                          className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full font-medium" 
-                          style={{ background: 'var(--bg-surface-2)', color: 'var(--text-brand)', border: '1px solid var(--border-subtle)' }}
-                        >
-                          {(r.match_score * 100).toFixed(0)}% Match
-                        </span>
-                      )}
-                    </p>
-                    <p
-                      className="text-compact-sm mt-0.5 m-0 truncate"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      {r.ingredients || r.description}
-                    </p>
-                  </div>
+            {recipes.map((r) => (
+              <li
+                key={r.id}
+                className={`relative flex justify-between items-center gap-2.5 px-3 py-2.5 rounded-md cursor-pointer transition-colors duration-150 hover:bg-(--bg-subtle) ${
+                  r.featured ? 'bg-(--bg-subtle)' : ''
+                }`}
+              >
+                {r.featured && (
                   <span
-                    className="shrink-0 ml-2 transition-transform duration-150 group-hover:translate-x-0.5"
-                    style={{ color: isFeatured ? 'var(--text-brand)' : 'var(--text-muted)' }}
+                    className="absolute left-0 top-1.5 bottom-1.5 w-0.75 rounded-full"
+                    style={{ background: 'var(--accent-primary)' }}
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <p
+                    className="text-compact-lg m-0"
+                    style={{ color: 'var(--text-primary)', fontWeight: r.featured ? 700 : 500 }}
                   >
-                    <ArrowRight size={16} strokeWidth={2} />
-                  </span>
-                </li>
-              )
-            })}
+                    <span className="capitalize">{r.name}</span>
+                    {r.match_score != null && (
+                      <span
+                        className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                        style={{ background: 'var(--bg-surface-2)', color: 'var(--text-brand)', border: '1px solid var(--border-subtle)' }}
+                      >
+                        {(r.match_score * 100).toFixed(0)}% Match
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-compact-sm mt-0.5 m-0 truncate" style={{ color: 'var(--text-secondary)' }}>
+                    {r.ingredients}
+                  </p>
+                </div>
+                <span
+                  className="shrink-0 ml-2 transition-transform duration-150 group-hover:translate-x-0.5"
+                  style={{ color: r.featured ? 'var(--text-brand)' : 'var(--text-muted)' }}
+                >
+                  <ArrowRight size={16} strokeWidth={2} />
+                </span>
+              </li>
+            ))}
           </ul>
         )}
       </div>
