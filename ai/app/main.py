@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.recommender import recommender
 from utils.carbon import hitung_co2e
 from utils.fraud import cek_aksi
+from utils.shelf_life import get_shelf_life
 
 app = FastAPI()
 
@@ -50,6 +51,7 @@ class FraudRequest(BaseModel):
 class FraudResponse(BaseModel):
     allowed: bool
     message: str
+    points_earned: int = 0
 
 
 @app.get("/")
@@ -65,7 +67,7 @@ def recommend_ai(req: RekomendasiRequest):
     if not req.ingredients:
         raise HTTPException(status_code=400, detail="Daftar bahan kosong")
     hasil = recommender.recommend(
-        user_ingredients=req.ingredients,
+        ingredients=req.ingredients,
         expired=req.expired,
         top_k=req.top_k
     )
@@ -83,9 +85,17 @@ def carbon(req: CarbonRequest):
 
 @app.post("/fraud-check", response_model=FraudResponse)
 def fraud_check(req: FraudRequest):
-    allowed, msg = cek_aksi(req.user_id, req.action)
-    return FraudResponse(allowed=allowed, message=msg)
+    allowed, msg, points = cek_aksi(req.user_id, req.action)
+    return FraudResponse(allowed=allowed, message=msg, points_earned=points)
+
+@app.get("/shelf-life")
+def check_shelf_life(ingredient: str):
+    hasil = get_shelf_life(ingredient)
+    if hasil:
+        return hasil
+    else:
+        raise HTTPException(status_code=404, detail="Bahan tidak ditemukan")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8003)
+    uvicorn.run(app, host="0.0.0.0", port=8004)
