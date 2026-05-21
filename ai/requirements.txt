@@ -5,4 +5,4 @@ tensorflow
 numpy
 pandas
 joblib
-tensorboard
+tensorboard 
