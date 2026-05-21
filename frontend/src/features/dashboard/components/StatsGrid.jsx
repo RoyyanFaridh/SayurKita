@@ -1,47 +1,10 @@
 import { Refrigerator, Clock, TrendingUp, Leaf } from 'lucide-react'
 
-const STATS = [
-  {
-    id: 'kulkas',
-    label: 'Bahan di kulkas',
-    value: '6',
-    valueUnit: 'bahan',
-    badge: '+2 bahan',
-    badgeType: 'green',
-    noteType: 'danger',
-    Icon: Refrigerator,
-    iconType: 'green',
-  },
-  {
-    id: 'posting',
-    label: 'Posting aktif',
-    value: '1',
-    valueUnit: 'postingan',
-    badge: '47 mnt tersisa',
-    badgeType: 'amber',
-    Icon: Clock,
-    iconType: 'amber',
-  },
-  {
-    id: 'surplus',
-    label: 'Surplus diselamatkan',
-    value: '12',
-    valueUnit: 'surplus',
-    badge: '+2 April ini',
-    badgeType: 'teal',
-    Icon: TrendingUp,
-    iconType: 'teal',
-  },
-  {
-    id: 'karbon',
-    label: 'Karbon diselamatkan',
-    value: '2',
-    valueUnit: 'kg',
-    badge: 'April ini',
-    badgeType: 'lime',
-    Icon: Leaf,
-    iconType: 'lime',
-  },
+const STAT_TEMPLATES = [
+  { id: 'kulkas',  label: 'Bahan di kulkas',       valueUnit: 'bahan',     badgeType: 'green', Icon: Refrigerator, iconType: 'green' },
+  { id: 'posting', label: 'Posting aktif',          valueUnit: 'postingan', badgeType: 'amber', Icon: Clock,        iconType: 'amber' },
+  { id: 'surplus', label: 'Surplus diselamatkan',   valueUnit: 'surplus',   badgeType: 'teal',  Icon: TrendingUp,   iconType: 'teal'  },
+  { id: 'karbon',  label: 'Karbon diselamatkan',    valueUnit: 'kg CO₂',    badgeType: 'lime',  Icon: Leaf,         iconType: 'lime'  },
 ]
 
 const iconStyle = {
@@ -56,13 +19,53 @@ const badgeStyle = {
   amber: { background: 'var(--bg-secondary-subtle)', color: 'var(--color-secondary-600)' },
   teal:  { background: 'var(--bg-subtle)',            color: 'var(--text-brand)' },
   lime:  { background: 'var(--bg-success-subtle)',   color: 'var(--text-success)' },
-  red:   { background: 'var(--bg-danger-subtle)',    color: 'var(--text-danger)' },
+  red:   { background: 'var(--bg-danger-subtle)',    color: 'var(--color-danger-800)' },
 }
 
-export default function StatsGrid() {
+export default function StatsGrid({ stats }) {
+  console.log('stats:', stats)
+  const hasExpired  = stats?.expired  > 0
+  const hasCritical = stats?.critical > 0
+
+  const kulkasBadge = !stats
+    ? '...'
+    : stats.expired > 0
+      ? `${stats.expired} kadaluarsa`
+      : stats.critical > 0
+        ? `${stats.critical} bahan kritis`
+        : stats.warning > 0
+          ? `${stats.warning} hampir kadaluwarsa`
+          : 'Semua aman'
+
+  const kulkasBadgeType = (stats?.expired > 0 || stats?.critical > 0) ? 'red' : stats?.warning > 0 ? 'amber' : 'green'
+
+  const resolvedStats = [
+    {
+      ...STAT_TEMPLATES[0],
+      value:     stats ? String(stats.totalBahanKulkas) : '—',
+      badge:     kulkasBadge,
+      badgeType: kulkasBadgeType,
+    },
+    {
+      ...STAT_TEMPLATES[1],
+      value: stats ? String(stats.postingAktif) : '—',
+      badge: stats?.postingAktif === 0 ? 'Belum ada posting' : `${stats?.postingAktif ?? '...'} aktif`,
+    },
+    {
+      ...STAT_TEMPLATES[2],
+      value: stats ? String(stats.surplusDiselamatkan) : '—',
+      badge: stats?.surplusDiselamatkan > 0 ? `+${stats.surplusDiselamatkan} total` : 'Mulai selamatkan!',
+    },
+    {
+      ...STAT_TEMPLATES[3],
+      value: stats ? String(stats.karbonDiselamatkan) : '—',
+      badge: 'Estimasi dampak',
+    },
+  ]
+
   return (
     <div className="grid grid-cols-4 gap-2.5 max-[900px]:grid-cols-2 max-[400px]:gap-2">
-      {STATS.map(({ id, Icon, iconType, value, valueUnit, label, badge, badgeType, note, noteType }) => (
+      {resolvedStats.map(({ id, Icon, iconType, value, valueUnit, label, badge, badgeType, note, noteType }) => (
         <div
           key={id}
           className="flex flex-col gap-2 rounded-md p-3.5 border transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-sm max-[400px]:p-3"
@@ -99,7 +102,7 @@ export default function StatsGrid() {
           {note && (
             <p
               className="text-compact-xs m-0"
-              style={{ color: noteType === 'danger' ? 'var(--text-danger)' : 'var(--text-muted)' }}
+              style={{ color: noteType === 'danger' ? 'var(--color-danger-800)' : 'var(--text-muted)' }}
             >
               {note}
             </p>

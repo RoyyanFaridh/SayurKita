@@ -1,10 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import AuthInput from '../components/AuthInput';
 import GoogleIcon from '../components/GoogleIcon';
+import { API_AUTH } from '../../../config/api';
 
 export default function Login() {
-  const [remember, setRemember] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [remember, setRemember]       = useState(false);
+  const [identifier, setIdentifier]   = useState('');
+  const [password, setPassword]       = useState('');
+  const [submitting, setSubmitting]   = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('registered') === '1') {
+      alert('Registrasi berhasil. Silakan masuk dengan email atau nomor HP dan password Anda.');
+    }
+  }, [searchParams]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${API_AUTH}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.token) {
+        localStorage.setItem('token', data.token);
+        navigate('/dashboard');
+      } else {
+        alert(data.message || 'Login gagal');
+      }
+    } catch {
+      alert('Tidak dapat menghubungi server. Pastikan backend berjalan.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <AuthLayout
@@ -34,7 +70,7 @@ export default function Login() {
           </p>
         </div>
 
-        <form className="flex flex-col gap-5" onSubmit={e => e.preventDefault()}>
+        <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
 
           <AuthInput
             id="identifier"
@@ -42,6 +78,8 @@ export default function Login() {
             type="text"
             placeholder="you@example.com atau 08xx"
             autoComplete="username"
+            value={identifier}
+            onChange={e => setIdentifier(e.target.value)}
           />
 
           <AuthInput
@@ -50,6 +88,8 @@ export default function Login() {
             type="password"
             placeholder="••••••••"
             autoComplete="current-password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
             rightLabel={
               <a href="/forgot-password" className="no-underline hover:underline hover:text-(--accent-primary)">
                 Lupa password?
@@ -71,12 +111,13 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full h-13 rounded-lg font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99]"
+            disabled={submitting}
+            className="w-full h-13 rounded-lg font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: 'var(--color-primary-900)', color: '#ffffff', fontFamily: 'Poppins, sans-serif' }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-800)'}
             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-900)'}
           >
-            Masuk
+            {submitting ? 'Memproses…' : 'Masuk'}
           </button>
 
           <div className="flex items-center gap-3">
@@ -93,7 +134,7 @@ export default function Login() {
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
           >
             <GoogleIcon />
-              Masuk dengan Google
+            Masuk dengan Google
           </button>
 
         </form>

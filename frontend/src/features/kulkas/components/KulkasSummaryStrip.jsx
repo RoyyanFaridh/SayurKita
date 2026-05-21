@@ -1,48 +1,57 @@
+import { AlertTriangle, AlertCircle, Leaf, Package } from 'lucide-react'
+
 const SUMMARY_CONFIG = [
-  { type: 'danger', label: 'Kritis' },
-  { type: 'warning', label: 'Perhatian' },
-  { type: 'ok', label: 'Oke' },
-  { type: 'fresh', label: 'Segar' },
+  { type: 'total',   label: 'Total Bahan', Icon: Package,       iconType: 'green',   },
+  { type: 'danger',  label: 'Kritis',      Icon: AlertCircle,   iconType: 'danger',  },
+  { type: 'warning', label: 'Perhatian',   Icon: AlertTriangle, iconType: 'warning', },
+  { type: 'fresh',   label: 'Segar',       Icon: Leaf,          iconType: 'teal',    },
 ]
 
-export default function KulkasSummaryStrip({ counts }) {
-  const styles = {
-    danger: {
-      card: 'border-danger-200 bg-danger-50',
-      count: 'text-danger-500',
-      label: 'text-danger-500',
-    },
-    warning: {
-      card: 'border-warning-200 bg-warning-50',
-      count: 'text-warning-500',
-      label: 'text-warning-500',
-    },
-    ok: {
-      card: 'border-success-200 bg-success-50',
-      count: 'text-success-500',
-      label: 'text-success-500',
-    },
-    fresh: {
-      card: 'border-neutral-100 bg-neutral-50',
-      count: 'text-neutral-900',
-      label: 'text-neutral-400',
-    },
-  }
+const iconStyle = {
+  green:   { background: 'var(--bg-success-subtle)',  color: 'var(--text-success)'      },
+  danger:  { background: 'var(--bg-danger-subtle)',   color: 'var(--color-danger-800)'  },
+  warning: { background: 'var(--bg-warning-subtle)',  color: 'var(--color-warning-800)' },
+  teal:    { background: 'var(--bg-subtle)',           color: 'var(--text-brand)'        },
+}
 
+export default function KulkasSummaryStrip({ counts }) {
   return (
-    <div className="grid grid-cols-4 gap-3 max-[900px]:grid-cols-2">
-      {SUMMARY_CONFIG.map(({ type, label }) => (
+    <div className="grid grid-cols-4 gap-2.5 max-[900px]:grid-cols-2 max-[400px]:gap-1">
+      {SUMMARY_CONFIG.map(({ type, label, Icon, iconType }) => (
         <div
           key={type}
-          className={`flex flex-col gap-1 rounded-md border px-4 py-3 ${styles[type].card}`}
+          className="flex flex-col gap-1.5 rounded-md p-3.5 border transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-sm max-[480px]:p-1.5 max-[480px]:gap-0.5 max-[480px]:rounded-sm"
+          style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subsub)', boxShadow: 'var(--shadow-xs)' }}
         >
-          <p className={`text-2xl font-bold leading-none ${styles[type].count}`}>
-            {counts[type]}
-          </p>
+          <div className="flex items-center gap-1.5 max-[480px]:gap-0.5">
+            <div
+              className="w-7 h-7 rounded-md flex items-center justify-center shrink-0 max-[480px]:w-4 max-[480px]:h-4 max-[480px]:rounded-xs"
+              style={iconStyle[iconType]}
+            >
+              <Icon size={16} strokeWidth={1.75} className="max-[480px]:w-2.5 max-[480px]:h-2.5" />
+            </div>
+            <p
+              className="text-compact-sm m-0 max-[480px]:text-[9px] leading-tight"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {label}
+            </p>
+          </div>
 
-          <p className={`text-compact-sm font-medium ${styles[type].label}`}>
-            {label}
-          </p>
+          <div className="ml-1 max-[480px]:ml-0">
+            <p
+              className="text-3xl font-bold m-0 max-[480px]:text-sm max-[400px]:text-xs"
+              style={{ color: 'var(--text-primary)', lineHeight: 2 }}
+            >
+              {counts[type] ?? 0}
+              <span
+                className="text-sm font-medium ml-1 max-[480px]:text-[9px] max-[480px]:ml-0.5"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                bahan
+              </span>
+            </p>
+          </div>
         </div>
       ))}
     </div>

@@ -8,4 +8,4 @@ pip install -r requirements.txt
 python app/main.py
 
 - **URL:** http://localhost:8003
-- **Docs:**http://calhost:8003/docs
+- **Docs:**http://localhost:8003/docs

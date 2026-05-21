@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { Search, ChevronDown } from 'lucide-react'
-import { INGREDIENTS_MASTER } from '../ingredientsMaster'
+import { fetchIngredientsMaster } from '../ingredientsMaster'
 
 const KATEGORI_LABEL = {
   bumbu: 'Bumbu', rempah: 'Rempah', sayuran: 'Sayuran', buah: 'Buah',
@@ -9,15 +9,16 @@ const KATEGORI_LABEL = {
 }
 
 export default function IngredientCombobox({ value, onChange }) {
-  const [query, setQuery] = useState(value || '')
-  const [open,  setOpen]  = useState(false)
+  const [query,  setQuery]  = useState(value || '')
+  const [open,   setOpen]   = useState(false)
+  const [master, setMaster] = useState([])
   const wrapRef = useRef(null)
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return INGREDIENTS_MASTER.slice(0, 40)
-    return INGREDIENTS_MASTER.filter(i => i.nama.includes(q)).slice(0, 40)
-  }, [query])
+  useEffect(() => {
+    fetchIngredientsMaster().then(map => {
+      setMaster(Object.values(map))
+    })
+  }, [])
 
   useEffect(() => { setQuery(value || '') }, [value])
 
@@ -26,6 +27,12 @@ export default function IngredientCombobox({ value, onChange }) {
     document.addEventListener('mousedown', fn)
     return () => document.removeEventListener('mousedown', fn)
   }, [])
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return master.slice(0, 40)
+    return master.filter(i => i.nama.includes(q)).slice(0, 40)
+  }, [query, master])
 
   function select(item) {
     setQuery(item.nama)

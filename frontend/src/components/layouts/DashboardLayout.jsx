@@ -1,27 +1,38 @@
-import { useState, useEffect } from 'react'
-import { NavLink, useLocation, Outlet } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { NavLink, useLocation, Outlet } from "react-router-dom";
 import {
   LayoutDashboard,
   Refrigerator,
   MapPin,
   Star,
   Bell,
-} from 'lucide-react'
+} from "lucide-react";
+import { API_ORIGIN } from "../../config/api";
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Beranda', end: true, Icon: LayoutDashboard },
-  { to: '/kulkas', label: 'Lihat Kulkas', Icon: Refrigerator },
-  { to: '/selamatkan', label: 'Selamatkan!', Icon: MapPin },
-  { to: '/poin', label: 'Poin Berkah', Icon: Star },
-]
+  { to: "/dashboard", label: "Beranda", end: true, Icon: LayoutDashboard },
+  { to: "/kulkas", label: "Lihat Kulkas", Icon: Refrigerator },
+  { to: "/selamatkan", label: "Selamatkan!", Icon: MapPin },
+  { to: "/poin", label: "Poin Berkah", Icon: Star },
+];
 
-const USER = {
-  name: 'Sri Rahayu',
-  role: 'Donatur Aktif',
-  initials: 'SR',
+const DEFAULT_USER = {
+  name: "User",
+  role: "Pengguna",
+  initials: "U",
+};
+
+const STREAK = ["S", "S", "R", "K", "J", "S", "M"];
+
+// Helper: generate initials dari nama (max 2 huruf pertama dari nama)
+function getInitials(name) {
+  if (!name) return "U";
+  const parts = name.trim().split(" ");
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
 }
-
-const STREAK = ['S', 'S', 'R', 'K', 'J', 'S', 'M']
 
 function PoinBlock() {
   return (
@@ -48,10 +59,10 @@ function PoinBlock() {
             key={i}
             className={`flex h-6.5 w-6.5 items-center justify-center rounded-full text-[9px] font-semibold ${
               i < 4
-                ? 'bg-secondary-400 text-primary-900'
+                ? "bg-secondary-400 text-primary-900"
                 : i === 4
-                  ? 'bg-white text-primary-900 outline-2 -outline-offset-2 outline-secondary-400'
-                  : 'bg-white/8 text-white/35'
+                  ? "bg-white text-primary-900 outline-2 -outline-offset-2 outline-secondary-400"
+                  : "bg-white/8 text-white/35"
             }`}
           >
             {d}
@@ -59,7 +70,7 @@ function PoinBlock() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 function NavItems() {
@@ -77,8 +88,8 @@ function NavItems() {
           className={({ isActive }) =>
             `flex items-center gap-2.5 rounded-md px-3 py-2.5 text-compact-lg font-medium transition-colors duration-fast ease-out ${
               isActive
-                ? 'bg-white/14 text-white'
-                : 'text-white/60 hover:bg-white/8 hover:text-white'
+                ? "bg-white/14 text-white"
+                : "text-white/60 hover:bg-white/8 hover:text-white"
             }`
           }
         >
@@ -86,7 +97,7 @@ function NavItems() {
             <>
               <span
                 className={`flex shrink-0 items-center ${
-                  isActive ? 'opacity-100' : 'opacity-70'
+                  isActive ? "opacity-100" : "opacity-70"
                 }`}
               >
                 <Icon size={16} strokeWidth={1.75} />
@@ -98,37 +109,61 @@ function NavItems() {
         </NavLink>
       ))}
     </>
-  )
+  );
 }
 
 export default function DashboardLayout() {
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [user, setUser] = useState(DEFAULT_USER);
 
-  const location = useLocation()
+  const location = useLocation();
+
+  // Fetch user data on mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch(`${API_ORIGIN}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.ok && res.json())
+      .then((data) => {
+        if (data?.data?.name) {
+          setUser({
+            name: data.data.name,
+            role: "Donatur Aktif",
+            initials: getInitials(data.data.name),
+          });
+        }
+      })
+      .catch(() => {
+        // Fallback to default on error
+      });
+  }, []);
 
   useEffect(() => {
-    setDrawerOpen(false)
-  }, [location.pathname])
+    setDrawerOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = drawerOpen ? 'hidden' : ''
+    document.body.style.overflow = drawerOpen ? "hidden" : "";
 
     return () => {
-      document.body.style.overflow = ''
-    }
-  }, [drawerOpen])
+      document.body.style.overflow = "";
+    };
+  }, [drawerOpen]);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 640) {
-        setDrawerOpen(false)
+        setDrawerOpen(false);
       }
-    }
+    };
 
-    window.addEventListener('resize', handleResize)
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="flex min-h-screen bg-neutral-50">
@@ -139,17 +174,15 @@ export default function DashboardLayout() {
 
         <div className="flex items-center gap-2.5 border-b border-primary-700 px-5 py-4">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-700 text-compact-sm font-semibold tracking-wide text-primary-200">
-            {USER.initials}
+            {user.initials}
           </div>
 
           <div>
             <p className="text-compact-lg font-semibold leading-snug text-white">
-              {USER.name}
+              {user.name}
             </p>
 
-            <p className="text-compact-xs text-white/60">
-              {USER.role}
-            </p>
+            <p className="text-compact-xs text-white/60">{user.role}</p>
           </div>
         </div>
 
@@ -164,10 +197,10 @@ export default function DashboardLayout() {
         <button
           className={`flex h-9 w-9 shrink-0 flex-col items-center justify-center gap-1.25 rounded-sm bg-white/9 transition-colors duration-fast ease-out hover:bg-white/15 ${
             drawerOpen
-              ? '[&>span:nth-child(1)]:translate-y-1.75 [&>span:nth-child(1)]:rotate-45 [&>span:nth-child(2)]:scale-x-0 [&>span:nth-child(2)]:opacity-0 [&>span:nth-child(3)]:-translate-y-1.75 [&>span:nth-child(3)]:-rotate-45'
-              : ''
+              ? "[&>span:nth-child(1)]:translate-y-1.75 [&>span:nth-child(1)]:rotate-45 [&>span:nth-child(2)]:scale-x-0 [&>span:nth-child(2)]:opacity-0 [&>span:nth-child(3)]:-translate-y-1.75 [&>span:nth-child(3)]:-rotate-45"
+              : ""
           }`}
-          onClick={() => setDrawerOpen(v => !v)}
+          onClick={() => setDrawerOpen((v) => !v)}
           aria-label="Toggle menu"
           aria-expanded={drawerOpen}
         >
@@ -191,16 +224,14 @@ export default function DashboardLayout() {
           </button>
 
           <div className="flex h-7.5 w-7.5 shrink-0 items-center justify-center rounded-full bg-primary-700 text-compact-xs font-semibold tracking-wide text-primary-200">
-            {USER.initials}
+            {user.initials}
           </div>
         </div>
       </header>
 
       <div
         className={`fixed inset-0 z-300 bg-black/55 transition-all duration-normal ease-out ${
-          drawerOpen
-            ? 'visible opacity-100'
-            : 'invisible delay-280 opacity-0'
+          drawerOpen ? "visible opacity-100" : "invisible delay-280 opacity-0"
         }`}
         onClick={() => setDrawerOpen(false)}
         aria-hidden="true"
@@ -208,7 +239,7 @@ export default function DashboardLayout() {
 
       <div
         className={`fixed inset-y-0 left-0 z-400 flex w-65 flex-col bg-primary-600 transition-transform duration-normal ease-out ${
-          drawerOpen ? 'translate-x-0' : '-translate-x-full'
+          drawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         aria-modal="true"
         role="dialog"
@@ -230,17 +261,15 @@ export default function DashboardLayout() {
 
         <div className="flex items-center gap-2.5 border-b border-primary-700 px-5 py-4">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-700 text-compact-sm font-semibold tracking-wide text-primary-200">
-            {USER.initials}
+            {user.initials}
           </div>
 
           <div>
             <p className="text-compact-lg font-semibold leading-snug text-white">
-              {USER.name}
+              {user.name}
             </p>
 
-            <p className="text-compact-xs text-white/60">
-              {USER.role}
-            </p>
+            <p className="text-compact-xs text-white/60">{user.role}</p>
           </div>
         </div>
 
@@ -255,5 +284,5 @@ export default function DashboardLayout() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
