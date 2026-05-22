@@ -67,7 +67,7 @@ def recommend_ai(req: RekomendasiRequest):
     if not req.ingredients:
         raise HTTPException(status_code=400, detail="Daftar bahan kosong")
     hasil = recommender.recommend(
-        ingredients=req.ingredients,
+        user_ingredients=req.ingredients,
         expired=req.expired,
         top_k=req.top_k
     )
@@ -98,4 +98,4 @@ def check_shelf_life(ingredient: str):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8004)
+    uvicorn.run(app, host="0.0.0.0", port=8003)

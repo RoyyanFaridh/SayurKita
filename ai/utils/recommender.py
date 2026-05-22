@@ -58,21 +58,23 @@ class RecipeRecommender:
             urgency_boost = 1 + ((30 - avg_expired) / 30)
             similarities = similarities * urgency_boost
         
-        top_indices = similarities.argsort()[-top_k:][::-1]
+        # Ambil top_k berdasarkan valid recipes saja
+        valid_similarities = [(i, similarities[i]) for i in self.valid_indices]
+        valid_similarities.sort(key=lambda x: x[1], reverse=True)
+        top_recipes = valid_similarities[:top_k]
         
         results = []
-        for idx in top_indices:
-            if similarities[idx] <= 0:
+        for original_idx, score in top_recipes:
+            if score <= 0:
                 continue
             
-            original_idx = self.valid_indices[idx] if idx < len(self.valid_indices) else idx
             recipe = self.recipes[original_idx]
             
             results.append({
                 "id": original_idx,
                 "name": recipe.get('Title Cleaned', recipe.get('Title', 'Resep')),
                 "ingredients": recipe.get('Ingredients Cleaned', recipe.get('Ingredients', '')),
-                "match_score": round(float(similarities[idx]), 4)   
+                "match_score": round(float(score), 4)   
             })
         
         return results
