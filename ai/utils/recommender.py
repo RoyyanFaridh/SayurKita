@@ -12,7 +12,7 @@ class RecipeRecommender:
             self.recipes = json.load(f)
         
  
-        self.recipe_texts = []
+        self.recipe_texts = [] 
         self.valid_indices = []
         for i, r in enumerate(self.recipes):
             ingredients = r.get('Ingredients Cleaned', r.get('Ingredients', ''))
@@ -52,13 +52,12 @@ class RecipeRecommender:
 
         similarities = cosine_similarity(user_vector, self.recipe_vectors)[0]
 
-        # prioritas bahan hampir expired
+
         if expired and len(expired) > 0:
             avg_expired = sum(expired) / len(expired)
             urgency_boost = 1 + ((30 - avg_expired) / 30)
             similarities = similarities * urgency_boost
         
-        # Ambil top_k berdasarkan valid recipes saja
         valid_similarities = [(i, similarities[i]) for i in self.valid_indices]
         valid_similarities.sort(key=lambda x: x[1], reverse=True)
         top_recipes = valid_similarities[:top_k]
