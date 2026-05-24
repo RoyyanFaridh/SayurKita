@@ -32,6 +32,10 @@ class ResepResponse(BaseModel):
     id: int
     name: str
     ingredients: str
+    ingredients_raw: str
+    steps_raw: str
+    category: str
+    url: Optional[str] = None
     match_score: float
 
 class CarbonRequest(BaseModel):
