@@ -70,11 +70,15 @@ class RecipeRecommender:
             recipe = self.recipes[original_idx]
             
             results.append({
-                "id": original_idx,
-                "name": recipe.get('Title Cleaned', recipe.get('Title', 'Resep')),
-                "ingredients": recipe.get('Ingredients Cleaned', recipe.get('Ingredients', '')),
-                "match_score": round(float(score), 4)   
-            })
+            "id": original_idx,
+            "name": recipe.get('Title Cleaned', recipe.get('Title', 'Resep')),
+            "ingredients": recipe.get('Ingredients Cleaned', recipe.get('Ingredients', '')),
+            "ingredients_raw": recipe.get('Ingredients', ''),
+            "steps_raw": recipe.get('Steps', ''),
+            "category": recipe.get('Category', ''),
+            "url": recipe.get('URL', ''),
+            "match_score": round(float(similarities[original_idx]), 4)
+             })
         
         return results
 
