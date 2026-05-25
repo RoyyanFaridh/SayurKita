@@ -1,25 +1,72 @@
 import { Package, MapPin, Clock, Users } from 'lucide-react'
 
-const STATS = [
-  { icon: Package, value: '5',    label: 'Surplus aktif',           style: 'border-primary-200 bg-primary-50',  valueClass: 'text-primary-600',  labelClass: 'text-primary-400'  },
-  { icon: MapPin,  value: '5 km', label: 'Radius lokasi',           style: 'border-neutral-100 bg-neutral-50',  valueClass: 'text-neutral-900',  labelClass: 'text-neutral-400'  },
-  { icon: Clock,   value: '3',    label: 'Segera kadaluwarsa',      style: 'border-warning-200 bg-warning-50',  valueClass: 'text-warning-500',  labelClass: 'text-warning-500'  },
-  { icon: Users,   value: '12',   label: 'Diselamatkan bulan ini',  style: 'border-success-200 bg-success-50',  valueClass: 'text-success-500',  labelClass: 'text-success-500'  },
+const STATS_CONFIG = [
+  {
+    key:      'surplus',
+    icon:     Package,
+    value:    '5',
+    label:    'Surplus aktif',
+    iconType: 'primary',
+  },
+  {
+    key:      'radius',
+    icon:     MapPin,
+    value:    '5 km',
+    label:    'Radius lokasi',
+    iconType: 'neutral',
+  },
+  {
+    key:      'expiring',
+    icon:     Clock,
+    value:    '3',
+    label:    'Segera kadaluwarsa',
+    iconType: 'warning',
+  },
+  {
+    key:      'saved',
+    icon:     Users,
+    value:    '12',
+    label:    'Diselamatkan bulan ini',
+    iconType: 'success',
+  },
 ]
+
+const ICON_STYLE = {
+  primary: { background: 'var(--bg-primary-subtle)', color: 'var(--text-brand)'    },
+  neutral: { background: 'var(--bg-subtle)',          color: 'var(--text-muted)'    },
+  warning: { background: 'var(--bg-warning-subtle)', color: 'var(--color-warning-800)' },
+  success: { background: 'var(--bg-success-subtle)', color: 'var(--text-success)'  },
+}
 
 export default function SelamatkanStatsBar() {
   return (
-    <div className="grid grid-cols-4 gap-3 max-lg:grid-cols-2">
-      {STATS.map(({ icon: Icon, value, label, style, valueClass, labelClass }) => (
+    <div className="grid grid-cols-4 gap-2.5 max-sm:grid-cols-2 max-sm:gap-2">
+      {STATS_CONFIG.map(({ key, icon: Icon, value, label, iconType }) => (
         <div
-          key={label}
-          className={`flex flex-col gap-1 rounded-md border px-4 py-3 ${style}`}
+          key={key}
+          className="flex flex-col gap-2 rounded-md p-3.5 border max-sm:p-3"
+          style={{
+            background:   'var(--bg-surface-1)',
+            borderColor:  'var(--border-subsub)',
+            boxShadow:    'var(--shadow-xs)',
+          }}
         >
-          <p className={`text-2xl font-bold leading-none ${valueClass}`}>
+          {/* Icon + label — sama persis dengan KulkasSummaryStrip */}
+          <div className="flex items-center gap-1.5">
+            <div
+              className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+              style={ICON_STYLE[iconType]}
+            >
+              <Icon size={13} strokeWidth={1.75} />
+            </div>
+            <p className="text-compact-xs font-medium m-0 leading-tight" style={{ color: 'var(--text-muted)' }}>
+              {label}
+            </p>
+          </div>
+
+          {/* Angka — tanpa suffix satuan karena value sudah include unit (e.g. "5 km") */}
+          <p className="text-2xl font-bold m-0 leading-none" style={{ color: 'var(--text-primary)' }}>
             {value}
-          </p>
-          <p className={`text-compact-sm font-medium ${labelClass}`}>
-            {label}
           </p>
         </div>
       ))}

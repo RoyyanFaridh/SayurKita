@@ -51,7 +51,6 @@ export default function LihatKulkas() {
   const [sortBy, setSortBy] = useState("exp");
   const [modal, setModal] = useState(null);
 
-  // Fetch ingredients saat component mount
   useEffect(() => {
     fetchIngredients();
   }, []);
@@ -69,9 +68,7 @@ export default function LihatKulkas() {
       }
 
       const response = await fetch(`${API_ORIGIN}/api/ingredients`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!response.ok) {
@@ -82,8 +79,6 @@ export default function LihatKulkas() {
       }
 
       const data = await response.json();
-
-      // Transform data ke format yang sesuai dengan UI
       const transformedItems = (data.data || []).map((item) => ({
         ...item,
         expType: getExpType(item.expDate),
@@ -118,7 +113,7 @@ export default function LihatKulkas() {
     warning: items.filter((i) => i.expType === "warning").length,
     ok:      items.filter((i) => i.expType === "ok").length,
     fresh:   items.filter((i) => i.expType === "fresh").length,
-  }
+  };
 
   if (loading) {
     return (
@@ -134,9 +129,7 @@ export default function LihatKulkas() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <p className="text-compact-lg text-(--text-danger) font-semibold">
-            {error}
-          </p>
+          <p className="text-compact-lg text-(--text-danger) font-semibold">{error}</p>
           <button
             onClick={fetchIngredients}
             className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg text-compact-base font-medium hover:bg-primary-700 transition-colors"
@@ -152,18 +145,16 @@ export default function LihatKulkas() {
     <>
       <KulkasTopbar totalItems={items.length} onTambah={() => setModal("add")} />
 
-      <div className="flex flex-col gap-5 px-7 pb-10 pt-6 max-sm:gap-4 max-sm:px-0 max-sm:pb-8 max-sm:pt-0">
-        <div className="hidden items-center justify-between rounded-b-xl bg-primary-600 px-4 pb-5 pt-4 max-sm:flex">
+      <div className="flex flex-col gap-5 px-7 pb-10 pt-6 max-[640px]:w-full max-[640px]:gap-4 max-[640px]:px-0 max-[640px]:pb-8 max-[640px]:pt-0">
+        <div className="hidden items-center justify-between rounded-b-xl bg-primary-600 px-4 pb-5 pt-4 max-[640px]:flex">
           <div>
             <h1 className="text-xl font-bold leading-snug text-white">
               Lihat Kulkas
             </h1>
-
             <p className="mt-1 text-compact-xs text-white/35">
               {items.length} bahan tersimpan
             </p>
           </div>
-
           <button
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/15 text-white"
             onClick={() => setModal("add")}
@@ -172,11 +163,11 @@ export default function LihatKulkas() {
           </button>
         </div>
 
-        <div className="max-sm:px-4">
+        <div className="max-[640px]:px-4">
           <KulkasSummaryStrip counts={counts} />
         </div>
 
-        <div className="max-sm:px-4">
+        <div className="max-[640px]:px-4">
           <KulkasToolbar
             search={search}
             onSearch={setSearch}
@@ -187,12 +178,13 @@ export default function LihatKulkas() {
           />
         </div>
 
-        <div className="max-sm:px-4">
-          <KulkasItemList items={filtered} onEdit={(item) => setModal(item)} />
-        </div>
-
-        <div className="max-sm:px-4">
-          <KulkasResepAI ingredients={items} />
+        <div className="flex items-start gap-5 min-w-0 max-[640px]:flex-col max-[640px]:px-4 overflow-x-hidden">
+          <div className="min-w-0 flex-1 max-[640px]:w-full">
+            <KulkasItemList items={filtered} onEdit={(item) => setModal(item)} />
+          </div>
+          <div className="w-96 shrink-0 min-w-0 overflow-hidden max-[1024px]:w-64 max-[640px]:w-full">
+            <KulkasResepAI ingredients={items} />
+          </div>
         </div>
       </div>
 

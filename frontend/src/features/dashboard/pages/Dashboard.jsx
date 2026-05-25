@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Bell } from "lucide-react";
 import AlertsSection from "../components/AlertsSection";
 import StatsGrid from "../components/StatsGrid";
-// import ExpiryAlertWidget from "../components/ExpiryAlertWidget";
-// import IngredientSummaryWidget from "../components/IngredientSummaryWidget";
 import KulkasDashWidget from "../components/KulkasDashWidget";
 import ResepWidget from "../components/ResepWidget";
 import SurplusDashWidget from "../components/SurplusDashWidget";
@@ -12,7 +11,6 @@ import { API_ORIGIN } from "../../../config/api";
 
 const GMAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? "";
 
-// ─── Lokasi helpers ───────────────────────────────────────────────────────────
 function guessCityFromCoords(lat, lng) {
   const KOTA = [
     { name: "Yogyakarta", lat: -7.7956, lng: 110.3695 },
@@ -35,6 +33,7 @@ function guessCityFromCoords(lat, lng) {
   return nearest.name;
 }
 
+// Fix 7: fungsi, bukan module-level constant
 function getFormattedDate() {
   return new Date().toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -43,8 +42,6 @@ function getFormattedDate() {
     year: 'numeric',
   })
 }
-
-const DEFAULT_DATE = getFormattedDate()
 
 async function reverseGeocode(lat, lng) {
   if (!GMAPS_API_KEY) return guessCityFromCoords(lat, lng);
@@ -85,14 +82,12 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
-  // ─── Fetch /api/dashboard/summary ────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
 
     async function fetchDashboard() {
       setLoading(true);
       setFetchError(false);
-
       try {
         const token = localStorage.getItem("token");
         if (!token) { navigate("/login"); return; }
@@ -114,9 +109,8 @@ export default function Dashboard() {
         }
 
         const json = await res.json();
-
         if (!cancelled && json?.success && json?.data) {
-          setDashboardData(json.data);        
+          setDashboardData(json.data);
         } else if (!cancelled) {
           setFetchError(true);
         }
@@ -153,11 +147,11 @@ export default function Dashboard() {
 
   useEffect(() => { handleLocate(); }, [handleLocate]);
 
-  const userName        = dashboardData?.user?.name ?? "…";
-  const statsData       = dashboardData?.stats       ?? null;
-  const kulkasPreview   = Array.isArray(dashboardData?.kulkasPreview)
-                            ? dashboardData.kulkasPreview
-                            : [];
+  const userName      = dashboardData?.user?.name ?? "…";
+  const statsData     = dashboardData?.stats       ?? null;
+  const kulkasPreview = Array.isArray(dashboardData?.kulkasPreview)
+                          ? dashboardData.kulkasPreview
+                          : [];
 
   const locationDisplay = locating ? (
     <span className="inline-flex items-center gap-1">
@@ -194,49 +188,53 @@ export default function Dashboard() {
     );
   }
 
+  // Fix 3 & 7: greeting dan date dihitung saat render
+  const greeting     = getGreeting()
+  const formattedDate = getFormattedDate()
+
   return (
     <>
-      <div className="bg-white border-b border-(--border-subtle) flex items-center justify-between px-7 py-4 sticky top-0 z-10 max-[640px]:hidden">
+      {/* Desktop topbar */}
+      <div className="bg-white border-b border-(--border-subtle) flex items-center justify-between px-7 py-4 sticky top-0 z-20 max-sm:hidden">
         <div>
-          <p className="text-compact-base text-(--text-muted)">{getGreeting()}</p>
+          <p className="text-compact-base text-(--text-muted)">{greeting}</p>
           <h1 className="text-xl font-bold leading-snug text-(--text-primary)">{userName}</h1>
-          <p className="text-compact-sm mt-1 text-(--text-muted)">
-            {DEFAULT_DATE} · {locationDisplay}
+          {/* Fix 2: mt-1 → mt-0.5 */}
+          <p className="text-compact-sm mt-0.5 text-(--text-muted)">
+            {formattedDate} · {locationDisplay}
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {/* Fix 6: pakai lucide Bell, konsisten dengan DashboardLayout */}
           <button
             className="relative w-9 h-9 rounded-md border flex items-center justify-center cursor-pointer transition-colors duration-150 bg-(--bg-alt) border-(--border-default) text-(--text-secondary) hover:bg-(--bg-surface-3)"
             aria-label="Notifikasi"
           >
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M9 2a5 5 0 015 5v3.5l1.5 2h-13L4 10.5V7a5 5 0 015-5z" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M7.5 15a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
+            <Bell size={18} strokeWidth={1.75} />
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-danger-500 border-[1.5px] border-white" />
           </button>
         </div>
       </div>
 
       {/* Body */}
-      <div className="flex flex-col gap-5 px-7 py-6 pb-10 max-[640px]:gap-4 max-[640px]:p-0 max-[640px]:pb-8">
+      <div className="flex flex-col gap-5 px-7 py-6 pb-10 max-sm:gap-4 max-sm:p-0 max-sm:pb-8">
 
-        {/* Header Mobile */}
-        <div className="hidden max-[640px]:block px-4 pt-4 pb-5 rounded-b-xl bg-(--bg-dark)">
-          <p className="text-compact-sm text-(--text-on-dark-muted)">Selamat pagi,</p>
-          <h1 className="text-xl font-bold leading-snug text-(--text-on-dark)">{userName}</h1>
-          <p className="text-compact-xs mt-1 text-(--text-on-dark-faint)">
-            {DEFAULT_DATE} · {locationDisplay}
+        {/* Fix 3, 4, 5: Mobile header — greeting dynamic, token konsisten dengan komponen lain */}
+        <div className="hidden max-sm:block px-4 pt-4 pb-5 rounded-b-xl bg-primary-600">
+          <p className="text-compact-sm text-white/60">{greeting}</p>
+          <h1 className="text-xl font-bold leading-snug text-white">{userName}</h1>
+          <p className="text-compact-xs mt-0.5 text-white/35">
+            {formattedDate} · {locationDisplay}
           </p>
         </div>
 
-        <div className="max-[640px]:px-4"><AlertsSection /></div>
+        <div className="max-sm:px-4"><AlertsSection /></div>
 
-        <div className="max-[640px]:px-4">
+        <div className="max-sm:px-4">
           <StatsGrid stats={statsData} />
         </div>
 
-        <div className="grid grid-cols-2 gap-5 max-[900px]:grid-cols-1 max-[640px]:px-4">
+        <div className="grid grid-cols-2 gap-5 max-[900px]:grid-cols-1 max-sm:px-4">
           <div className="flex flex-col gap-5">
             <KulkasDashWidget items={kulkasPreview} />
             <ResepWidget />
@@ -246,6 +244,7 @@ export default function Dashboard() {
             <PostingWidget />
           </div>
         </div>
+
       </div>
     </>
   );

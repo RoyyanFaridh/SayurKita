@@ -10,9 +10,10 @@ const SURPLUS = [
 ]
 
 const STATUS_MAP = {
-  'segar':    { cls: 'bg-(--status-segar-bg) text-(--status-segar-text) border border-(--status-segar-border)',     label: 'Segar'    },
-  'mau-basi': { cls: 'bg-(--status-hati-bg)  text-(--status-hati-text)  border border-(--status-hati-border)',      label: 'Mau basi' },
-  'basi':     { cls: 'bg-(--status-basi-bg)  text-(--status-basi-text)  border border-(--status-basi-border)',      label: 'Basi'     },
+  // spasi ganda dibersihkan
+  'segar':    { cls: 'bg-(--status-segar-bg) text-(--status-segar-text) border border-(--status-segar-border)',    label: 'Segar'    },
+  'mau-basi': { cls: 'bg-(--status-hati-bg) text-(--status-hati-text) border border-(--status-hati-border)',       label: 'Mau basi' },
+  'basi':     { cls: 'bg-(--status-basi-bg) text-(--status-basi-text) border border-(--status-basi-border)',       label: 'Basi'     },
 }
 
 export default function SurplusDashWidget({ userCoords }) {
@@ -27,49 +28,77 @@ export default function SurplusDashWidget({ userCoords }) {
   }, [userCoords])
 
   return (
-    <div className="rounded-xl overflow-hidden border bg-(--bg-surface-1) border-(--border-subsub) shadow-(--shadow-xs)">
-      <div className="flex justify-between items-start gap-3 px-4 py-3.5 border-b border-(--border-subtle)">
+    <div
+      // rounded-md — konsisten, rounded-xl dihapus
+      // border-[0.5px] + inline borderColor — --border-subsub dihapus
+      // shadow via inline style — konsisten dengan semua card lain
+      className="rounded-md overflow-hidden border-[0.5px]"
+      style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subtle)', boxShadow: 'var(--shadow-xs)' }}
+    >
+      <div
+        // pt-4 pb-2 px-4 — konsisten dengan pola header card lain
+        className="flex justify-between items-start gap-3 px-4 pt-4 pb-2 border-b"
+        style={{ borderColor: 'var(--border-subtle)' }}
+      >
         <div className="flex-1">
-          <h2 className="text-compact-lg font-semibold text-(--text-primary)">Surplus Dekatmu</h2>
-          <p className="flex items-center gap-1.5 text-compact-sm mt-0.5 text-(--text-muted)">
+          <h2 className="text-compact-lg font-semibold m-0" style={{ color: 'var(--text-primary)' }}>
+            Surplus Dekatmu
+          </h2>
+          <p className="flex items-center gap-1.5 text-compact-sm mt-0.5 m-0" style={{ color: 'var(--text-muted)' }}>
+            {/* animate-pulse via Tailwind class, bukan inline style
+                bg-secondary-500 (hijau brand) bukan bg-danger-500 (merah) —
+                live indicator positif lebih seirama dengan palet SayurKita */}
             <span
-              className="inline-block w-1.5 h-1.5 rounded-full shrink-0 bg-danger-500"
-              style={{ animation: 'pulse 1.6s ease-in-out infinite' }}
+              className="inline-block w-1.5 h-1.5 rounded-full shrink-0 bg-secondary-500 animate-pulse"
               aria-hidden="true"
             />
             Live · Aktivitas komunitas
           </p>
         </div>
-        <button className="inline-flex items-center gap-1 text-compact-base font-medium border-none bg-transparent cursor-pointer shrink-0 transition-colors duration-150 text-(--text-brand) hover:text-primary-400">
+        <button
+          // hover:opacity-75 — konsisten dengan semua button link lain
+          className="inline-flex items-center gap-1 text-compact-base font-medium border-none bg-transparent cursor-pointer shrink-0 transition-opacity duration-150 hover:opacity-75"
+          style={{ color: 'var(--text-brand)' }}
+        >
           Lihat semua <ArrowRight size={14} strokeWidth={2} />
         </button>
       </div>
 
-      <ul>
-        {items.map(({ id, name, by, qty, status, jarakLabel }, i) => (
-          <li
-            key={id}
-            className={`flex justify-between items-center gap-3 px-4 py-3 ${i < items.length - 1 ? 'border-b border-(--border-subtle)' : ''}`}
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-compact-lg font-medium truncate text-(--text-primary)">{name}</p>
-              <p className="flex items-center gap-1.5 text-compact-sm mt-0.5 text-(--text-muted)">
-                {by} · {qty}
-                {jarakLabel && (
-                  <>
-                    <span className="w-px h-3 bg-(--border-default) shrink-0" />
-                    <MapPin size={10} strokeWidth={2} className="shrink-0" />
-                    {jarakLabel}
-                  </>
-                )}
-              </p>
-            </div>
-            <span className={`text-compact-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${STATUS_MAP[status].cls}`}>
-              {STATUS_MAP[status].label}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {items.length === 0 ? (
+        <p className="text-compact-sm py-6 text-center m-0" style={{ color: 'var(--text-muted)' }}>
+          Belum ada surplus di sekitarmu.
+        </p>
+      ) : (
+        <ul className="list-none p-0 m-0">
+          {items.map(({ id, name, by, qty, status, jarakLabel }, i) => (
+            <li
+              key={id}
+              className={`flex justify-between items-center gap-3 px-4 py-3 ${i < items.length - 1 ? 'border-b' : ''}`}
+              style={i < items.length - 1 ? { borderColor: 'var(--border-subtle)' } : {}}
+            >
+              <div className="flex-1 min-w-0">
+                <p className="text-compact-lg font-medium truncate m-0" style={{ color: 'var(--text-primary)' }}>
+                  {name}
+                </p>
+                <p className="flex items-center gap-1.5 text-compact-sm mt-0.5 m-0" style={{ color: 'var(--text-muted)' }}>
+                  {by} · {qty}
+                  {jarakLabel && (
+                    <>
+                      <span className="w-px h-3 shrink-0" style={{ background: 'var(--border-default)' }} />
+                      {/* size={12} bukan size={10} — 10px terlalu kecil untuk inline icon */}
+                      <MapPin size={12} strokeWidth={2} className="shrink-0" />
+                      {jarakLabel}
+                    </>
+                  )}
+                </p>
+              </div>
+              <span className={`text-compact-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${STATUS_MAP[status]?.cls ?? ''}`}>
+                {STATUS_MAP[status]?.label ?? status}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

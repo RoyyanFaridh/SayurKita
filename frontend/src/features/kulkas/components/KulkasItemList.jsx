@@ -25,11 +25,19 @@ const KATEGORI_LABEL = {
   lainnya:        'Lainnya',
 }
 
+const borderAccent = {
+  danger:  'border-l-danger-400',
+  warning: 'border-l-warning-400',
+  ok:      'border-l-success-400',
+  fresh:   'border-l-success-400',
+}
+
 function StorageChip({ storage }) {
   const s = STORAGE_ICON[storage] ?? STORAGE_ICON.kulkas
-  const Icon = s.Icon
+  const { Icon } = s
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full text-compact-sm font-medium text-(--text-brand)">
+    <span className="inline-flex items-center gap-1 rounded-full bg-(--bg-subtle) px-2.5 py-1 text-compact-sm font-medium" style={{ color: 'var(--text-brand)' }}>
+      <Icon size={12} strokeWidth={1.75} />
       {s.label}
     </span>
   )
@@ -37,7 +45,7 @@ function StorageChip({ storage }) {
 
 function ExpBadge({ expLabel, expType }) {
   return (
-    <span className={`inline-block whitespace-nowrap rounded-full px-3 py-1 mx-2 text-compact-xs font-medium ${expBadgeClass[expType]}`}>
+    <span className={`inline-block whitespace-nowrap rounded-full px-3 py-1 text-compact-xs font-medium ${expBadgeClass[expType]}`}>
       {expLabel}
     </span>
   )
@@ -46,7 +54,7 @@ function ExpBadge({ expLabel, expType }) {
 export default function KulkasItemList({ items, onEdit }) {
   if (items.length === 0) {
     return (
-      <div className="overflow-hidden rounded-md border border-(--border-subtle) bg-white shadow-xs max-sm:hidden">
+      <div className="overflow-hidden rounded-md border border-(--border-subtle) bg-white shadow-xs">
         <div className="flex flex-col items-center gap-3 px-6 py-12 text-center text-compact-lg" style={{ color: 'var(--text-muted)' }}>
           <Refrigerator size={32} strokeWidth={1} style={{ color: 'var(--text-disabled)' }} />
           <p>Tidak ada bahan ditemukan</p>
@@ -61,13 +69,20 @@ export default function KulkasItemList({ items, onEdit }) {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              {['Nama Bahan', 'Kategori', 'Penyimpanan', 'Jumlah', 'Kadaluwarsa', ''].map(col => (
+              {[
+                { label: 'Nama Bahan', align: 'text-center'   },
+                { label: 'Kategori',   align: 'text-center' },
+                { label: 'Penyimpanan', align: 'text-center' },
+                { label: 'Jumlah',     align: 'text-center' },
+                { label: 'Kadaluwarsa', align: 'text-center' },
+                { label: '',           align: 'text-center' },
+              ].map(col => (
                 <th
-                  key={col}
-                  className="whitespace-nowrap border-b border-(--border-subtle) bg-(--bg-alt) px-4 py-3 text-center text-compact-sm font-semibold"
+                  key={col.label}
+                  className={`whitespace-nowrap border-b border-(--border-subtle) bg-(--bg-alt) px-4 py-3 ${col.align} text-compact-sm font-semibold`}
                   style={{ color: 'var(--text-muted)' }}
                 >
-                  {col}
+                  {col.label}
                 </th>
               ))}
             </tr>
@@ -78,7 +93,7 @@ export default function KulkasItemList({ items, onEdit }) {
                 key={item.id}
                 className="border-b border-(--border-subsub) transition-colors duration-150 last:border-b-0 hover:bg-(--bg-alt)"
               >
-                <td className="px-4 py-3 text-center align-middle text-compact-base font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
+                <td className="px-4 py-3 text-left align-middle text-compact-base font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
                   {item.nama}
                 </td>
                 <td className="px-4 py-3 text-center align-middle">
@@ -112,41 +127,46 @@ export default function KulkasItemList({ items, onEdit }) {
 
       {/* Mobile cards */}
       <div className="hidden flex-col gap-2 max-sm:flex">
-        {items.map(item => {
-          const borderClass = {
-            danger:  'border-l-danger-400',
-            warning: 'border-l-warning-400',
-            ok:      'border-l-success-400',
-            fresh:   'border-l-success-400',
-          }
-          return (
-            <div
-              key={item.id}
-              className={`flex items-center justify-between gap-3 rounded-md border border-(--border-subtle) border-l-[3px] bg-white px-4 py-3 shadow-xs ${borderClass[item.expType]}`}
-            >
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-compact-lg font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
-                  {item.nama}
-                </p>
-                <p className="mt-0.5 text-compact-sm" style={{ color: 'var(--text-muted)' }}>
+        {items.map(item => (
+          <div
+            key={item.id}
+            className={`flex items-center justify-between gap-3 rounded-md border border-(--border-subtle) border-l-[3px] bg-white px-4 py-3 shadow-xs ${borderAccent[item.expType]}`}
+          >
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-compact-lg font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
+                {item.nama}
+              </p>
+              <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                <span className="text-compact-xs" style={{ color: 'var(--text-muted)' }}>
                   {KATEGORI_LABEL[item.kategori] ?? item.kategori}
-                  {item.jumlah && item.jumlah !== '-' ? ` · ${item.jumlah}` : ''}
-                  {' · '}{STORAGE_ICON[item.storage]?.label ?? 'Kulkas'}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <ExpBadge expLabel={item.expLabel} expType={item.expType} />
-                <button
-                  className="rounded-sm border border-(--border-default) bg-transparent px-3 py-1 text-compact-sm font-medium transition-all duration-150 hover:bg-(--bg-surface-3)"
-                  style={{ color: 'var(--text-secondary)' }}
-                  onClick={() => onEdit(item)}
-                >
-                  Edit
-                </button>
+                </span>
+                {item.jumlah && item.jumlah !== '-' && (
+                  <>
+                    <span style={{ color: 'var(--border-default)' }}>·</span>
+                    <span className="text-compact-xs" style={{ color: 'var(--text-muted)' }}>
+                      {item.jumlah}
+                    </span>
+                  </>
+                )}
+                <span style={{ color: 'var(--border-default)' }}>·</span>
+                <span className="inline-flex items-center gap-1 text-compact-xs" style={{ color: 'var(--text-muted)' }}>
+                  {(() => { const { Icon } = STORAGE_ICON[item.storage] ?? STORAGE_ICON.kulkas; return <Icon size={11} strokeWidth={1.75} /> })()}
+                  {STORAGE_ICON[item.storage]?.label ?? 'Kulkas'}
+                </span>
               </div>
             </div>
-          )
-        })}
+            <div className="flex shrink-0 flex-col items-end gap-2">
+              <ExpBadge expLabel={item.expLabel} expType={item.expType} />
+              <button
+                className="rounded-sm border border-(--border-default) bg-transparent px-3 py-1 text-compact-sm font-medium transition-all duration-150 hover:bg-(--bg-surface-3)"
+                style={{ color: 'var(--text-secondary)' }}
+                onClick={() => onEdit(item)}
+              >
+                Edit
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   )
