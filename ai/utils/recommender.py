@@ -11,7 +11,6 @@ class RecipeRecommender:
         with open(data_path, 'r', encoding='utf-8') as f:
             self.recipes = json.load(f)
         
- 
         self.recipe_texts = [] 
         self.valid_indices = []
         for i, r in enumerate(self.recipes):
@@ -32,54 +31,42 @@ class RecipeRecommender:
     def recommend(self, user_ingredients, expired=None, top_k=5):
         """
         Rekomendasi resep berdasarkan bahan yang dimiliki.
-        
-        Args:
-            user_ingredients: list of str, contoh ['string']
-            expired: optional list of int, panjang harus sama dengan user_ingredients,
-                     sisa hari expired (belum digunakan untuk similarity, 
-                     tapi disediakan untuk pengembangan prioritas bahan)
-            top_k: int, jumlah rekomendasi yang diminta
-        
-        Returns:
-            list of dict: setiap dict berisi id, name, ingredients, match_score
+        - expired: list of int (opsional), panjang harus sama dengan user_ingredients.
+        - Jika rata-rata expired < 30 hari, resep dengan bahan tersebut akan mendapat prioritas lebih tinggi.
+        - Jika rata-rata expired >= 30 hari, similarity tidak diubah.
         """
         if not user_ingredients:
             return []
 
         user_text = ' '.join(user_ingredients).lower()
         user_vector = self.vectorizer.transform([user_text])
-        
-
         similarities = cosine_similarity(user_vector, self.recipe_vectors)[0]
 
-
-        if expired and len(expired) > 0:
+ 
+        if expired and len(expired) == len(user_ingredients):
             avg_expired = sum(expired) / len(expired)
-            urgency_boost = 1 + ((30 - avg_expired) / 30)
-            similarities = similarities * urgency_boost
-        
-        valid_similarities = [(i, similarities[i]) for i in self.valid_indices]
+            if avg_expired < 30:
+                urgency_boost = 1 + (30 - avg_expired) / 30  
+                similarities = similarities * urgency_boost
+
+
+        valid_similarities = [(i, similarities[i]) for i in self.valid_indices if similarities[i] > 0]
         valid_similarities.sort(key=lambda x: x[1], reverse=True)
         top_recipes = valid_similarities[:top_k]
         
         results = []
         for original_idx, score in top_recipes:
-            if score <= 0:
-                continue
-            
             recipe = self.recipes[original_idx]
-            
             results.append({
-            "id": original_idx,
-            "name": recipe.get('Title Cleaned', recipe.get('Title', 'Resep')),
-            "ingredients": recipe.get('Ingredients Cleaned', recipe.get('Ingredients', '')),
-            "ingredients_raw": recipe.get('Ingredients', ''),
-            "steps_raw": recipe.get('Steps', ''),
-            "category": recipe.get('Category', ''),
-            "url": recipe.get('URL', ''),
-            "match_score": round(float(similarities[original_idx]), 4)
-             })
-        
+                "id": original_idx,
+                "name": recipe.get('Title Cleaned', recipe.get('Title', 'Resep')),
+                "ingredients": recipe.get('Ingredients Cleaned', recipe.get('Ingredients', '')),
+                "ingredients_raw": recipe.get('Ingredients', ''),
+                "steps_raw": recipe.get('Steps', ''),
+                "category": recipe.get('Category', ''),
+                "url": recipe.get('URL', ''),
+                "match_score": round(float(score), 4)
+            })
         return results
 
 recommender = RecipeRecommender()
