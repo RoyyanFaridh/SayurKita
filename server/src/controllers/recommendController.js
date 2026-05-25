@@ -18,23 +18,31 @@ const getDashboardRecommendation = async (req, res) => {
       });
     }
 
-    // 1. Ambil semua Ingredient aktif milik req.userId
+    // Filter bahan yang akan kadaluarsa dalam 3 hari ke depan
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const threeDaysFromNow = new Date(today);
+    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+
     const ingredients = await prisma.ingredient.findMany({
-      where: { userId },
+      where: {
+        userId,
+        expDate: {
+          lte: threeDaysFromNow,
+          gte: today,
+        },
+      },
       select: { nama: true },
     });
 
-    // 2. Ekstrak hanya nama bahannya saja menjadi array of strings
     const ingredientNames = ingredients.map((item) => item.nama);
 
-    // Jika tidak ada bahan, langsung kembalikan response kosong tanpa memanggil AI
     if (ingredientNames.length === 0) {
       return res.status(200).json({
         success: true,
-        message: "Tidak ada bahan di kulkas untuk direkomendasikan.",
-        data: {
-          recipes: [],
-        },
+        message: "Tidak ada bahan yang akan kadaluwarsa dalam 3 hari ke depan.",
+        data: { recipes: [] },
       });
     }
 

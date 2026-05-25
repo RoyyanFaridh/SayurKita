@@ -27,16 +27,15 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
   const center = userCoords ?? DEFAULT_CENTER
 
   return (
-    <div className="bg-white border border-(--border-subtle) rounded-xl shadow-(--shadow-xs) overflow-hidden flex flex-col sticky top-20">
+    <div className="bg-(--color-bg-primary) border border-(--border-subtle) rounded-xl overflow-hidden flex flex-col sticky top-20">
 
       {/* Header */}
       <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-(--border-subtle)">
-        <h2 style={{ fontSize: '0.75rem' }} className="font-semibold text-(--text-primary) m-0">Peta Sekitarmu</h2>
+        <h2 className="text-xs font-semibold text-(--text-primary) m-0">Peta Sekitarmu</h2>
         <button
           onClick={onLocate}
           disabled={locating}
-          style={{ fontSize: '0.625rem' }}
-          className="inline-flex items-center gap-1 px-2 py-1 bg-(--bg-subtle) border border-(--border-subtle) rounded-lg font-medium cursor-pointer transition-colors duration-150 hover:bg-primary-100 disabled:opacity-50"
+          className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-(--bg-subtle) border border-(--border-subtle) rounded-lg font-medium cursor-pointer transition-colors duration-150 hover:bg-primary-100 disabled:opacity-50 text-(--text-secondary)"
         >
           <Navigation size={11} strokeWidth={2} />
           {locating ? 'Mencari...' : 'Lokasiku'}
@@ -73,8 +72,8 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
       </div>
 
       {/* Radius info */}
-      <p style={{ fontSize: '0.625rem' }} className="px-3 py-1 text-center bg-(--bg-alt) border-t border-(--border-subtle) text-(--text-muted) m-0">
-        Menampilkan radius <strong className="text-(--text-primary)">{radius} km</strong>
+      <p className="px-3 py-1.5 text-center text-xs bg-(--bg-alt) border-t border-(--border-subtle) text-(--text-muted) m-0">
+        Menampilkan radius <strong className="text-(--text-primary) font-medium">{radius} km</strong>
       </p>
 
       {/* Legend */}
@@ -84,7 +83,7 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
           { color: 'warning', label: 'Segera ambil' },
           { color: 'danger',  label: 'Hari ini!' },
         ].map(({ color, label }) => (
-          <div key={color} style={{ fontSize: '0.625rem' }} className="flex items-center gap-1 text-(--text-secondary)">
+          <div key={color} className="flex items-center gap-1 text-xs text-(--text-secondary)">
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${DOT_CLS[color]}`} />
             {label}
           </div>
@@ -93,21 +92,20 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
 
       {/* Nearest list */}
       <div className="px-3.5 py-2.5 flex flex-col gap-0.5">
-        <p style={{ fontSize: '0.625rem' }} className="font-semibold uppercase tracking-wide text-(--text-muted) mb-1 m-0">Terdekat</p>
+        <p className="text-xs font-medium text-(--text-muted) mb-1.5 m-0">Terdekat</p>
         {items.slice(0, 3).map(item => {
           const color = KONDISI_MAP[item.kondisi]?.color ?? 'success'
           return (
             <div key={item.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-colors duration-75 hover:bg-(--bg-alt)">
               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${DOT_CLS[color]}`} />
               <div className="min-w-0">
-                <p style={{ fontSize: '0.6875rem' }} className="font-medium truncate text-(--text-primary) m-0">{item.nama}</p>
-                <p style={{ fontSize: '0.625rem' }} className="text-(--text-muted) m-0">{item.jarak} · {item.pemilik}</p>
+                <p className="text-xs font-medium truncate text-(--text-primary) m-0">{item.nama}</p>
+                <p className="text-xs text-(--text-muted) m-0">{item.jarak} · {item.pemilik}</p>
               </div>
             </div>
           )
         })}
       </div>
-
     </div>
   )
 }

@@ -1,10 +1,10 @@
 import { Refrigerator, Clock, TrendingUp, Leaf } from 'lucide-react'
 
 const STAT_TEMPLATES = [
-  { id: 'kulkas',  label: 'Bahan di kulkas',       valueUnit: 'bahan',     badgeType: 'green', Icon: Refrigerator, iconType: 'green' },
-  { id: 'posting', label: 'Posting aktif',          valueUnit: 'postingan', badgeType: 'amber', Icon: Clock,        iconType: 'amber' },
-  { id: 'surplus', label: 'Surplus diselamatkan',   valueUnit: 'surplus',   badgeType: 'teal',  Icon: TrendingUp,   iconType: 'teal'  },
-  { id: 'karbon',  label: 'Karbon diselamatkan',    valueUnit: 'kg CO₂',    badgeType: 'lime',  Icon: Leaf,         iconType: 'lime'  },
+  { id: 'kulkas',  label: 'Bahan di kulkas',     valueUnit: 'bahan',     badgeType: 'green', Icon: Refrigerator, iconType: 'green' },
+  { id: 'posting', label: 'Posting aktif',        valueUnit: 'postingan', badgeType: 'amber', Icon: Clock,        iconType: 'amber' },
+  { id: 'surplus', label: 'Surplus diselamatkan', valueUnit: 'surplus',   badgeType: 'teal',  Icon: TrendingUp,   iconType: 'teal'  },
+  { id: 'karbon',  label: 'Karbon diselamatkan',  valueUnit: 'kg CO₂',   badgeType: 'lime',  Icon: Leaf,         iconType: 'lime'  },
 ]
 
 const iconStyle = {
@@ -23,9 +23,7 @@ const badgeStyle = {
 }
 
 export default function StatsGrid({ stats }) {
-  console.log('stats:', stats)
-  const hasExpired  = stats?.expired  > 0
-  const hasCritical = stats?.critical > 0
+  // console.log dihapus — debug log tidak boleh ada di production component
 
   const kulkasBadge = !stats
     ? '...'
@@ -37,7 +35,11 @@ export default function StatsGrid({ stats }) {
           ? `${stats.warning} hampir kadaluwarsa`
           : 'Semua aman'
 
-  const kulkasBadgeType = (stats?.expired > 0 || stats?.critical > 0) ? 'red' : stats?.warning > 0 ? 'amber' : 'green'
+  const kulkasBadgeType = (stats?.expired > 0 || stats?.critical > 0)
+    ? 'red'
+    : stats?.warning > 0
+      ? 'amber'
+      : 'green'
 
   const resolvedStats = [
     {
@@ -68,28 +70,36 @@ export default function StatsGrid({ stats }) {
       {resolvedStats.map(({ id, Icon, iconType, value, valueUnit, label, badge, badgeType, note, noteType }) => (
         <div
           key={id}
-          className="flex flex-col gap-2 rounded-md p-3.5 border transition-[transform,box-shadow] duration-150 hover:-translate-y-0.5 hover:shadow-sm max-[400px]:p-3"
-          style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subsub)', boxShadow: 'var(--shadow-xs)' }}
+          // border-[0.5px] + --border-subtle — konsisten dengan semua card lain
+          // hover lift dihapus — false affordance untuk elemen non-interaktif
+          className="flex flex-col rounded-md p-3.5 border-[0.5px] max-[400px]:p-3"
+          style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subtle)', boxShadow: 'var(--shadow-xs)' }}
         >
-          <div className="flex items-center gap-2">
+          {/* Icon + label row */}
+          <div className="flex items-center gap-2 mb-3">
             <div className="w-7 h-7 rounded-md flex items-center justify-center shrink-0" style={iconStyle[iconType]}>
-              <Icon size={16} strokeWidth={1.75} />
+              <Icon size={15} strokeWidth={1.75} />
             </div>
             <p className="text-compact-sm m-0" style={{ color: 'var(--text-secondary)' }}>{label}</p>
           </div>
 
-          <div className="flex items-baseline gap-2 ml-1">
+          {/* Value row
+              - text-2xl (24px) bukan text-3xl (30px) — lebih proporsional terhadap card compact
+              - font-semibold bukan font-bold — cukup kuat tanpa terlalu berat
+              - lineHeight 1.1 bukan 2 — line-height 200% tidak ada alasan visual
+              - ml-1 dihapus — tidak ada elemen kiri yang perlu di-offset */}
+          <div className="flex items-baseline gap-1.5 mb-2.5">
             <p
-              className="text-3xl font-bold m-0 max-[400px]:text-xl"
-              style={{ color: 'var(--text-primary)', lineHeight: 2 }}
+              className="text-2xl font-semibold m-0 max-[400px]:text-xl"
+              style={{ color: 'var(--text-primary)', lineHeight: 1.1 }}
             >
               {value}
-              {valueUnit && (
-                <span className="text-sm font-medium ml-1" style={{ color: 'var(--text-secondary)' }}>
-                  {valueUnit}
-                </span>
-              )}
             </p>
+            {valueUnit && (
+              <span className="text-compact-sm font-normal" style={{ color: 'var(--text-secondary)' }}>
+                {valueUnit}
+              </span>
+            )}
           </div>
 
           <span
@@ -101,7 +111,7 @@ export default function StatsGrid({ stats }) {
 
           {note && (
             <p
-              className="text-compact-xs m-0"
+              className="text-compact-xs mt-2 m-0"
               style={{ color: noteType === 'danger' ? 'var(--color-danger-800)' : 'var(--text-muted)' }}
             >
               {note}

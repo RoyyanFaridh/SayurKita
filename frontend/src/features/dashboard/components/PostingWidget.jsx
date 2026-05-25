@@ -12,34 +12,77 @@ const POSTINGS = [
 ]
 
 const BADGE_MAP = {
-  aktif: 'bg-(--bg-dark) text-(--text-brand-dark)',
+  aktif:   'bg-(--bg-dark) text-(--text-brand-dark)',
+  selesai: 'bg-(--bg-success-subtle) text-(--text-success)',
+  expired: 'bg-(--bg-danger-subtle) text-(--text-danger)',
+  // fallback ditangani di bawah via ?? operator
 }
 
 export default function PostingWidget() {
   return (
-    <div className="rounded-xl overflow-hidden border bg-(--bg-surface-1) border-(--border-subsub) shadow-(--shadow-xs)">
-      <div className="flex justify-between items-center px-4 py-3.5 border-b border-(--border-subtle)">
-        <h2 className="text-compact-lg font-semibold text-(--text-primary)">Posting Aktifmu</h2>
-        <button className="inline-flex items-center gap-1 text-compact-base font-medium border-none bg-transparent cursor-pointer transition-colors duration-150 text-(--text-brand) hover:text-primary-400">
+    <div
+      // rounded-md — konsisten dengan semua card lain di dashboard
+      // border-[0.5px] + inline borderColor — konsisten, --border-subsub dihapus
+      // shadow via inline style — konsisten dengan KulkasDashWidget
+      className="rounded-md overflow-hidden border-[0.5px]"
+      style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subtle)', boxShadow: 'var(--shadow-xs)' }}
+    >
+      {/* Header: ganti px-4 py-3.5 → p-4 pb-2 + border-b, konsisten dengan KulkasDashWidget */}
+      <div
+        className="flex justify-between items-center px-4 pt-4 pb-2 mb-0 border-b"
+        style={{ borderColor: 'var(--border-subtle)' }}
+      >
+        <h2 className="text-compact-lg font-semibold m-0" style={{ color: 'var(--text-primary)' }}>
+          Posting Aktifmu
+        </h2>
+        <button
+          className="inline-flex items-center gap-1 text-compact-base font-medium border-none bg-transparent cursor-pointer transition-colors duration-150 hover:opacity-75"
+          style={{ color: 'var(--text-brand)' }}
+        >
           Lihat semua <ArrowRight size={14} strokeWidth={2} />
         </button>
       </div>
 
-      <ul>
+      <ul className="list-none p-0 m-0">
         {POSTINGS.map((p, i) => (
-          <li key={p.id} className={i < POSTINGS.length - 1 ? 'border-b border-(--border-subtle)' : ''}>
-            <div className="flex items-center gap-3 px-4 py-3.5">
-              <div className="w-10 h-10 rounded-md shrink-0 bg-(--bg-subtle)" aria-hidden="true" />
+          <li
+            key={p.id}
+            className={i < POSTINGS.length - 1 ? 'border-b' : ''}
+            style={{ borderColor: 'var(--border-subtle)' }}
+          >
+            <div className="flex items-center gap-3 px-4 py-3">
+              <div
+                // tambah border tipis agar thumbnail terlihat di dark mode
+                className="w-10 h-10 rounded-md shrink-0 border-[0.5px]"
+                style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-subtle)' }}
+                aria-hidden="true"
+              />
               <div className="flex-1 min-w-0">
-                <p className="text-compact-lg font-semibold truncate text-(--text-primary)">{p.name}</p>
-                <p className="text-compact-sm mt-0.5 text-(--text-muted)">{p.sub}</p>
+                {/* font-medium — bukan semibold, agar hierarki terbaca: title card (semibold) > item name (medium) */}
+                <p className="text-compact-lg font-medium truncate m-0" style={{ color: 'var(--text-primary)' }}>
+                  {p.name}
+                </p>
+                <p className="text-compact-sm mt-0.5 m-0" style={{ color: 'var(--text-muted)' }}>
+                  {p.sub}
+                </p>
               </div>
-              <span className={`text-compact-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${BADGE_MAP[p.statusType]}`}>
+              <span
+                className={`text-compact-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${BADGE_MAP[p.statusType] ?? 'bg-(--bg-subtle) text-(--text-secondary)'}`}
+              >
                 {p.statusLabel}
               </span>
             </div>
+
             {p.note && (
-              <p className="text-compact-sm px-4 py-2.5 text-(--text-brand) bg-(--bg-subtle)">
+              // --text-secondary bukan --text-brand — note adalah info pasif, bukan aksi
+              <p
+                className="text-compact-sm px-4 py-2.5 m-0 border-t"
+                style={{
+                  color: 'var(--text-secondary)',
+                  background: 'var(--bg-subtle)',
+                  borderColor: 'var(--border-subtle)',
+                }}
+              >
                 {p.note}
               </p>
             )}

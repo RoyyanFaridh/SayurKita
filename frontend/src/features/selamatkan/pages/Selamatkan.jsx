@@ -67,26 +67,28 @@ export default function Selamatkan() {
     <APIProvider apiKey={GMAPS_API_KEY}>
       <SelamatkanTopbar totalAktif={SURPLUS_ITEMS.length} onPosting={() => setModal(true)} />
 
-      <div className="px-7 pt-6 pb-10 flex flex-col gap-5 max-md:px-0 max-md:pt-0 max-md:gap-4">
+      {/* ↓ breakpoint notation diseragamkan ke explicit pixel, sama seperti LihatKulkas */}
+      <div className="px-7 pt-6 pb-10 flex flex-col gap-5 max-[640px]:px-0 max-[640px]:pt-0 max-[640px]:pb-8 max-[640px]:gap-4">
 
-        <div className="hidden max-sm:flex items-center justify-between bg-(--bg-dark) px-4 pt-4 pb-5 rounded-b-2xl">
+        {/* ↓ mobile header: bg, radius, button, subtitle sekarang konsisten */}
+        <div className="hidden items-center justify-between bg-primary-600 px-4 pb-5 pt-4 rounded-b-xl max-[640px]:flex">
           <div>
             <h1 className="text-xl font-bold text-white leading-snug">Selamatkan!</h1>
-            <p className="text-(--text-compact-xs) mt-0.5">
+            <p className="mt-1 text-compact-xs text-white/35">
               {SURPLUS_ITEMS.length} surplus aktif di sekitarmu
             </p>
           </div>
           <button
             onClick={() => setModal(true)}
-            className="w-9 h-9 flex items-center justify-center bg-secondary-500 text-primary-900 rounded-lg border-0 cursor-pointer"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/15 text-white"
           >
             <Plus size={14} strokeWidth={2.5} />
           </button>
         </div>
 
-        <div className="max-sm:px-4"><SelamatkanStatsBar /></div>
+        <div className="max-[640px]:px-4"><SelamatkanStatsBar /></div>
 
-        <div className="max-sm:px-4">
+        <div className="max-[640px]:px-4">
           <SelamatkanToolbar
             search={search}     onSearch={setSearch}
             kategori={kategori} onKategori={setKategori}
@@ -95,11 +97,12 @@ export default function Selamatkan() {
           />
         </div>
 
-        <div className="grid gap-5 items-start grid-cols-[3fr_1fr] max-lg:grid-cols-[2fr_1fr] max-md:grid-cols-1 max-sm:px-4">
+        {/* ↓ breakpoint diseragamkan: max-[1024px] dan max-[768px] */}
+        <div className="grid gap-5 items-start grid-cols-[3fr_1fr] max-[1024px]:grid-cols-[2fr_1fr] max-[768px]:grid-cols-1 max-[640px]:px-4">
           <div className="min-w-0">
             <SelamatkanCardList items={filtered} />
           </div>
-          <aside className="min-w-0 max-sm:hidden">
+          <aside className="min-w-0 max-[640px]:hidden">
             <SelamatkanMapPanel
               items={filtered}
               radius={radius}

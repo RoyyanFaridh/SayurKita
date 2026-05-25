@@ -9,57 +9,66 @@ const badgeStyle = {
   fresh:   { background: 'var(--bg-success-subtle)', color: 'var(--text-success)' },
 }
 
-/**
- * @param {{ items?: Array<{ id: string, nama: string, jumlah: string, expStatus: string, expLabel: string }> }} props
- */
 export default function KulkasDashWidget({ items }) {
   const list = items ?? []
 
   return (
     <div
-      className="rounded-md overflow-hidden p-4 border"
-      style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subsub)', boxShadow: 'var(--shadow-xs)' }}
+      // border-[0.5px] — konsisten dengan komponen lain, --border-subsub → --border-subtle
+      className="rounded-md overflow-hidden p-4 border-[0.5px]"
+      style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subtle)', boxShadow: 'var(--shadow-xs)' }}
     >
       <div
-        className="flex justify-between items-center pb-2.5 mb-2.5 border-b"
+        className="flex justify-between items-center pb-2 mb-2 border-b"
         style={{ borderColor: 'var(--border-subtle)' }}
       >
-        <h2 className="text-compact-lg font-semibold leading-snug m-0" style={{ color: 'var(--text-primary)' }}>
+        {/* Tidak ada icon wrap di sini — intentional karena ini bukan AI card.
+            Jika card lain di grid dashboard semua punya icon header, pertimbangkan
+            tambah ikon kulkas (Refrigerator dari lucide) agar konsisten. */}
+        <h2 className="text-compact-lg font-semibold m-0" style={{ color: 'var(--text-primary)' }}>
           Lihat Kulkas
         </h2>
+        {/* Hapus onMouseEnter/onMouseLeave — gunakan Tailwind hover atau CSS class.
+            Inline event handler untuk hover adalah anti-pattern di React. */}
         <Link
           to="/kulkas"
-          className="inline-flex items-center gap-1 text-compact-base font-medium transition-colors duration-150"
+          className="inline-flex items-center gap-1 text-compact-base font-medium transition-colors duration-150 hover:opacity-75"
           style={{ color: 'var(--text-brand)' }}
-          onMouseEnter={e => e.currentTarget.style.color = 'var(--brand-green-light)'}
-          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-brand)'}
         >
           Lihat semua <ArrowRight size={14} strokeWidth={2} />
         </Link>
       </div>
 
       {list.length === 0 ? (
-        <p className="text-compact-sm py-4 text-center" style={{ color: 'var(--text-muted)' }}>
-          Kulkas masih kosong. <Link to="/kulkas" style={{ color: 'var(--text-brand)' }}>Tambah bahan →</Link>
+        <p className="text-compact-sm py-6 text-center m-0" style={{ color: 'var(--text-muted)' }}>
+          Kulkas masih kosong.{' '}
+          <Link to="/kulkas" style={{ color: 'var(--text-brand)' }}>Tambah bahan →</Link>
         </p>
       ) : (
-        <ul>
+        <ul className="list-none p-0 m-0">
           {list.map(({ id, nama, jumlah, expStatus, expLabel }, i) => (
             <li
               key={id}
-              className="flex justify-between items-center py-4"
-              style={{ borderBottom: i < list.length - 1 ? '1px solid var(--border-subsub)' : 'none' }}
+              // items-center — bukan items-baseline, agar badge tidak menggantung jika nama wrap
+              className="flex justify-between items-center py-3"
+              style={{
+                borderBottom: i < list.length - 1
+                  ? '0.5px solid var(--border-subtle)'  // --border-subsub → --border-subtle
+                  : 'none',
+              }}
             >
-              <div>
-                <span className="text-compact-base" style={{ color: 'var(--text-primary)' }}>{nama}</span>
-                {jumlah && (
-                  <span className="ml-1.5 text-compact-sm" style={{ color: 'var(--text-muted)' }}>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-compact-base truncate capitalize" style={{ color: 'var(--text-primary)' }}>
+                  {nama}
+                </span>
+                {jumlah && jumlah !== '-' && (
+                  <span className="text-compact-sm shrink-0" style={{ color: 'var(--text-muted)' }}>
                     · {jumlah}
                   </span>
                 )}
               </div>
               <span
-                className="text-compact-sm font-medium px-3 py-1 rounded-full"
+                className="shrink-0 ml-3 text-compact-xs font-medium px-2.5 py-0.5 rounded-full"
                 style={badgeStyle[expStatus] ?? badgeStyle.ok}
               >
                 {expLabel}

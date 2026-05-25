@@ -49,9 +49,9 @@ function formatExp(dateStr) {
   return                 { label: `${diff} hari lagi`, sublabel: 'Masih aman disimpan',         color: 'fresh'   }
 }
 
-const inputCls      = 'w-full px-3 py-2.5 bg-(--bg-alt) border border-(--border-default) rounded-md text-compact-lg text-(--text-primary) box-border transition-colors duration-150 focus:outline-none focus:border-(--border-brand)'
-const beliChipBase   = 'px-3.5 py-1.5 rounded-md border text-compact-base font-medium cursor-pointer whitespace-nowrap transition-all duration-150'
-const beliChipIdle   = 'bg-(--bg-alt) border-(--border-default) text-(--text-secondary) hover:border-(--border-brand) hover:text-(--text-brand)'
+const inputCls     = 'w-full px-3 py-2.5 bg-(--bg-alt) border border-(--border-default) rounded-md text-compact-lg text-(--text-primary) box-border transition-colors duration-150 focus:outline-none focus:border-(--border-brand)'
+const beliChipBase  = 'px-3.5 py-1.5 rounded-md border text-compact-base font-medium cursor-pointer whitespace-nowrap transition-all duration-150'
+const beliChipIdle  = 'bg-(--bg-alt) border-(--border-default) text-(--text-secondary) hover:border-(--border-brand) hover:text-(--text-brand)'
 const beliChipActive = 'bg-(--bg-subtle) border-(--border-brand) text-(--text-brand)'
 
 const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = false }, ref) {
@@ -159,8 +159,8 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
   return (
     <>
       {error && (
-        <div className="mx-5 mt-4 px-4 py-2.5 bg-danger-50 border border-danger-200 rounded-md">
-          <p className="text-compact-sm text-danger-600">{error}</p>
+        <div className="mx-5 mt-4 px-4 py-2.5 bg-(--bg-danger-subtle) border border-(--border-danger) rounded-md">
+          <p className="text-compact-sm text-(--text-danger)">{error}</p>
         </div>
       )}
 
@@ -172,8 +172,8 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
         </div>
 
         {master && expInfo && (
-          <div className={`rounded-md px-4 py-3 flex items-start gap-3 ${ESTIMASI_META[expInfo.color].cls}`}>
-            <div className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${ESTIMASI_META[expInfo.color].dot}`} />
+          <div className={`rounded-md px-4 py-3 flex items-start gap-2 ${ESTIMASI_META[expInfo.color].cls}`}>
+            <div className={`w-2 h-2 rounded-full shrink-0 mt-1.25 ${ESTIMASI_META[expInfo.color].dot}`} />
             <div className="flex flex-col gap-0.5">
               <p className="text-compact-base font-bold">{expInfo.label}</p>
               <p className="text-compact-sm opacity-80">{expInfo.sublabel}</p>
@@ -200,7 +200,7 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
                   onClick={() => !unavail && setStorage(value)}
                   className={`flex flex-col items-center gap-1.5 py-3.5 px-2 border rounded-md cursor-pointer transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${
                     active
-                      ? 'bg-(--bg-subtle) border-(--border-brand) shadow-[0_0_0_2px_var(--color-primary-100)]'
+                      ? 'bg-(--bg-subtle) border-(--border-brand) ring-2 ring-primary-100'
                       : 'bg-(--bg-alt) border-(--border-default) hover:border-(--border-brand) hover:bg-(--bg-subtle)'
                   }`}
                 >
@@ -220,7 +220,9 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-compact-base font-medium text-(--text-secondary)">Kapan kamu beli?</label>
+          <div className="flex items-baseline gap-1.5">
+            <label className="text-compact-base font-medium text-(--text-secondary)">Kapan kamu beli?</label>
+          </div>
           <div className="flex items-center gap-1.5 flex-wrap">
             {BELI_OPTIONS.map(opt => (
               <button
@@ -241,29 +243,31 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
               Pilih tanggal
             </button>
           </div>
-          {beliMode === 'custom' && (
-            <input
-              type="date"
-              className={inputCls}
-              value={beliCustom}
-              max={new Date().toISOString().split('T')[0]}
-              onChange={e => setBeliCustom(e.target.value)}
-            />
-          )}
+          <div className={`grid transition-all duration-200 ease-out ${beliMode === 'custom' ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <input
+                type="date"
+                className={`${inputCls} mt-1`}
+                value={beliCustom}
+                max={new Date().toISOString().split('T')[0]}
+                onChange={e => setBeliCustom(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-compact-base font-medium text-(--text-secondary) flex items-center gap-1.5">
-            Jumlah
-            <span className="text-compact-sm font-normal text-(--text-muted)">(opsional)</span>
-          </label>
+          <div className="flex items-baseline gap-1.5">
+            <label className="text-compact-base font-medium text-(--text-secondary)">Jumlah</label>
+            <span className="text-compact-sm text-(--text-muted)">opsional</span>
+          </div>
           <div className="flex items-center gap-2 bg-(--bg-alt) border border-(--border-default) rounded-md px-3 focus-within:border-(--border-brand) transition-colors duration-150">
             <Package size={13} strokeWidth={2} className="text-(--text-muted) shrink-0" />
             <input
               className="flex-1 border-0 bg-transparent py-2.5 text-compact-lg text-(--text-primary) min-w-0 placeholder:text-(--text-muted) focus:outline-none"
               value={jumlah}
               onChange={e => setJumlah(e.target.value)}
-              placeholder="cth. 200 g, 2 buah, 1 ikat"
+              placeholder="200 g, 2 buah, 1 ikat"
             />
           </div>
         </div>
@@ -275,16 +279,16 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
                 Info Gizi per 100 g
               </p>
             </div>
-            <div className="grid grid-cols-4 divide-x divide-(--border-subtle) max-[480px]:grid-cols-2 max-[480px]:divide-x-0">
+            <div className="grid grid-cols-4 divide-x divide-(--border-subtle) max-[480px]:grid-cols-2 max-[480px]:divide-x-0 max-[480px]:*:border-b max-[480px]:*:border-(--border-subtle) max-[480px]:[&>*:nth-child(n+3)]:border-b-0">
               {[
                 { icon: Flame,    label: 'Kalori',  value: master.kkal,    unit: 'kkal' },
                 { icon: Beef,     label: 'Protein', value: master.protein, unit: 'g'    },
                 { icon: Droplets, label: 'Lemak',   value: master.lemak,   unit: 'g'    },
                 { icon: Wheat,    label: 'Karbo',   value: master.karbo,   unit: 'g'    },
-              ].map(({ icon: Icon, label, value, unit }, idx) => (
+              ].map(({ icon: Icon, label, value, unit }) => (
                 <div
                   key={label}
-                  className={`flex flex-col items-center gap-1 py-3 px-2 text-center max-[480px]:border-b max-[480px]:border-(--border-subtle) ${idx >= 2 ? 'max-[480px]:border-b-0' : ''}`}
+                  className="flex flex-col items-center gap-1 py-3 px-2 text-center"
                 >
                   <Icon size={13} strokeWidth={1.75} className="text-(--text-brand)" />
                   <p className="text-compact-lg font-bold text-(--text-primary) leading-none">
@@ -297,7 +301,6 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
             </div>
           </div>
         )}
-
       </div>
     </>
   )
