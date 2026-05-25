@@ -25,7 +25,7 @@ export default function SelamatkanPostingModal({ onClose }) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-[520px] max-h-[90vh] overflow-y-auto rounded-2xl animate-[slideUp_280ms_cubic-bezier(0.34,1.56,0.64,1)]"
+        className="w-full max-w-130 max-h-[90vh] overflow-y-auto rounded-2xl animate-[slideUp_280ms_cubic-bezier(0.34,1.56,0.64,1)]"
         style={{
           background: 'var(--bg-surface-1)',
           boxShadow:  'var(--shadow-xl)',
