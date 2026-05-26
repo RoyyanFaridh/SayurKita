@@ -15,10 +15,10 @@ const getDashboardSummary = async (req, res) => {
       });
     }
 
-    // ─── 1. Data User (nama + poin) ──────────────────────────────────────────
+    // ─── 1. Data User (nama + poin + totalCarbonSaved) ───────────────────────
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, points: true },
+      select: { name: true, points: true, totalCarbonSaved: true },
     });
 
     if (!user) {
@@ -116,7 +116,7 @@ const getDashboardSummary = async (req, res) => {
     const surplusDiselamatkan = user.points > 0
       ? Math.floor(user.points / 10)
       : 0;
-    const karbonDiselamatkan = parseFloat((totalBahanKulkas * 0.5).toFixed(1));
+    const karbonDiselamatkan = user.totalCarbonSaved || 0;
 
     // ─── 6. Susun response ───────────────────────────────────────────────────
     return res.status(200).json({

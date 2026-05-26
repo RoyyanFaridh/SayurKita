@@ -14,6 +14,7 @@ model User {
   phone      String   @unique
   password   String
   points     Int      @default(0)
+  totalCarbonSaved Float    @default(0.0)
   isVerified Boolean  @default(false)
   otpCode    String?
   otpExpires DateTime?
@@ -21,6 +22,8 @@ model User {
   updatedAt  DateTime @updatedAt
 
   ingredients Ingredient[]
+  surplusPosts SurplusPost[] @relation("PostedSurplus")
+  receivedSurplus SurplusPost[] @relation("ReceivedSurplus")
 }
 
 model Ingredient {
@@ -35,6 +38,27 @@ model Ingredient {
   expDate     DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model SurplusPost {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  user        User     @relation("PostedSurplus", fields: [userId], references: [id], onDelete: Cascade)
+  receiverId  String?
+  receiver    User?    @relation("ReceivedSurplus", fields: [receiverId], references: [id])
+  title       String
+  description String
+  category    String
+  quantity    String
+  pickupTime  String
+  address     String
+  latitude    Float
+  longitude   Float
+  imageUrl    String?
+  status      String   @default("Tersedia")
+  createdAt   DateTime @default(now())
 
   @@index([userId])
 }

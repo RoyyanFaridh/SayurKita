@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Plus } from 'lucide-react'
 import { APIProvider } from '@vis.gl/react-google-maps'
+import { API_ORIGIN } from '../../../config/api'
 
 import SelamatkanTopbar       from '../components/SelamatkanTopbar'
 import SelamatkanStatsBar     from '../components/SelamatkanStatsBar'
@@ -9,13 +10,13 @@ import SelamatkanCardList     from '../components/SelamatkanCardList'
 import SelamatkanMapPanel     from '../components/SelamatkanMapPanel'
 import SelamatkanPostingModal from '../components/SelamatkanPostingModal'
 
-import { SURPLUS_ITEMS } from '../selamatkanData'
 import { hitungJarak, formatJarak } from '../../../utils/geoUtils'
 
 const KONDISI_URGENCY = { segera: 0, 'mau-habis': 1, segar: 2 }
 const GMAPS_API_KEY   = import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? ''
 
 export default function Selamatkan() {
+  const [surplusItems, setSurplusItems] = useState([])
   const [search,     setSearch]     = useState('')
   const [kategori,   setKategori]   = useState('Semua')
   const [radius,     setRadius]     = useState('5')
@@ -36,15 +37,55 @@ export default function Selamatkan() {
     )
   }, [])
 
+  const fetchSurplus = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      let url = `${API_ORIGIN}/api/surplus`;
+      if (userCoords) {
+        url += `?lat=${userCoords.lat}&lng=${userCoords.lng}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Map database fields to frontend fields
+        const mappedData = data.data.map(item => ({
+          id: item.id,
+          nama: item.title,
+          deskripsi: item.description,
+          kategori: item.category,
+          jumlah: item.quantity,
+          kondisi: item.pickupTime === 'Hari ini!' ? 'segera' : item.pickupTime === 'Segera ambil' ? 'mau-habis' : 'segar',
+          lat: item.latitude,
+          lng: item.longitude,
+          lokasi: item.address,
+          pemilik: item.user?.name || 'User',
+          imageUrl: item.imageUrl ? `${API_ORIGIN}${item.imageUrl}` : null
+        }));
+        setSurplusItems(mappedData);
+      }
+    } catch (err) {
+      console.error("Gagal fetch data surplus:", err);
+    }
+  }, [userCoords]);
+
   useEffect(() => { handleLocate() }, [handleLocate])
+  
+  useEffect(() => {
+    fetchSurplus();
+  }, [fetchSurplus]);
 
   const itemsWithJarak = useMemo(() => {
-    return SURPLUS_ITEMS.map(item => {
+    return surplusItems.map(item => {
       if (!userCoords || !item.lat || !item.lng) return { ...item, _jarakRaw: Infinity }
       const km = hitungJarak(userCoords.lat, userCoords.lng, item.lat, item.lng)
       return { ...item, jarak: formatJarak(km), _jarakRaw: km }
     })
-  }, [userCoords])
+  }, [surplusItems, userCoords])
 
   const filtered = useMemo(() => {
     const radiusKm = parseFloat(radius)
@@ -65,7 +106,7 @@ export default function Selamatkan() {
 
   return (
     <APIProvider apiKey={GMAPS_API_KEY}>
-      <SelamatkanTopbar totalAktif={SURPLUS_ITEMS.length} onPosting={() => setModal(true)} />
+      <SelamatkanTopbar totalAktif={surplusItems.length} onPosting={() => setModal(true)} />
 
       {/* ↓ breakpoint notation diseragamkan ke explicit pixel, sama seperti LihatKulkas */}
       <div className="px-7 pt-6 pb-10 flex flex-col gap-5 max-[640px]:px-0 max-[640px]:pt-0 max-[640px]:pb-8 max-[640px]:gap-4">
@@ -75,7 +116,7 @@ export default function Selamatkan() {
           <div>
             <h1 className="text-xl font-bold text-white leading-snug">Selamatkan!</h1>
             <p className="mt-1 text-compact-xs text-white/35">
-              {SURPLUS_ITEMS.length} surplus aktif di sekitarmu
+              {surplusItems.length} surplus aktif di sekitarmu
             </p>
           </div>
           <button
