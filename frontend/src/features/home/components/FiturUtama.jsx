@@ -75,18 +75,15 @@ export default function FiturUtama() {
           style={{ maxWidth: '52ch' }}
         >
           <span
-            className="inline-flex items-center w-fit border rounded-full font-semibold"
-            style={{
-              padding: 'var(--space-1-5) var(--space-5)',
-              borderColor: 'var(--color-forest-200)',
-              color: 'var(--color-forest-600)',
-              backgroundColor: 'var(--color-forest-50)',
-              fontSize: 'var(--text-fluid-xs)',
-              letterSpacing: 'var(--tracking-wide)',
-            }}
-          >
-            Fitur Utama
-          </span>
+                className="inline-flex items-center w-fit font-bold uppercase"
+                style={{
+                    color: 'var(--color-tertiary-600)',
+                    fontSize: 'var(--text-fluid-xs)',
+                    letterSpacing: '0.25em',
+                }}
+            >
+                Fitur Utama
+            </span>
 
           <h2
             className="font-extrabold leading-tight m-0"
@@ -109,7 +106,7 @@ export default function FiturUtama() {
               lineHeight: 'var(--leading-relaxed)',
             }}
           >
-            Dari pantau kulkas sampai bagikan surplus — SayurKita dirancang agar menyelamatkan pangan terasa mudah dan bermakna.
+            Dari pantau kulkas sampai bagikan surplus, SayurKita dirancang agar menyelamatkan pangan terasa mudah dan bermakna.
           </p>
         </div>
 

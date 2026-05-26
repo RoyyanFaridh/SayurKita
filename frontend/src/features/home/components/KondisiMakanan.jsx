@@ -1,19 +1,17 @@
-import { Leaf, Clock, AlertTriangle } from 'lucide-react';
+import { Leaf, Clock, AlertTriangle, XCircle } from 'lucide-react';
 
 const CONDITIONS = [
   {
     accent: '#2A5C40',
-    indicatorColor: '#657F6D',
+    indicatorColor: '#2A5C40',
     tagBg: '#F6FBF8',
-    tagColor: '#657F6D',
+    tagColor: '#2A5C40',
     icon: Leaf,
     iconColor: '#2A5C40',
-    status: 'Segar',
+    status: 'Masih Segar',
     tag: 'Aman dikonsumsi',
-    title: 'Bahan dalam kondisi baik',
-    description:
-      'Bahan makananmu masih dalam kondisi prima. Simpan dengan benar agar tetap segar lebih lama.',
-    days: 'lebih dari 5 hari',
+    description: 'Bahan makananmu masih dalam kondisi prima. Simpan dengan benar agar tetap segar lebih lama.',
+    days: '> 5 hari',
     tips: [
       'Simpan di bagian paling dingin kulkas',
       'Jauhkan dari bahan berbau tajam',
@@ -29,14 +27,12 @@ const CONDITIONS = [
     iconColor: '#b07d12',
     status: 'Segera Gunakan',
     tag: 'Hampir kedaluwarsa',
-    title: 'Bahan mendekati batas waktu',
-    description:
-      'Beberapa bahan mulai mendekati kedaluwarsa. Prioritaskan penggunaan atau segera bagikan ke sekitar.',
-    days: '1–2 hari lagi',
+    description: 'Prioritaskan penggunaan atau segera bagikan ke sekitar sebelum terlambat.',
+    days: '2–4 hari',
     tips: [
-      'Masak hari ini atau besok',
+      'Masak dalam 1–2 hari ke depan',
       'Bagikan ke tetangga jika tidak terpakai',
-      'Cek saran resep dari SayurKita',
+      'Cek saran resep darurat SayurKita',
     ],
   },
   {
@@ -47,15 +43,30 @@ const CONDITIONS = [
     icon: AlertTriangle,
     iconColor: '#C4622D',
     status: 'Perlu Tindakan',
-    tag: 'Jangan dibuang dulu',
-    title: 'Bahan perlu segera ditangani',
-    description:
-      'Bahan ini sudah melewati batas optimal. Cek kondisi fisik, masih bisa diolah atau donasikan sekarang.',
-    days: 'Hari ini',
+    tag: 'Hari ini / besok',
+    description: 'Sudah sangat mendekati kedaluwarsa. Masak sekarang atau donasikan hari ini.',
+    days: '0–1 hari',
     tips: [
-      'Periksa kondisi fisik bahan',
-      'Olah menjadi kompos jika sudah rusak',
+      'Masak atau olah hari ini juga',
       'Donasikan sebelum tidak layak',
+      'Hubungi penerima terdekat via SayurKita',
+    ],
+  },
+  {
+    accent: '#8B2020',
+    indicatorColor: '#B91C1C',
+    tagBg: '#FEF2F2',
+    tagColor: '#B91C1C',
+    icon: XCircle,
+    iconColor: '#B91C1C',
+    status: 'Kadaluwarsa',
+    tag: 'Sudah melewati batas',
+    description: 'Periksa kondisi fisik dengan teliti. Jangan dikonsumsi jika ada tanda kerusakan.',
+    days: 'Lewat batas',
+    tips: [
+      'Periksa kondisi fisik secara seksama',
+      'Olah menjadi kompos jika sudah rusak',
+      'Jangan konsumsi tanpa pemeriksaan',
     ],
   },
 ];
@@ -68,6 +79,25 @@ export default function KondisiMakanan() {
         paddingBlock: 'clamp(4rem, 8vw, 7rem)',
       }}
     >
+      <style>{`
+        .kondisi-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1.25rem;
+        }
+        @media (max-width: 900px) {
+          .kondisi-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 540px) {
+          .kondisi-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+        }
+      `}</style>
+
       <div
         className="mx-auto"
         style={{
@@ -81,18 +111,15 @@ export default function KondisiMakanan() {
           style={{ maxWidth: '52ch' }}
         >
           <span
-            className="inline-flex items-center w-fit border rounded-full font-semibold"
-            style={{
-              padding: 'var(--space-1-5) var(--space-5)',
-              borderColor: 'var(--color-forest-200)',
-              color: 'var(--color-forest-600)',
-              backgroundColor: 'var(--color-forest-50)',
-              fontSize: 'var(--text-fluid-xs)',
-              letterSpacing: 'var(--tracking-wide)',
-            }}
-          >
-            Kondisi Makanan
-          </span>
+                className="inline-flex items-center w-fit font-bold uppercase"
+                style={{
+                    color: 'var(--color-tertiary-600)',
+                    fontSize: 'var(--text-fluid-xs)',
+                    letterSpacing: '0.25em',
+                }}
+            >
+                Kondisi Makanan
+            </span>
 
           <h2
             className="font-extrabold leading-tight m-0"
@@ -115,12 +142,12 @@ export default function KondisiMakanan() {
               lineHeight: 'var(--leading-relaxed)',
             }}
           >
-            SayurKita membantu kamu memantau kondisi setiap bahan makanan, dari yang masih segar hingga yang perlu segera ditangani.
+            SayurKita membantu kamu memantau kondisi setiap bahan makanan — dari yang masih segar hingga yang perlu segera ditangani.
           </p>
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-3 gap-6 max-[900px]:grid-cols-1 max-[900px]:gap-5">
+        <div className="kondisi-grid">
           {CONDITIONS.map((c, i) => {
             const Icon = c.icon;
             return (
@@ -135,46 +162,30 @@ export default function KondisiMakanan() {
                   overflow: 'hidden',
                 }}
               >
-                {/* Top accent bar */}
                 <div style={{ height: '4px', backgroundColor: c.accent }} />
 
                 <div
-                  className="flex flex-col gap-5"
-                  style={{ padding: 'clamp(1.5rem, 2.5vw, 2rem)' }}
+                  className="flex flex-col gap-4"
+                  style={{ padding: 'clamp(1.25rem, 1.5vw, 1.5rem)', flex: 1 }}
                 >
-                  {/* Status row */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex items-center justify-center rounded-xl"
-                        style={{
-                          width: '2.75rem',
-                          height: '2.75rem',
-                          backgroundColor: c.tagBg,
-                          border: `1px solid ${c.accent}40`,
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Icon size={18} style={{ color: c.iconColor }} />
-                      </div>
-                      <span
-                        className="font-bold"
-                        style={{
-                          fontFamily: 'var(--font-display)',
-                          fontSize: 'clamp(1rem, 1.3vw, 1.125rem)',
-                          color: 'var(--text-primary)',
-                        }}
-                      >
-                        {c.status}
-                      </span>
+                  <div className="flex items-start justify-between gap-2">
+                    <div
+                      className="flex items-center justify-center rounded-xl"
+                      style={{
+                        width: '2.5rem',
+                        height: '2.5rem',
+                        minWidth: '2.5rem',
+                        backgroundColor: c.tagBg,
+                        border: `1px solid ${c.accent}40`,
+                      }}
+                    >
+                      <Icon size={16} style={{ color: c.iconColor }} />
                     </div>
-
-                    {/* Circle indicator */}
                     <div className="flex items-center gap-1.5">
                       <span
                         style={{
-                          width: '8px',
-                          height: '8px',
+                          width: '7px',
+                          height: '7px',
                           borderRadius: '50%',
                           backgroundColor: c.indicatorColor,
                           flexShrink: 0,
@@ -184,7 +195,7 @@ export default function KondisiMakanan() {
                       <span
                         className="font-semibold"
                         style={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.7rem',
                           color: c.indicatorColor,
                           whiteSpace: 'nowrap',
                         }}
@@ -194,51 +205,51 @@ export default function KondisiMakanan() {
                     </div>
                   </div>
 
-                  {/* Title + desc */}
-                  <div className="flex flex-col gap-2">
-                    <h3
-                      className="m-0 font-bold"
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: 'clamp(1.05rem, 1.4vw, 1.25rem)',
-                        color: 'var(--text-primary)',
-                        letterSpacing: '-0.01em',
-                      }}
-                    >
-                      {c.title}
-                    </h3>
-                    <p
-                      className="m-0"
-                      style={{
-                        fontSize: 'clamp(0.8125rem, 1vw, 0.9375rem)',
-                        color: 'var(--text-secondary)',
-                        lineHeight: '1.65',
-                      }}
-                    >
-                      {c.description}
-                    </p>
-                  </div>
+                  <span
+                    className="font-bold"
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      fontSize: 'clamp(0.95rem, 1.2vw, 1.0625rem)',
+                      color: 'var(--text-primary)',
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {c.status}
+                  </span>
 
-                  {/* Tips */}
-                  <ul className="m-0 flex flex-col gap-2" style={{ paddingLeft: 0, listStyle: 'none' }}>
+                  <p
+                    className="m-0"
+                    style={{
+                      fontSize: 'clamp(0.775rem, 0.9vw, 0.8125rem)',
+                      color: 'var(--text-secondary)',
+                      lineHeight: '1.6',
+                    }}
+                  >
+                    {c.description}
+                  </p>
+
+                  <ul
+                    className="m-0 flex flex-col gap-1.5"
+                    style={{ paddingLeft: 0, listStyle: 'none' }}
+                  >
                     {c.tips.map((tip, j) => (
                       <li
                         key={j}
                         className="flex items-start gap-2"
                         style={{
-                          fontSize: 'clamp(0.75rem, 0.9vw, 0.875rem)',
+                          fontSize: 'clamp(0.7rem, 0.8vw, 0.75rem)',
                           color: 'var(--text-secondary)',
                           lineHeight: '1.5',
                         }}
                       >
                         <span
                           style={{
-                            width: '1rem',
-                            height: '1rem',
-                            minWidth: '1rem',
+                            width: '0.875rem',
+                            height: '0.875rem',
+                            minWidth: '0.875rem',
                             borderRadius: '50%',
                             backgroundColor: c.tagBg,
-                            border: `1px solid ${c.accent}60`,
+                            border: `1px solid ${c.accent}50`,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -246,8 +257,8 @@ export default function KondisiMakanan() {
                             flexShrink: 0,
                           }}
                         >
-                          <svg width="7" height="6" viewBox="0 0 7 6" fill="none">
-                            <path d="M1 3L2.5 4.5L6 1" stroke={c.iconColor} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                          <svg width="6" height="5" viewBox="0 0 6 5" fill="none">
+                            <path d="M0.5 2.5L2 4L5.5 0.5" stroke={c.iconColor} strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </span>
                         {tip}
@@ -255,19 +266,18 @@ export default function KondisiMakanan() {
                     ))}
                   </ul>
 
-                  {/* Tag pill */}
                   <div
-                    className="inline-flex items-center gap-2 w-fit rounded-full"
+                    className="inline-flex items-center gap-1.5 w-fit rounded-full"
                     style={{
                       backgroundColor: c.tagBg,
-                      padding: '0.4rem 0.875rem',
+                      padding: '0.35rem 0.75rem',
                       marginTop: 'auto',
                     }}
                   >
                     <span
                       style={{
-                        width: '6px',
-                        height: '6px',
+                        width: '5px',
+                        height: '5px',
                         borderRadius: '50%',
                         backgroundColor: c.indicatorColor,
                         flexShrink: 0,
@@ -276,7 +286,7 @@ export default function KondisiMakanan() {
                     <span
                       className="font-medium"
                       style={{
-                        fontSize: '0.75rem',
+                        fontSize: '0.7rem',
                         color: c.tagColor,
                         whiteSpace: 'nowrap',
                       }}
