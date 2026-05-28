@@ -51,7 +51,6 @@ export default function SelamatkanStatsBar() {
             boxShadow:    'var(--shadow-xs)',
           }}
         >
-          {/* Icon + label — sama persis dengan KulkasSummaryStrip */}
           <div className="flex items-center gap-1.5">
             <div
               className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
@@ -64,7 +63,6 @@ export default function SelamatkanStatsBar() {
             </p>
           </div>
 
-          {/* Angka — tanpa suffix satuan karena value sudah include unit (e.g. "5 km") */}
           <p className="text-2xl font-bold m-0 leading-none" style={{ color: 'var(--text-primary)' }}>
             {value}
           </p>

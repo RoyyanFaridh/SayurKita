@@ -5,17 +5,56 @@ import AuthInput from '../components/AuthInput';
 import GoogleIcon from '../components/GoogleIcon';
 import { API_AUTH } from '../../../config/api';
 
+// FIX 4 & 8: Komponen toast sederhana menggantikan alert() native.
+// Bisa diganti dengan library toast (react-hot-toast, sonner, dll) kapan saja
+// tanpa mengubah struktur halaman ini.
+function Toast({ message, type = 'info', onDismiss }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 4000);
+    return () => clearTimeout(t);
+  }, [onDismiss]);
+
+  const styles = {
+    info:    'bg-green-50 border-green-200 text-green-800',
+    error:   'bg-red-50 border-red-200 text-red-700',
+  };
+
+  return (
+    <div
+      role="alert"
+      aria-live="assertive"
+      className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium shadow-md max-w-sm w-[calc(100%-2rem)] ${styles[type]}`}
+    >
+      <span className="flex-1">{message}</span>
+      <button
+        onClick={onDismiss}
+        aria-label="Tutup notifikasi"
+        className="text-current opacity-50 hover:opacity-100 transition-opacity text-base leading-none"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [remember, setRemember]       = useState(false);
-  const [identifier, setIdentifier]   = useState('');
-  const [password, setPassword]       = useState('');
-  const [submitting, setSubmitting]   = useState(false);
 
+  const [remember, setRemember]     = useState(false);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword]     = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  // FIX 4: toast state menggantikan alert()
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = 'info') => setToast({ message, type });
+  const dismissToast = () => setToast(null);
+
+  // FIX 8: useEffect pakai toast, bukan alert()
   useEffect(() => {
     if (searchParams.get('registered') === '1') {
-      alert('Registrasi berhasil. Silakan masuk dengan email atau nomor HP dan password Anda.');
+      showToast('Registrasi berhasil. Silakan masuk dengan email atau nomor HP dan password Anda.', 'info');
     }
   }, [searchParams]);
 
@@ -26,50 +65,67 @@ export default function Login() {
       const res = await fetch(`${API_AUTH}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password }),
+        // FIX 5: remember sekarang dikirim ke API
+        body: JSON.stringify({ identifier, password, remember }),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.token) {
-        localStorage.setItem('token', data.token);
+        // FIX 5: simpan token sesuai pilihan remember
+        const storage = remember ? localStorage : sessionStorage;
+        storage.setItem('token', data.token);
         navigate('/dashboard');
       } else {
-        alert(data.message || 'Login gagal');
+        showToast(data.message || 'Login gagal. Periksa email/nomor HP dan password kamu.', 'error');
       }
     } catch {
-      alert('Tidak dapat menghubungi server. Pastikan backend berjalan.');
+      showToast('Tidak dapat menghubungi server. Pastikan koneksi internetmu aktif.', 'error');
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <AuthLayout
-      eyebrow="Selamat datang kembali"
-      title={
-        <>
-          Lanjutkan<br />aksi{' '}
-          <span className="text-(--accent-primary) italic">baikmu</span>
-        </>
-      }
-      subtitle="Masuk dan lihat surplus terbaru di sekitarmu"
-    >
-      <div className="w-full max-w-120 flex flex-col gap-6">
+    <>
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onDismiss={dismissToast} />
+      )}
 
+      {/*
+        FIX 6: Pakai prop title dan highlight sebagaimana API AuthLayout dirancang.
+        Hapus JSX arbitrary di dalam title prop.
+      */}
+      <AuthLayout
+        eyebrow="Selamat datang kembali"
+        title="Lanjutkan aksi"
+        highlight="baikmu"
+        subtitle="Masuk dan lihat surplus terbaru di sekitarmu"
+      >
+        {/*
+          FIX 1: Hapus wrapper <div max-w-120> — AuthLayout sudah menangani ini.
+          Children langsung dimulai dari konten, bukan wrapper ulang.
+        */}
+
+        {/* Heading section */}
         <div className="flex flex-col gap-1">
-          <h2
-            className="font-bold m-0"
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2rem)', color: 'var(--text-primary)', letterSpacing: '-0.02em' }}
-          >
+          {/*
+            FIX 2: Ganti inline style dengan Tailwind class yang konsisten
+            dengan gaya di AuthLayout dan komponen lain.
+          */}
+          <h2 className="font-display font-bold text-[clamp(1.375rem,2.5vw,1.75rem)] tracking-tight text-(--text-primary) m-0">
             Masuk ke akun
           </h2>
-          <p className="text-sm m-0" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-sm m-0 text-(--text-secondary)">
             Belum punya akun?{' '}
-            <a href="/register" className="font-semibold no-underline hover:underline" style={{ color: 'var(--accent-primary)' }}>
+            <a
+              href="/register"
+              className="font-semibold no-underline hover:underline text-(--accent-primary)"
+            >
               Daftar
             </a>
           </p>
         </div>
 
+        {/* Form */}
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
 
           <AuthInput
@@ -91,47 +147,52 @@ export default function Login() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             rightLabel={
-              <a href="/forgot-password" className="no-underline hover:underline hover:text-(--accent-primary)">
+              <a
+                href="/forgot-password"
+                className="no-underline hover:underline hover:text-(--accent-primary) text-(--text-secondary) text-sm"
+              >
                 Lupa password?
               </a>
             }
           />
 
+          {/* Checkbox remember */}
           <label className="flex items-center gap-3 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={remember}
               onChange={e => setRemember(e.target.checked)}
-              className="w-4.5 h-4.5 shrink-0 accent-primary-700 cursor-pointer"
+              className="w-4 h-4 shrink-0 cursor-pointer accent-(--accent-primary)"
+              // FIX 7: accent-[var(--accent-primary)] = valid Tailwind arbitrary value
             />
-            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <span className="text-sm text-(--text-secondary)">
               Ingat saya di perangkat ini
             </span>
           </label>
 
+          {/*
+            FIX 3: Hapus onMouseEnter/Leave untuk hover styling.
+            Gunakan Tailwind hover: arbitrary value.
+          */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full h-13 rounded-lg font-semibold text-base transition-[background-color,transform] duration-150 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: 'var(--color-primary-900)', color: '#ffffff', fontFamily: 'Poppins, sans-serif' }}
-            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-800)'}
-            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'var(--color-primary-900)'}
+            className="w-full h-13 rounded-xl font-semibold text-base text-white transition-[background-color,transform] duration-150 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed bg-primary-900 hover:bg-primary-800"
           >
             {submitting ? 'Memproses…' : 'Masuk'}
           </button>
 
+          {/* Divider */}
           <div className="flex items-center gap-3">
             <span className="flex-1 h-px bg-(--border-subtle)" />
             <span className="text-sm text-neutral-400 whitespace-nowrap">atau</span>
             <span className="flex-1 h-px bg-(--border-subtle)" />
           </div>
 
+          {/* Google button — FIX 3: sama, hapus onMouseEnter/Leave */}
           <button
             type="button"
-            className="w-full h-13 bg-white text-sm font-medium border-[1.5px] rounded-lg flex items-center justify-center gap-3 transition-[background-color,border-color] duration-150 hover:bg-neutral-50"
-            style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-primary)', fontFamily: 'Poppins, sans-serif' }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-strong)'}
-            onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-subtle)'}
+            className="w-full h-13 bg-white text-sm font-medium border-[1.5px] border-(--border-subtle) rounded-xl flex items-center justify-center gap-3 transition-[background-color,border-color] duration-150 hover:bg-neutral-50 hover:border-(--border-strong) text-(--text-primary)"
           >
             <GoogleIcon />
             Masuk dengan Google
@@ -139,15 +200,20 @@ export default function Login() {
 
         </form>
 
-        <p className="text-xs text-neutral-400 text-center leading-[1.6] m-0">
+        {/* Footer legal */}
+        <p className="text-xs text-neutral-400 text-center leading-relaxed m-0">
           Dengan masuk, kamu menyetujui{' '}
-          <a href="/syarat" className="font-semibold hover:underline" style={{ color: 'var(--accent-primary)' }}>Syarat & Ketentuan</a>
+          <a href="/syarat" className="font-semibold hover:underline text-(--accent-primary)">
+            Syarat & Ketentuan
+          </a>
           {' '}dan{' '}
-          <a href="/privasi" className="font-semibold hover:underline" style={{ color: 'var(--accent-primary)' }}>Kebijakan Privasi</a>
+          <a href="/privasi" className="font-semibold hover:underline text-(--accent-primary)">
+            Kebijakan Privasi
+          </a>
           {' '}kami
         </p>
 
-      </div>
-    </AuthLayout>
+      </AuthLayout>
+    </>
   );
 }

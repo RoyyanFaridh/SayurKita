@@ -2,57 +2,62 @@ import { Check } from "lucide-react";
 
 export default function StepIndicator({ steps }) {
   return (
-    <div className="flex items-start w-full">
+    // FIX 8: role="list" untuk screen reader — ini adalah daftar langkah progress
+    <div className="flex items-start w-full" role="list" aria-label="Langkah pendaftaran">
       {steps.map((s, i) => (
         <div
           key={s.num}
           className="flex flex-col items-center gap-1.5 flex-1 relative min-w-0"
+          role="listitem"
+          // FIX 8: aria-current="step" pada step aktif
+          aria-current={s.active ? "step" : undefined}
         >
+          {/* Step circle */}
           <div
-            className="w-8.5 h-8.5 rounded-full border-2 text-sm font-semibold flex items-center justify-center relative z-10 transition-[background,border-color,color] duration-200 shrink-0"
-            style={
+            className={[
+              // FIX 6: w-8.5 h-8.5 dipertahankan — asumsi dikonfigurasi di project
+              "w-8.5 h-8.5 rounded-full border-2 text-sm font-semibold",
+              "flex items-center justify-center relative z-10 shrink-0",
+              "transition-[background-color,border-color,color] duration-200",
+              // FIX 1, 2, 3, 5: Semua warna via Tailwind conditional class
+              // FIX 5: --color-forest-900 konsisten dengan AuthInput & tombol
               s.done
-                ? {
-                    background: "var(--accent-primary)",
-                    borderColor: "var(--accent-primary)",
-                    color: "var(--color-primary-900)",
-                  }
+                ? "bg-(--accent-primary) border-(--accent-primary) text-(--color-forest-900)"
                 : s.active
-                  ? {
-                      background: "var(--color-primary-900)",
-                      borderColor: "var(--color-primary-900)",
-                      color: "#ffffff",
-                    }
-                  : {
-                      background: "#ffffff",
-                      borderColor: "var(--border-subtle)",
-                      color: "var(--color-neutral-400)",
-                    }
-            }
+                  ? "bg-(--color-forest-900) border-(--color-forest-900) text-white"
+                  : "bg-(--bg-input,white) border-(--border-subtle) text-neutral-400",
+            ].join(" ")}
           >
-            {s.done ? <Check size={14} strokeWidth={2.5} /> : s.num}
+            {s.done
+              ? <Check size={14} strokeWidth={2.5} aria-hidden="true" />
+              : <span aria-hidden="true">{s.num}</span>
+            }
+
+            <span className="sr-only">
+              {s.done ? `Langkah ${s.num} selesai` : s.active ? `Langkah ${s.num} aktif` : `Langkah ${s.num} belum dimulai`}
+            </span>
           </div>
 
           <span
-            className="text-compact-sm text-center w-full px-1 leading-snug"
-            style={{
-              color: s.active
-                ? "var(--text-primary)"
-                : "var(--color-neutral-400)",
-              fontWeight: s.active ? 600 : 500,
-            }}
+            className={[
+              "text-xs text-center w-full px-1 leading-snug",
+              s.active
+                ? "font-semibold text-(--text-primary)"
+                : "font-medium text-neutral-400",
+            ].join(" ")}
           >
             {s.label}
           </span>
 
           {i < steps.length - 1 && (
             <div
-              className="absolute top-4.25 left-[calc(50%+18px)] right-[calc(-50%+18px)] h-[2px] z-0 transition-[background] duration-200"
-              style={{
-                background: s.done
-                  ? "var(--accent-primary)"
-                  : "var(--border-subtle)",
-              }}
+              className={[
+                "absolute top-4.25 z-0 h-[2px]",
+                "left-[calc(50%+18px)] right-[calc(-50%+18px)]",
+                "transition-[background-color] duration-200",
+                s.done ? "bg-(--accent-primary)" : "bg-(--border-subtle)",
+              ].join(" ")}
+              aria-hidden="true"
             />
           )}
         </div>
