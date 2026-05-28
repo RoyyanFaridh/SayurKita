@@ -26,7 +26,7 @@ app.add_middleware(
 class RekomendasiRequest(BaseModel):
     ingredients: List[str]
     expired: Optional[List[int]] = None
-    top_k: int = 5
+    top_k: int = 10
 
 class ResepResponse(BaseModel):
     id: int
