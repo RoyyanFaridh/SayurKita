@@ -3,7 +3,7 @@ import { X, Trash2 } from 'lucide-react'
 import { API_ORIGIN } from '../../../config/api'
 import KulkasForm from './KulkasForm'
 
-export default function KulkasModal({ item, onClose, onSave }) {
+export default function KulkasModal({ item, preFillNama, onClose, onSave }) {
   const isEdit = !!item
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -113,7 +113,7 @@ export default function KulkasModal({ item, onClose, onSave }) {
           </div>
         )}
 
-        <KulkasForm ref={formRef} item={item} onSave={handleSave} isLoading={isLoading} />
+        <KulkasForm ref={formRef} item={item} preFillNama={preFillNama} onSave={handleSave} isLoading={isLoading} />
 
         {/* Footer */}
         <div className="flex items-center gap-2 px-5 py-4 border-t border-(--border-subtle)">

@@ -16,10 +16,13 @@ model User {
   phone      String   @unique
   password   String
   points     Int      @default(0)
-  totalCarbonSaved Float    @default(0.0)
   isVerified Boolean  @default(false)
   otpCode    String?
   otpExpires DateTime?
+  streakCount    Int       @default(0)
+  lastActiveDate DateTime?
+  totalKarbonAkumulasi Float @default(0)
+  poinKarbonAwarded    Int   @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -27,6 +30,8 @@ model User {
   surplusPosts SurplusPost[] @relation("PostedSurplus")
   receivedSurplus SurplusPost[] @relation("ReceivedSurplus")
   chatMessages  ChatMessage[]
+  cookingLogs CookingLog[]
+  poinLogs     PoinLog[]
 }
 
 model Ingredient {
@@ -45,6 +50,7 @@ model Ingredient {
   @@index([userId])
 }
 
+<<<<<<< HEAD
 model SurplusPost {
   id          Int      @id @default(autoincrement())
   userId      String
@@ -65,10 +71,22 @@ model SurplusPost {
   expiredReceivers String[] @default([])
   createdAt   DateTime @default(now())
   messages    ChatMessage[]
+=======
+model CookingLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resepNama   String
+  resepId     String?
+  bahanUsed   Json     // array of { nama, karbon_co2e }
+  totalKarbon Float
+  createdAt   DateTime @default(now())
+>>>>>>> 36e556688571c597367cd122c7af513cac69a09c
 
   @@index([userId])
 }
 
+<<<<<<< HEAD
 model ChatMessage {
   id            Int         @id @default(autoincrement())
   surplusPostId Int
@@ -81,3 +99,22 @@ model ChatMessage {
   @@index([surplusPostId])
   @@index([senderId])
 }
+=======
+model PoinLog {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  delta      Int         
+  source     PoinSource
+  note       String?
+  refId      String?     
+  createdAt  DateTime    @default(now())
+
+  @@index([userId])
+}
+
+enum PoinSource {
+  KARBON
+  STREAK
+}
+>>>>>>> 36e556688571c597367cd122c7af513cac69a09c

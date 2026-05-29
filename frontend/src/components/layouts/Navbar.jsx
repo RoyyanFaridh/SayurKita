@@ -34,7 +34,7 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-[200] bg-white border-b transition-shadow duration-200 ${scrolled ? 'shadow-md' : 'shadow-none'}`}
+        className={`fixed top-0 left-0 right-0 z-200 bg-white border-b transition-shadow duration-200 ${scrolled ? 'shadow-md' : 'shadow-none'}`}
         style={{ borderColor: 'var(--border-subtle)' }}
       >
         <div
@@ -95,18 +95,18 @@ export default function Navbar() {
             aria-label={menuOpen ? 'Tutup menu' : 'Buka menu'}
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
-            className="flex md:hidden h-11 w-11 flex-col items-center justify-center gap-[5px] rounded-lg relative z-[201]"
+            className="flex md:hidden h-11 w-11 flex-col items-center justify-center gap-1.25 rounded-lg relative z-201"
           >
-            <span className={`block h-[2px] w-[22px] rounded transition-all duration-300 ${menuOpen ? 'translate-y-[7px] rotate-45' : ''}`} style={{ backgroundColor: 'var(--text-primary)' }} />
-            <span className={`block h-[2px] w-[22px] rounded transition-all duration-300 ${menuOpen ? 'opacity-0 scale-x-0' : ''}`} style={{ backgroundColor: 'var(--text-primary)' }} />
-            <span className={`block h-[2px] w-[22px] rounded transition-all duration-300 ${menuOpen ? '-translate-y-[7px] -rotate-45' : ''}`} style={{ backgroundColor: 'var(--text-primary)' }} />
+            <span className={`block h-[2px] w-5.5 rounded transition-all duration-300 ${menuOpen ? 'translate-y-1.75 rotate-45' : ''}`} style={{ backgroundColor: 'var(--text-primary)' }} />
+            <span className={`block h-[2px] w-5.5 rounded transition-all duration-300 ${menuOpen ? 'opacity-0 scale-x-0' : ''}`} style={{ backgroundColor: 'var(--text-primary)' }} />
+            <span className={`block h-[2px] w-5.5 rounded transition-all duration-300 ${menuOpen ? '-translate-y-1.75 -rotate-45' : ''}`} style={{ backgroundColor: 'var(--text-primary)' }} />
           </button>
         </div>
       </nav>
 
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[198] md:hidden transition-all duration-300"
+        className="fixed inset-0 z-198 md:hidden transition-all duration-300"
         style={{
           backgroundColor: 'rgba(0,0,0,0.35)',
           backdropFilter: 'blur(4px)',
@@ -118,7 +118,7 @@ export default function Navbar() {
 
       <div
         id="mobile-menu"
-        className="fixed top-0 right-0 bottom-0 z-[199] md:hidden flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+        className="fixed top-0 right-0 bottom-0 z-199 md:hidden flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
         style={{
           width: 'min(320px, 85vw)',
           backgroundColor: 'var(--bg-base)',

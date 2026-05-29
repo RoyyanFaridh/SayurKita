@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { ArrowRight, Sparkles, AlertCircle, Loader2 } from 'lucide-react'
 import { API_ORIGIN } from '../../../config/api'
-import ResepModal from '../../dashboard/components/ResepModal'
 import { formatRecipe } from '../../../utils/resepUtils'
 
-export default function KulkasResepAI({ ingredients = [] }) {
+
+export default function KulkasResepAI({ ingredients = [], onSelectResep }) {
   const [recommendations, setRecommendations] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [hasRequested, setHasRequested] = useState(false)
-  const [selected, setSelected] = useState(null)
 
   async function fetchRecommendations() {
     try {
@@ -33,7 +32,7 @@ export default function KulkasResepAI({ ingredients = [] }) {
       else if (result.data && Array.isArray(result.data)) rawRecipes = result.data
       else if (result.data && Array.isArray(result.data.recipes)) rawRecipes = result.data.recipes
       else if (Array.isArray(result.recipes)) rawRecipes = result.recipes
-      const formatted = rawRecipes.slice(0, 5).map(formatRecipe)
+      const formatted = rawRecipes.slice(0, 10).map(formatRecipe)
       setRecommendations(formatted)
     } catch (err) {
       setError(err.message || 'Terjadi kesalahan saat memuat rekomendasi resep')
@@ -147,42 +146,38 @@ export default function KulkasResepAI({ ingredients = [] }) {
   }
 
   return (
-    <>
-      <ResepModal recipe={selected} onClose={() => setSelected(null)} />
-
-      <div className={cardClass}>
-        <Header />
-        <ul className="flex w-full min-w-0 flex-col gap-1 overflow-hidden">
-          {recommendations.map(r => (
-            <li
-              key={r.id}
-              onClick={() => setSelected(r)}
-              className={`relative flex w-full min-w-0 overflow-hidden cursor-pointer items-center justify-between gap-2.5 rounded-md px-3 py-2.5 transition-colors duration-150 hover:bg-(--bg-alt) ${
-                r.featured
-                  ? 'bg-(--bg-alt) before:absolute before:bottom-[6px] before:left-0 before:top-[6px] before:w-0.75 before:rounded-full before:bg-secondary-500'
-                  : ''
-              }`}
-            >
-              <div className="min-w-0 flex-1 overflow-hidden">
-                <p className={`flex min-w-0 items-center gap-2 text-compact-lg ${r.featured ? 'font-bold' : 'font-medium'}`} style={{ color: 'var(--text-primary)' }}>
-                  <span className="truncate capitalize">{r.name}</span>
-                  {r.match_score != null && (
-                    <span className="shrink-0 text-compact-xs px-1.5 py-0.5 rounded-full font-medium bg-(--bg-secondary-subtle)" style={{ color: 'var(--color-secondary-600)', border: '1px solid var(--color-secondary-100)' }}>
-                      {(r.match_score * 100).toFixed(0)}% Match
-                    </span>
-                  )}
-                </p>
-                <p className="mt-0.5 w-full truncate text-compact-sm" style={{ color: 'var(--text-secondary)' }}>
-                  {r.ingredients}
-                </p>
-              </div>
-              <span className="shrink-0" style={{ color: r.featured ? 'var(--text-brand)' : 'var(--text-muted)' }}>
-                <ArrowRight size={15} strokeWidth={2} />
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </>
+    <div className={cardClass}>
+      <Header />
+      <ul className="flex w-full min-w-0 flex-col gap-1 overflow-hidden">
+        {recommendations.map(r => (
+          <li
+            key={r.id}
+            onClick={() => onSelectResep?.(r)}
+            className={`relative flex w-full min-w-0 overflow-hidden cursor-pointer items-center justify-between gap-2.5 rounded-md px-3 py-2.5 transition-colors duration-150 hover:bg-(--bg-alt) ${
+              r.featured
+                ? 'bg-(--bg-alt) before:absolute before:bottom-[6px] before:left-0 before:top-[6px] before:w-0.75 before:rounded-full before:bg-secondary-500'
+                : ''
+            }`}
+          >
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <p className={`flex min-w-0 items-center gap-2 text-compact-lg ${r.featured ? 'font-bold' : 'font-medium'}`} style={{ color: 'var(--text-primary)' }}>
+                <span className="truncate capitalize">{r.name}</span>
+                {r.match_score != null && (
+                  <span className="shrink-0 text-compact-xs px-1.5 py-0.5 rounded-full font-medium bg-(--bg-secondary-subtle)" style={{ color: 'var(--color-secondary-600)', border: '1px solid var(--color-secondary-100)' }}>
+                    {(r.match_score * 100).toFixed(0)}% Match
+                  </span>
+                )}
+              </p>
+              <p className="mt-0.5 w-full truncate text-compact-sm" style={{ color: 'var(--text-secondary)' }}>
+                {r.ingredients}
+              </p>
+            </div>
+            <span className="shrink-0" style={{ color: r.featured ? 'var(--text-brand)' : 'var(--text-muted)' }}>
+              <ArrowRight size={15} strokeWidth={2} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

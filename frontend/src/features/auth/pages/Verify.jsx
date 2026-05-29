@@ -1,34 +1,67 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Check } from 'lucide-react';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import StepIndicator from '../components/StepIndicator';
 import { API_AUTH } from '../../../config/api';
 
-const OTP_LENGTH = 6;
+const OTP_LENGTH  = 6;
 const TIMER_START = 60;
 
-const steps = [
-  { num: 1, label: 'Daftar diri',    done: true, active: false  },
-  { num: 2, label: 'Verifikasi HP',  done: false, active: true },
-  { num: 3, label: 'Selesai',        done: false, active: false },
-];
+function buildSteps(activeNum) {
+  return [
+    { num: 1, label: 'Daftar diri',   done: activeNum > 1, active: activeNum === 1 },
+    { num: 2, label: 'Verifikasi HP', done: activeNum > 2, active: activeNum === 2 },
+    { num: 3, label: 'Selesai',       done: activeNum > 3, active: activeNum === 3 },
+  ];
+}
+
+// FIX 1: Toast komponen — konsisten dengan Login & Register
+function Toast({ message, type = 'error', onDismiss }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 4000);
+    return () => clearTimeout(t);
+  }, [onDismiss]);
+
+  const styles = {
+    info:  'bg-green-50 border-green-200 text-green-800',
+    error: 'bg-red-50 border-red-200 text-red-700',
+  };
+
+  return (
+    <div
+      role="alert"
+      aria-live="assertive"
+      className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium shadow-md max-w-sm w-[calc(100%-2rem)] ${styles[type]}`}
+    >
+      <span className="flex-1">{message}</span>
+      <button
+        onClick={onDismiss}
+        aria-label="Tutup notifikasi"
+        className="text-current opacity-50 hover:opacity-100 transition-opacity text-base leading-none"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
 
 export default function Verify() {
-  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(''));
-  const [timer, setTimer] = useState(TIMER_START);
+  const [otp, setOtp]           = useState(Array(OTP_LENGTH).fill(''));
+  const [timer, setTimer]       = useState(TIMER_START);
   const [canResend, setCanResend] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]   = useState(false);
   const [resending, setResending] = useState(false);
-  const inputRefs = useRef([]);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const phone = searchParams.get('phone') ?? '';
+  const [toast, setToast]       = useState(null);
+  const inputRefs               = useRef([]);
+  const navigate                = useNavigate();
+  const [searchParams]          = useSearchParams();
+  const phone                   = searchParams.get('phone') ?? '';
+
+  const showToast = (message, type = 'error') => setToast({ message, type });
+  const dismissToast = () => setToast(null);
 
   useEffect(() => {
-    if (!phone.trim()) {
-      navigate('/register', { replace: true });
-    }
+    if (!phone.trim()) navigate('/register', { replace: true });
   }, [phone, navigate]);
 
   useEffect(() => {
@@ -37,8 +70,9 @@ export default function Verify() {
     return () => clearTimeout(id);
   }, [timer]);
 
-  const pad = n => String(n).padStart(2, '0');
+  const pad       = n => String(n).padStart(2, '0');
   const formatted = `${pad(Math.floor(timer / 60))}:${pad(timer % 60)}`;
+  const isFilled  = otp.every(d => d !== '');
 
   const handleChange = (val, idx) => {
     if (!/^\d?$/.test(val)) return;
@@ -69,33 +103,33 @@ export default function Verify() {
     if (!canResend || !phone.trim()) return;
     setResending(true);
     try {
-      const res = await fetch(`${API_AUTH}/resend-otp`, {
+      const res  = await fetch(`${API_AUTH}/resend-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        alert(data.message || 'Gagal mengirim ulang OTP');
+        showToast(data.message || 'Gagal mengirim ulang OTP');
         return;
       }
       setTimer(TIMER_START);
       setCanResend(false);
       setOtp(Array(OTP_LENGTH).fill(''));
       inputRefs.current[0]?.focus();
-      alert('OTP baru dikirim (cek juga console server untuk kode demo).');
+      showToast('OTP baru telah dikirim ke nomormu.', 'info');
     } catch {
-      alert('Tidak dapat menghubungi server.');
+      showToast('Tidak dapat menghubungi server. Pastikan koneksi internetmu aktif.');
     } finally {
       setResending(false);
     }
   };
 
   const handleVerify = async () => {
-    if (otp.join('').length < OTP_LENGTH) return;
+    if (!isFilled) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_AUTH}/verify-otp`, {
+      const res  = await fetch(`${API_AUTH}/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, otpCode: otp.join('') }),
@@ -104,97 +138,51 @@ export default function Verify() {
       if (res.ok) {
         navigate('/success');
       } else {
-        alert(data.message || 'Kode OTP salah');
+        showToast(data.message || 'Kode OTP salah. Coba lagi.');
       }
     } catch {
-      alert('Tidak dapat menghubungi server. Pastikan backend berjalan.');
+      showToast('Tidak dapat menghubungi server. Pastikan koneksi internetmu aktif.');
     } finally {
       setLoading(false);
     }
   };
 
-  const isFilled = otp.every(d => d !== '');
-
   return (
-    <AuthLayout
-      eyebrow="Bergabung Sekarang"
-      title={
-        <>
-          Mulai dari{' '}
-          <span className="text-(--accent-primary) italic block">dapurmu</span>
-        </>
-      }
-      subtitle="Daftar dua langkah saja. Akun langsung aktif tanpa proses approval dan tanpa biaya."
-    >
-      <div className="w-full max-w-130 flex flex-col gap-6 max-[640px]:gap-5">
+    <>
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onDismiss={dismissToast} />
+      )}
 
-        <div className="flex items-start">
-          {steps.map((s, i) => (
-            <div key={s.num} className="flex flex-col items-center gap-2 flex-1 relative">
-              <div
-                className="w-8.5 h-8.5 rounded-full border-2 text-sm font-semibold flex items-center justify-center relative z-10 transition-[background,border-color,color] duration-200"
-                style={
-                  s.done
-                    ? { background: 'var(--accent-primary)', borderColor: 'var(--accent-primary)', color: 'var(--color-forest-900)' }
-                    : s.active
-                    ? { background: 'var(--color-forest-900)', borderColor: 'var(--color-forest-900)', color: '#ffffff' }
-                    : { background: '#ffffff', borderColor: 'var(--border-subtle)', color: 'var(--color-neutral-400)' }
-                }
-              >
-                {s.done ? <Check size={14} strokeWidth={2.5} /> : s.num}
-              </div>
-
-              <span
-                className="text-compact-sm text-center whitespace-nowrap"
-                style={{ color: s.active ? 'var(--text-primary)' : 'var(--color-neutral-400)', fontWeight: s.active ? 600 : 500 }}
-              >
-                {s.label}
-              </span>
-
-              {i < steps.length - 1 && (
-                <div
-                  className="absolute top-4.25 left-[calc(50%+20px)] right-[calc(-50%+20px)] h-[2px] z-0"
-                  style={{ background: s.done ? 'var(--accent-primary)' : 'var(--border-subtle)' }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+      <AuthLayout
+        eyebrow="Bergabung sekarang"
+        title="Mulai dari"
+        highlight="dapurmu"
+        subtitle="Daftar dua langkah saja. Akun langsung aktif tanpa proses approval dan tanpa biaya."
+      >
+        <StepIndicator steps={buildSteps(2)} />
 
         <div className="flex flex-col gap-1">
-          <h2
-            className="font-bold m-0"
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em'
-            }}
-          >
+          <h2 className="font-display font-bold text-[clamp(1.375rem,2.5vw,1.75rem)] tracking-tight text-(--text-primary) m-0">
             Verifikasi Nomor HP
           </h2>
-          <p className="text-sm m-0 leading-normal" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-sm m-0 leading-normal text-(--text-secondary)">
             Masukkan 6 kode verifikasi yang dikirim ke nomormu.
           </p>
         </div>
 
-        <div className="flex items-center gap-4 px-5 py-4 border-[1.5px] rounded-lg"
-          style={{ background: 'var(--color-neutral-50)', borderColor: 'var(--border-subtle)' }}
-        >
-          <div className="w-11 h-11 rounded-[10px] flex items-center justify-center shrink-0"
-            style={{ background: 'var(--color-forest-900)', color: 'var(--accent-primary)' }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="flex items-center gap-4 px-5 py-4 border-[1.5px] rounded-xl bg-neutral-50 border-(--border-subtle)">
+          <div className="w-11 h-11 rounded-[10px] flex items-center justify-center shrink-0 bg-(--color-forest-900) text-(--accent-primary)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <rect x="5" y="2" width="14" height="20" rx="2" />
               <circle cx="12" cy="17" r="1" />
             </svg>
           </div>
 
           <div className="flex-1 flex flex-col gap-[2px]">
-            <span className="text-compact-sm font-medium tracking-[0.02em]" style={{ color: 'var(--text-secondary)' }}>
+            <span className="text-xs font-medium tracking-wide text-(--text-secondary)">
               Kode dikirim ke
             </span>
-            <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
+            <span className="text-base font-bold text-(--text-primary)">
               +62 {phone}
             </span>
           </div>
@@ -202,43 +190,38 @@ export default function Verify() {
           <button
             type="button"
             onClick={goBack}
-            className="text-sm font-semibold"
-            style={{ background: 'none', border: 'none', color: 'var(--accent-primary)' }}
+            aria-label="Ubah nomor HP"
+            className="text-sm font-semibold text-(--accent-primary) hover:underline bg-transparent border-none cursor-pointer"
           >
             Ubah
           </button>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-4 py-2 border-[1.5px] rounded-full w-fit"
-          style={{ borderColor: 'var(--border-subtle)' }}
-        >
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            Berlaku selama
-          </span>
-          <span className="text-sm font-bold"
-            style={{
-              color: timer <= 10 ? '#C0392B' : 'var(--color-forest-900)',
-              fontVariantNumeric: 'tabular-nums'
-            }}
-          >
-            {formatted}
-          </span>
-        </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="inline-flex items-center gap-2 px-4 py-2 border-[1.5px] rounded-full border-(--border-subtle)">
+            <span className="text-sm text-(--text-secondary)">
+              Berlaku selama
+            </span>
+            <span
+              className="text-sm font-bold tabular-nums transition-colors duration-300"
+              style={{ color: timer <= 10 ? '#C0392B' : 'var(--color-forest-900)' }}
+            >
+              {formatted}
+            </span>
+          </div>
 
-        {canResend && (
           <button
             type="button"
             onClick={handleResend}
-            disabled={resending}
-            className="text-sm font-semibold self-start disabled:opacity-50"
-            style={{ background: 'none', border: 'none', color: 'var(--accent-primary)' }}
+            disabled={!canResend || resending}
+            className="text-sm font-semibold text-(--accent-primary) bg-transparent border-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:underline"
           >
-            {resending ? 'Mengirim…' : 'Kirim ulang OTP'}
+            {resending ? 'Mengirim…' : 'Kirim ulang'}
           </button>
-        )}
+        </div>
 
         <div className="flex flex-col gap-3">
-          <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+          <label className="text-sm font-medium text-(--text-primary)">
             Kode OTP
           </label>
 
@@ -253,12 +236,12 @@ export default function Verify() {
                 value={digit}
                 onChange={e => handleChange(e.target.value, idx)}
                 onKeyDown={e => handleKeyDown(e, idx)}
-                className="flex-1 min-w-0 aspect-square max-w-18 text-center text-2xl font-bold outline-none rounded-lg border-[1.5px]"
+                aria-label={`Digit OTP ke-${idx + 1}`}
+                className="flex-1 min-w-0 aspect-square max-w-18 text-center text-2xl font-bold outline-none rounded-xl border-[1.5px] transition-[border-color,background-color] duration-150 focus:border-(--color-forest-900) focus:ring-2 focus:ring-(--color-forest-900)/10"
                 style={{
-                  fontFamily: 'Poppins, sans-serif',
-                  color: 'var(--text-primary)',
+                  color:       'var(--text-primary)',
                   borderColor: digit ? 'var(--color-forest-900)' : 'var(--border-subtle)',
-                  background: digit ? '#f2f8f3' : '#ffffff'
+                  background:  digit ? 'var(--color-forest-50)'  : '#ffffff',
                 }}
               />
             ))}
@@ -270,13 +253,7 @@ export default function Verify() {
           <button
             type="button"
             onClick={goBack}
-            className="flex-1 h-13 text-base font-semibold rounded-lg border-[1.5px]"
-            style={{
-              background: '#ffffff',
-              borderColor: 'var(--border-subtle)',
-              color: 'var(--text-primary)',
-              fontFamily: 'Poppins, sans-serif'
-            }}
+            className="flex-1 h-13 text-base font-semibold rounded-xl border-[1.5px] border-(--border-subtle) bg-white text-(--text-primary) transition-[background-color,border-color] duration-150 hover:bg-neutral-50 hover:border-(--border-strong)"
           >
             Kembali
           </button>
@@ -285,19 +262,14 @@ export default function Verify() {
             type="button"
             onClick={handleVerify}
             disabled={!isFilled || loading}
-            className="flex-2 h-13 text-base font-semibold rounded-lg flex items-center justify-center disabled:opacity-45 disabled:cursor-not-allowed"
-            style={{
-              background: 'var(--color-forest-900)',
-              color: '#ffffff',
-              fontFamily: 'Poppins, sans-serif'
-            }}
+            className="flex-[2_2_0%] h-13 text-base font-semibold rounded-xl bg-(--color-forest-900) text-white transition-[background-color,transform] duration-150 active:scale-[0.99] hover:bg-(--color-forest-800) disabled:opacity-45 disabled:cursor-not-allowed"
           >
             {loading ? 'Memverifikasi…' : 'Verifikasi'}
           </button>
 
         </div>
 
-      </div>
-    </AuthLayout>
+      </AuthLayout>
+    </>
   );
 }
