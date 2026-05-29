@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "poinKarbonAwarded" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "totalKarbonAkumulasi" DOUBLE PRECISION NOT NULL DEFAULT 0;

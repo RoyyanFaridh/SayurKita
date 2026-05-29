@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import { API_ORIGIN } from '../../../config/api'
 import IngredientCombobox from './IngredientCombobox'
-import { fetchIngredientsMaster, INGREDIENTS_MAP as _map } from '../ingredientsMaster'
+import { fetchIngredientsMaster, INGREDIENTS_MAP as _map, findMasterByNama } from '../ingredientsMaster'
 
 const STORAGE_OPTIONS = [
   { value: 'kulkas',  label: 'Kulkas',     icon: Refrigerator,   field: 'umur_kulkas'  },
@@ -69,7 +69,7 @@ const KulkasForm = forwardRef(function KulkasForm({ item, onSave, isLoading = fa
     fetchIngredientsMaster().then(setMasterMap)
   }, [])
 
-  const master = masterMap[nama] ?? null
+  const master = useMemo(() => findMasterByNama(nama), [nama, masterMap])
 
   const expDate = useMemo(() => {
     const daysAgo = beliMode === 'custom' && beliCustom

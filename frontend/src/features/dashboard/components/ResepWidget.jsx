@@ -1,15 +1,41 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowRight, Sparkles, AlertCircle, Loader2 } from 'lucide-react'
 import { API_ORIGIN } from '../../../config/api'
 import ResepModal from './ResepModal'
 import { formatRecipe } from '../../../utils/resepUtils'
 
-export default function ResepWidget() {
-  const [recipes, setRecipes] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [hasRequested, setHasRequested] = useState(false)
-  const [selected, setSelected] = useState(null)
+// Fetch helper — throws on non-ok so callers can catch uniformly
+async function apiFetch(path, token) {
+  const res = await fetch(`${API_ORIGIN}${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  const data = await res.json()
+  return data
+}
+
+export default function ResepWidget({ onCookingLogged }) {
+  const [recipes, setRecipes]                 = useState([])
+  const [userIngredients, setUserIngredients] = useState([])
+  const [masterData, setMasterData]           = useState([])
+  const [loading, setLoading]                 = useState(false)
+  const [error, setError]                     = useState('')
+  const [hasRequested, setHasRequested]       = useState(false)
+  const [selected, setSelected]               = useState(null)
+
+  // Fetch stok dan master data sekali saat mount — non-fatal kalau gagal
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) return
+
+    apiFetch('/api/ingredients', token)
+      .then(data => setUserIngredients(data.data || []))
+      .catch(() => {}) // non-fatal
+
+    apiFetch('/api/ingredients-master', token)
+      .then(data => setMasterData(data.data || []))
+      .catch(() => {}) // non-fatal
+  }, [])
 
   async function fetchRecommendations() {
     try {
@@ -29,10 +55,10 @@ export default function ResepWidget() {
       }
       const result = await response.json()
       let rawRecipes = []
-      if (Array.isArray(result)) rawRecipes = result
+      if (Array.isArray(result))                           rawRecipes = result
       else if (result.data && Array.isArray(result.data)) rawRecipes = result.data
-      else if (result.data && Array.isArray(result.data.recipes)) rawRecipes = result.data.recipes
-      else if (Array.isArray(result.recipes)) rawRecipes = result.recipes
+      else if (result.data?.recipes)                       rawRecipes = result.data.recipes
+      else if (Array.isArray(result.recipes))              rawRecipes = result.recipes
       setRecipes(rawRecipes.slice(0, 3).map(formatRecipe))
     } catch (err) {
       setError(err.message || 'Gagal memuat rekomendasi otomatis.')
@@ -152,7 +178,13 @@ export default function ResepWidget() {
 
   return (
     <>
-      <ResepModal recipe={selected} onClose={() => setSelected(null)} />
+      <ResepModal
+        recipe={selected}
+        onClose={() => setSelected(null)}
+        userIngredients={userIngredients}
+        masterData={masterData}
+        onCookingLogged={onCookingLogged}
+      />
       <div className={cardClass}>
         <Header />
         <ul className="flex w-full min-w-0 flex-col gap-1 overflow-hidden">

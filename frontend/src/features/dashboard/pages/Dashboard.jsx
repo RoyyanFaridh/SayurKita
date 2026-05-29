@@ -82,49 +82,46 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    let cancelled = false;
+  const fetchDashboard = useCallback(async () => {
+    setLoading(true);
+    setFetchError(false);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) { navigate("/login"); return; }
 
-    async function fetchDashboard() {
-      setLoading(true);
-      setFetchError(false);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) { navigate("/login"); return; }
+      const res = await fetch(`${API_ORIGIN}/api/dashboard/summary`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        const res = await fetch(`${API_ORIGIN}/api/dashboard/summary`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (res.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-          return;
-        }
-
-        if (!res.ok) {
-          console.error("Gagal fetch dashboard:", res.status);
-          if (!cancelled) setFetchError(true);
-          return;
-        }
-
-        const json = await res.json();
-        if (!cancelled && json?.success && json?.data) {
-          setDashboardData(json.data);
-        } else if (!cancelled) {
-          setFetchError(true);
-        }
-      } catch (err) {
-        console.error("fetchDashboard error:", err);
-        if (!cancelled) setFetchError(true);
-      } finally {
-        if (!cancelled) setLoading(false);
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
       }
-    }
 
-    fetchDashboard();
-    return () => { cancelled = true; };
+      if (!res.ok) {
+        console.error("Gagal fetch dashboard:", res.status);
+        setFetchError(true);
+        return;
+      }
+
+      const json = await res.json();
+      if (json?.success && json?.data) {
+        setDashboardData(json.data);
+      } else {
+        setFetchError(true);
+      }
+    } catch (err) {
+      console.error("fetchDashboard error:", err);
+      setFetchError(true);
+    } finally {
+      setLoading(false);
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
 
   const handleLocate = useCallback(async () => {
     if (!navigator.geolocation) {
@@ -237,7 +234,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 gap-5 max-[900px]:grid-cols-1 max-sm:px-4">
           <div className="flex flex-col gap-5">
             <KulkasDashWidget items={kulkasPreview} />
-            <ResepWidget />
+            <ResepWidget onCookingLogged={fetchDashboard} />
           </div>
           <div className="flex flex-col gap-5">
             <SurplusDashWidget userCoords={userCoords} />

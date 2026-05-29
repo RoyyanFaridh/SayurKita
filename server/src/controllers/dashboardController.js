@@ -113,10 +113,18 @@ const getDashboardSummary = async (req, res) => {
 
     // ─── 5. Placeholder stats (model Surplus belum dibuat) ───────────────────
     const postingAktif = 0;
-    const surplusDiselamatkan = user.points > 0
-      ? Math.floor(user.points / 10)
-      : 0;
-    const karbonDiselamatkan = parseFloat((totalBahanKulkas * 0.5).toFixed(1));
+    // const surplusDiselamatkan = user.points > 0
+    //   ? Math.floor(user.points / 10)
+    //   : 0;
+    const surplusDiselamatkan = 0; // TODO: hitung dari model Surplus saat sudah dibuat
+      
+    const cookingLogs = await prisma.cookingLog.findMany({
+      where: { userId },
+      select: { totalKarbon: true },
+    });
+    const karbonDiselamatkan = parseFloat(
+      cookingLogs.reduce((sum, log) => sum + log.totalKarbon, 0).toFixed(2)
+    );
 
     // ─── 6. Susun response ───────────────────────────────────────────────────
     return res.status(200).json({
