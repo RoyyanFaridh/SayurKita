@@ -70,9 +70,9 @@ export default function Login() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.token) {
-        // FIX 5: simpan token sesuai pilihan remember
-        const storage = remember ? localStorage : sessionStorage;
-        storage.setItem('token', data.token);
+        // Selalu simpan ke localStorage agar konsisten dengan semua komponen
+        // yang membaca token (Dashboard, DashboardLayout, ResepWidget, dll).
+        localStorage.setItem('token', data.token);
         navigate('/dashboard');
       } else {
         showToast(data.message || 'Login gagal. Periksa email/nomor HP dan password kamu.', 'error');

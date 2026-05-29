@@ -18,7 +18,7 @@ exports.verifyToken = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, secret);
-    req.userId = decoded.userId;
+    req.userId = decoded.userId || decoded.id;
     return next();
   } catch (error) {
     return res.status(401).json({

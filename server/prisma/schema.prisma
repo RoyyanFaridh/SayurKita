@@ -1,46 +1,51 @@
-generator client {
-  provider = "prisma-client-js"
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  phone      String   @unique
-  password   String
-  points     Int      @default(0)
-  isVerified Boolean  @default(false)
-  otpCode    String?
-  otpExpires DateTime?
-  streakCount    Int       @default(0)
-  lastActiveDate DateTime?
-  totalKarbonAkumulasi Float @default(0)
-  poinKarbonAwarded    Int   @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                   String    @id @default(uuid())
+  name                 String
+  email                String    @unique
+  phone                String    @unique
+  password             String
+  points               Int       @default(0)
+  isVerified           Boolean   @default(false)
+  otpCode              String?
+  otpExpires           DateTime?
+  streakCount          Int       @default(0)
+  lastActiveDate       DateTime?
+  totalKarbonAkumulasi Float     @default(0)
+  poinKarbonAwarded    Int       @default(0)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
-  ingredients Ingredient[]
-  cookingLogs CookingLog[]
-  poinLogs     PoinLog[]
+  ingredients     Ingredient[]
+  cookingLogs     CookingLog[]
+  poinLogs        PoinLog[]
+  surplusPosts    SurplusPost[] @relation("PostedSurplus")
+  receivedSurplus SurplusPost[] @relation("ReceivedSurplus")
+  chatMessages    ChatMessage[]
 }
 
 model Ingredient {
-  id          String   @id @default(uuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  nama        String
-  kategori    String
-  jumlah      String
-  storage     String   @default("kulkas")
-  beliDate    DateTime
-  expDate     DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nama      String
+  kategori  String
+  jumlah    String
+  storage   String   @default("kulkas")
+  beliDate  DateTime
+  expDate   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
 }
@@ -51,7 +56,7 @@ model CookingLog {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   resepNama   String
   resepId     String?
-  bahanUsed   Json     // array of { nama, karbon_co2e }
+  bahanUsed   Json // array of { nama, karbon_co2e }
   totalKarbon Float
   createdAt   DateTime @default(now())
 
@@ -59,14 +64,14 @@ model CookingLog {
 }
 
 model PoinLog {
-  id         String      @id @default(uuid())
-  userId     String
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  delta      Int         
-  source     PoinSource
-  note       String?
-  refId      String?     
-  createdAt  DateTime    @default(now())
+  id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  delta     Int
+  source    PoinSource
+  note      String?
+  refId     String?
+  createdAt DateTime   @default(now())
 
   @@index([userId])
 }
@@ -74,4 +79,41 @@ model PoinLog {
 enum PoinSource {
   KARBON
   STREAK
+}
+
+model SurplusPost {
+  id               Int           @id @default(autoincrement())
+  userId           String
+  user             User          @relation("PostedSurplus", fields: [userId], references: [id], onDelete: Cascade)
+  receiverId       String?
+  receiver         User?         @relation("ReceivedSurplus", fields: [receiverId], references: [id])
+  title            String
+  description      String
+  category         String
+  quantity         String
+  pickupTime       String
+  address          String
+  latitude         Float
+  longitude        Float
+  imageUrl         String?
+  status           String        @default("Tersedia")
+  claimedAt        DateTime?
+  expiredReceivers String[]      @default([])
+  createdAt        DateTime      @default(now())
+  messages         ChatMessage[]
+
+  @@index([userId])
+}
+
+model ChatMessage {
+  id            Int         @id @default(autoincrement())
+  surplusPostId Int
+  surplusPost   SurplusPost @relation(fields: [surplusPostId], references: [id], onDelete: Cascade)
+  senderId      String
+  sender        User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  message       String
+  createdAt     DateTime    @default(now())
+
+  @@index([surplusPostId])
+  @@index([senderId])
 }

@@ -15,10 +15,10 @@ const getDashboardSummary = async (req, res) => {
       });
     }
 
-    // ─── 1. Data User (nama + poin) ──────────────────────────────────────────
+    // ─── 1. Data User (nama + poin + totalKarbonAkumulasi) ───────────────────────
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, points: true },
+      select: { name: true, points: true, totalKarbonAkumulasi: true },
     });
 
     if (!user) {
@@ -111,20 +111,16 @@ const getDashboardSummary = async (req, res) => {
       };
     });
 
-    // ─── 5. Placeholder stats (model Surplus belum dibuat) ───────────────────
-    const postingAktif = 0;
-    // const surplusDiselamatkan = user.points > 0
-    //   ? Math.floor(user.points / 10)
-    //   : 0;
-    const surplusDiselamatkan = 0; // TODO: hitung dari model Surplus saat sudah dibuat
-      
-    const cookingLogs = await prisma.cookingLog.findMany({
-      where: { userId },
-      select: { totalKarbon: true },
+    // ─── 5. Placeholder stats & Gamification ───────────────────────────────────
+    const postingAktif = await prisma.surplusPost.count({
+      where: { userId, status: 'Tersedia' }
     });
-    const karbonDiselamatkan = parseFloat(
-      cookingLogs.reduce((sum, log) => sum + log.totalKarbon, 0).toFixed(2)
-    );
+    const surplusDiselamatkan = await prisma.surplusPost.count({
+      where: { receiverId: userId, status: 'Selesai' }
+    });
+    
+    // Using pre-aggregated field from user to avoid double-counting
+    const karbonDiselamatkan = user.totalKarbonAkumulasi || 0;
 
     // ─── 6. Susun response ───────────────────────────────────────────────────
     return res.status(200).json({

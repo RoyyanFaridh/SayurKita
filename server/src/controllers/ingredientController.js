@@ -52,11 +52,35 @@ const addIngredient = async (req, res) => {
     const { nama, kategori, jumlah, storage, beliDate, expDate } = req.body;
 
     // Validasi input
-    if (!nama || !kategori || !jumlah || !expDate) {
+    if (!nama || !kategori || !jumlah) {
       return res.status(400).json({
         success: false,
-        message: "Nama, kategori, jumlah, dan expDate harus diisi.",
+        message: "Nama, kategori, dan jumlah harus diisi.",
       });
+    }
+
+    let finalExpDate;
+    if (expDate) {
+      finalExpDate = new Date(expDate);
+    } else {
+      let extraDays = 3; // Fallback jika API AI 404 atau mati
+      try {
+        const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
+        const response = await fetch(`${AI_SERVICE_URL}/shelf-life?ingredient=${encodeURIComponent(nama)}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.umur_kulkas !== undefined) {
+            extraDays = parseInt(data.umur_kulkas, 10) || 3;
+          }
+        }
+      } catch (error) {
+        console.error("Gagal terhubung ke API Shelf-Life AI:", error.message);
+      }
+      
+      const baseDate = beliDate ? new Date(beliDate) : new Date();
+      finalExpDate = new Date(baseDate);
+      finalExpDate.setDate(finalExpDate.getDate() + extraDays);
     }
 
     const ingredient = await prisma.ingredient.create({
@@ -67,9 +91,48 @@ const addIngredient = async (req, res) => {
         jumlah,
         storage: storage || "kulkas",
         beliDate: beliDate ? new Date(beliDate) : new Date(),
-        expDate: new Date(expDate),
+        expDate: finalExpDate,
       },
     });
+
+    // --- LOGIKA HITUNG JEJAK KARBON OTOMATIS MENGGUNAKAN API AI ---
+    try {
+      // Parsing jumlah (contoh "200 g" -> 200)
+      const parsedJumlah = parseFloat(jumlah);
+      
+      if (!isNaN(parsedJumlah) && parsedJumlah > 0) {
+        const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
+        const carbonResponse = await fetch(`${AI_SERVICE_URL}/carbon`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ingredient_name: nama,
+            weight_grams: parsedJumlah,
+          }),
+        });
+
+        if (carbonResponse.ok) {
+          const carbonData = await carbonResponse.json();
+          if (carbonData && carbonData.co2e_kg) {
+            // Tambahkan nilai carbon ke totalCarbonSaved user
+            await prisma.user.update({
+              where: { id: userId },
+              data: {
+                totalCarbonSaved: {
+                  increment: carbonData.co2e_kg,
+                },
+              },
+            });
+            console.log(`Berhasil menambahkan ${carbonData.co2e_kg} kg CO2e ke total user ${userId}`);
+          }
+        }
+      }
+    } catch (carbonError) {
+      // Jika error, log saja tanpa menggagalkan proses tambah bahan
+      console.error("Gagal terhubung ke API Carbon AI atau update user:", carbonError.message);
+    }
 
     return res.status(201).json({
       success: true,

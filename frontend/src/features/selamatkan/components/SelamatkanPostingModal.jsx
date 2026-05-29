@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { X, Upload, MapPin, Package } from 'lucide-react'
+import { API_ORIGIN } from '../../../config/api'
 
 const KONDISI_OPTIONS = [
   { value: 'segar',     label: 'Segar',        hint: 'Masih layak dikonsumsi',    active: 'bg-(--bg-success-subtle) border-(--border-success)', activeText: 'text-(--text-success)' },
@@ -16,8 +17,97 @@ const inputCls = `w-full px-3 py-2.5 bg-(--bg-alt)
   box-border transition-colors duration-150
   focus:outline-none focus:border-(--border-brand)`
 
-export default function SelamatkanPostingModal({ onClose }) {
+export default function SelamatkanPostingModal({ onClose, onSuccess }) {
   const [kondisi, setKondisi] = useState('segar')
+  const [nama, setNama] = useState('')
+  const [deskripsi, setDeskripsi] = useState('')
+  const [kategori, setKategori] = useState(KATEGORI_OPTIONS[0])
+  const [jumlah, setJumlah] = useState('')
+  const [lokasi, setLokasi] = useState('')
+  const [lat, setLat] = useState(null)
+  const [lng, setLng] = useState(null)
+  const [file, setFile] = useState(null)
+  const [preview, setPreview] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const fileInputRef = useRef(null)
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0]
+    if (selectedFile) {
+      setFile(selectedFile)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreview(reader.result)
+      }
+      reader.readAsDataURL(selectedFile)
+    }
+  }
+
+  const handleLocate = () => {
+    if (!navigator.geolocation) return
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        setLat(pos.coords.latitude)
+        setLng(pos.coords.longitude)
+        setLokasi(`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`)
+      },
+      err => {
+        console.error("Gagal mendapatkan lokasi", err)
+      }
+    )
+  }
+
+  const handleSubmit = async () => {
+    if (!nama || !deskripsi || !jumlah || !lokasi || lat === null || lng === null) {
+      alert("Mohon lengkapi semua data, termasuk lokasi (klik Gunakan lokasimu)!");
+      return;
+    }
+
+    setIsSubmitting(true)
+    try {
+      const formData = new FormData()
+      formData.append('title', nama)
+      formData.append('description', deskripsi)
+      formData.append('category', kategori)
+      formData.append('quantity', jumlah)
+      
+      const pickupTimeMap = {
+        'segar': 'Kapan saja',
+        'mau-habis': 'Segera ambil',
+        'segera': 'Hari ini!'
+      }
+      formData.append('pickupTime', pickupTimeMap[kondisi] || 'Kapan saja')
+      
+      formData.append('address', lokasi)
+      formData.append('latitude', lat.toString())
+      formData.append('longitude', lng.toString())
+      if (file) {
+        formData.append('image', file)
+      }
+
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${API_ORIGIN}/api/surplus`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        if (onSuccess) onSuccess()
+        onClose()
+      } else {
+        alert(data.message || "Gagal memposting surplus")
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Terjadi kesalahan saat memposting")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   return (
     <div
@@ -56,12 +146,28 @@ export default function SelamatkanPostingModal({ onClose }) {
         <div className="px-5 py-5 flex flex-col gap-5">
 
           {/* Upload */}
-          <div className="flex flex-col items-center gap-1.5 py-8 px-4 border-2 border-dashed border-(--border-default) rounded-md cursor-pointer transition-all duration-150 hover:border-(--border-brand) hover:bg-(--bg-subtle)">
-            <Upload size={20} strokeWidth={1.5} className="text-(--text-muted)" />
-            <p className="text-compact-lg font-medium text-(--text-secondary) m-0">
-              Upload foto makanan
-            </p>
-            <p className="text-compact-sm text-(--text-muted) m-0">JPG, PNG · Maks 5 MB</p>
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex flex-col items-center gap-1.5 py-8 px-4 border-2 border-dashed border-(--border-default) rounded-md cursor-pointer transition-all duration-150 hover:border-(--border-brand) hover:bg-(--bg-subtle) relative overflow-hidden"
+          >
+            {preview ? (
+              <img src={preview} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <>
+                <Upload size={20} strokeWidth={1.5} className="text-(--text-muted)" />
+                <p className="text-compact-lg font-medium text-(--text-secondary) m-0">
+                  Upload foto makanan
+                </p>
+                <p className="text-compact-sm text-(--text-muted) m-0">JPG, PNG · Maks 5 MB</p>
+              </>
+            )}
+            <input 
+              type="file" 
+              accept="image/*" 
+              style={{ display: 'none' }} 
+              ref={fileInputRef} 
+              onChange={handleFileChange}
+            />
           </div>
 
           {/* Nama */}
@@ -73,6 +179,8 @@ export default function SelamatkanPostingModal({ onClose }) {
               id="nama-makanan"
               className={inputCls}
               placeholder="cth. Nasi kotak sisa acara"
+              value={nama}
+              onChange={e => setNama(e.target.value)}
             />
           </div>
 
@@ -86,6 +194,8 @@ export default function SelamatkanPostingModal({ onClose }) {
               className={`${inputCls} resize-y min-h-20 leading-relaxed`}
               placeholder="Ceritakan kondisi, lauk, atau info penting lainnya…"
               rows={3}
+              value={deskripsi}
+              onChange={e => setDeskripsi(e.target.value)}
             />
           </div>
 
@@ -95,7 +205,7 @@ export default function SelamatkanPostingModal({ onClose }) {
               <label htmlFor="kategori" className="text-compact-base font-medium text-(--text-secondary)">
                 Kategori
               </label>
-              <select id="kategori" className={inputCls}>
+              <select id="kategori" className={inputCls} value={kategori} onChange={e => setKategori(e.target.value)}>
                 {KATEGORI_OPTIONS.map(k => <option key={k}>{k}</option>)}
               </select>
             </div>
@@ -110,6 +220,8 @@ export default function SelamatkanPostingModal({ onClose }) {
                   id="jumlah"
                   className="flex-1 border-0 bg-transparent py-2.5 text-compact-lg text-(--text-primary) min-w-0 placeholder:text-(--text-muted) focus:outline-none"
                   placeholder="5 porsi, 3 bungkus"
+                  value={jumlah}
+                  onChange={e => setJumlah(e.target.value)}
                 />
               </div>
             </div>
@@ -157,8 +269,13 @@ export default function SelamatkanPostingModal({ onClose }) {
                 id="lokasi"
                 className="flex-1 border-0 bg-transparent py-2.5 text-compact-lg text-(--text-primary) min-w-0 placeholder:text-(--text-muted) focus:outline-none"
                 placeholder="Alamat atau titik lokasi"
+                value={lokasi}
+                onChange={e => setLokasi(e.target.value)}
               />
-              <button className="shrink-0 px-2.5 py-1 bg-(--bg-subtle) border border-(--border-subtle) rounded-md text-compact-sm font-medium text-(--text-brand) cursor-pointer whitespace-nowrap transition-colors duration-150 hover:bg-primary-100">
+              <button 
+                onClick={handleLocate}
+                className="shrink-0 px-2.5 py-1 bg-(--bg-subtle) border border-(--border-subtle) rounded-md text-compact-sm font-medium text-(--text-brand) cursor-pointer whitespace-nowrap transition-colors duration-150 hover:bg-primary-100"
+              >
                 Gunakan lokasimu
               </button>
             </div>
@@ -175,10 +292,11 @@ export default function SelamatkanPostingModal({ onClose }) {
             Batal
           </button>
           <button
-            onClick={onClose}
-            className="inline-flex items-center gap-2 px-5 py-2 bg-primary-600 text-white border-0 rounded-md text-compact-lg font-semibold cursor-pointer transition-colors duration-150 hover:bg-primary-700"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 px-5 py-2 bg-primary-600 text-white border-0 rounded-md text-compact-lg font-semibold cursor-pointer transition-colors duration-150 hover:bg-primary-700 disabled:opacity-50"
           >
-            Posting Sekarang
+            {isSubmitting ? 'Memposting...' : 'Posting Sekarang'}
           </button>
         </div>
 
