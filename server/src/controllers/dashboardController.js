@@ -119,14 +119,8 @@ const getDashboardSummary = async (req, res) => {
       where: { receiverId: userId, status: 'Selesai' }
     });
     
-    // Using cookingLogs as added by gamification to count karbon
-    const cookingLogs = await prisma.cookingLog.findMany({
-      where: { userId },
-      select: { totalKarbon: true },
-    });
-    const karbonDiselamatkan = parseFloat(
-      cookingLogs.reduce((sum, log) => sum + log.totalKarbon, 0).toFixed(2)
-    ) + (user.totalKarbonAkumulasi || 0);
+    // Using pre-aggregated field from user to avoid double-counting
+    const karbonDiselamatkan = user.totalKarbonAkumulasi || 0;
 
     // ─── 6. Susun response ───────────────────────────────────────────────────
     return res.status(200).json({
