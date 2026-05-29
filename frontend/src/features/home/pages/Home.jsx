@@ -5,6 +5,10 @@ import FiturUtama from '../components/FiturUtama';
 import KondisiMakanan from '../components/KondisiMakanan';
 import FeedSelamatkan from '../components/FeedSelamatkan';
 import CaraKerja from '../components/CaraKerja';
+import DariKomunitas from '../components/DariKomunitas';
+import FooterMain from '../components/FooterMain';
+import FooterBottom from '../components/FooterBottom';
+
 
 function Home() {
   return (
@@ -24,6 +28,9 @@ function Home() {
       <KondisiMakanan />
       <FeedSelamatkan />
       <CaraKerja />
+      <DariKomunitas />
+      <FooterMain />
+      <FooterBottom />
     </>
   );
 }

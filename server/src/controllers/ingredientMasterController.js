@@ -18,6 +18,7 @@ const getIngredientsMaster = (req, res) => {
       protein:      item.protein_g        ?? 0,
       lemak:        item.lemak_g          ?? 0,
       karbo:        item.karbo_g          ?? 0,
+      karbon_co2e:  item.karbon_co2e      ?? 0,
     }))
 
     return res.status(200).json({ success: true, data: transformed })

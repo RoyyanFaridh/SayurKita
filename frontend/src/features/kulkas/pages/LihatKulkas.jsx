@@ -8,13 +8,9 @@ import KulkasToolbar from "../components/KulkasToolbar";
 import KulkasItemList from "../components/KulkasItemList";
 import KulkasResepAI from "../components/KulkasResepAI";
 import KulkasModal from "../components/KulkasModal";
+import ResepModal from "../../dashboard/components/ResepModal";
 
-const EXP_ORDER = {
-  danger: 0,
-  warning: 1,
-  ok: 2,
-  fresh: 3,
-};
+const EXP_ORDER = { danger: 0, warning: 1, ok: 2, fresh: 3 };
 
 function getExpType(expDate) {
   if (!expDate) return "ok";
@@ -23,7 +19,6 @@ function getExpType(expDate) {
   const exp = new Date(expDate);
   exp.setHours(0, 0, 0, 0);
   const diff = Math.round((exp - today) / 86400000);
-  if (diff <= 0) return "danger";
   if (diff <= 1) return "danger";
   if (diff <= 3) return "warning";
   return "fresh";
@@ -38,21 +33,30 @@ function formatExpLabel(expDate) {
   const diff = Math.round((exp - today) / 86400000);
   if (diff <= 0) return "Sudah kadaluwarsa";
   if (diff === 1) return "Besok!";
-  if (diff <= 3) return `${diff} hari`;
   return `${diff} hari`;
 }
 
 export default function LihatKulkas() {
   const [items, setItems] = useState([]);
+  const [masterData, setMasterData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [kategori, setKategori] = useState("Semua");
   const [sortBy, setSortBy] = useState("exp");
+
+  // modal kulkas (tambah/edit bahan)
   const [modal, setModal] = useState(null);
+
+  // modal resep — null = tutup, object = resep yang dipilih
+  const [selectedResep, setSelectedResep] = useState(null);
+
+  // nama bahan pre-fill saat KulkasModal dibuka dari tombol "Tambah" di ResepModal
+  const [preFillNama, setPreFillNama] = useState(null);
 
   useEffect(() => {
     fetchIngredients();
+    fetchMasterData();
   }, []);
 
   async function fetchIngredients() {
@@ -60,31 +64,23 @@ export default function LihatKulkas() {
       setLoading(true);
       setError("");
       const token = localStorage.getItem("token");
-
-      if (!token) {
-        setError("Anda belum login");
-        setLoading(false);
-        return;
-      }
+      if (!token) { setError("Anda belum login"); setLoading(false); return; }
 
       const response = await fetch(`${API_ORIGIN}/api/ingredients`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       if (!response.ok) {
         const data = await response.json();
         setError(data.message || "Gagal mengambil data");
         setLoading(false);
         return;
       }
-
       const data = await response.json();
       const transformedItems = (data.data || []).map((item) => ({
         ...item,
-        expType: getExpType(item.expDate),
+        expType:  getExpType(item.expDate),
         expLabel: formatExpLabel(item.expDate),
       }));
-
       setItems(transformedItems);
       setLoading(false);
     } catch (err) {
@@ -94,9 +90,32 @@ export default function LihatKulkas() {
     }
   }
 
-  async function handleSaveModal(data, action) {
+  async function fetchMasterData() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_ORIGIN}/api/ingredients-master`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      setMasterData(data.data || []);
+    } catch (err) {
+      // masterData gagal fetch = non-fatal, karbon jadi 0 semua
+      console.error("fetchMasterData error:", err);
+    }
+  }
+
+  async function handleSaveModal() {
     await fetchIngredients();
     setModal(null);
+    setPreFillNama(null);
+  }
+
+  // Dipanggil dari ResepModal saat user klik "Tambah" pada bahan yang belum ada di stok.
+  // Buka KulkasModal dengan nama bahan pre-filled.
+  function handleTambahBahanDariResep(namaBahan) {
+    setPreFillNama(namaBahan);
+    setModal("add");
   }
 
   const filtered = items
@@ -109,18 +128,16 @@ export default function LihatKulkas() {
 
   const counts = {
     total:   items.length,
-    danger:  items.filter((i) => i.expType === "danger").length,
-    warning: items.filter((i) => i.expType === "warning").length,
-    ok:      items.filter((i) => i.expType === "ok").length,
-    fresh:   items.filter((i) => i.expType === "fresh").length,
+    danger:  items.filter(i => i.expType === "danger").length,
+    warning: items.filter(i => i.expType === "warning").length,
+    ok:      items.filter(i => i.expType === "ok").length,
+    fresh:   items.filter(i => i.expType === "fresh").length,
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-compact-lg text-(--text-secondary)">
-          Memuat data kulkas...
-        </p>
+        <p className="text-compact-lg text-(--text-secondary)">Memuat data kulkas...</p>
       </div>
     );
   }
@@ -148,12 +165,8 @@ export default function LihatKulkas() {
       <div className="flex flex-col gap-5 px-7 pb-10 pt-6 max-[640px]:w-full max-[640px]:gap-4 max-[640px]:px-0 max-[640px]:pb-8 max-[640px]:pt-0">
         <div className="hidden items-center justify-between rounded-b-xl bg-primary-600 px-4 pb-5 pt-4 max-[640px]:flex">
           <div>
-            <h1 className="text-xl font-bold leading-snug text-white">
-              Lihat Kulkas
-            </h1>
-            <p className="mt-1 text-compact-xs text-white/35">
-              {items.length} bahan tersimpan
-            </p>
+            <h1 className="text-xl font-bold leading-snug text-white">Lihat Kulkas</h1>
+            <p className="mt-1 text-compact-xs text-white/35">{items.length} bahan tersimpan</p>
           </div>
           <button
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/15 text-white"
@@ -183,18 +196,32 @@ export default function LihatKulkas() {
             <KulkasItemList items={filtered} onEdit={(item) => setModal(item)} />
           </div>
           <div className="w-96 shrink-0 min-w-0 overflow-hidden max-[1024px]:w-64 max-[640px]:w-full">
-            <KulkasResepAI ingredients={items} />
+            <KulkasResepAI
+              ingredients={items}
+              onSelectResep={setSelectedResep}
+            />
           </div>
         </div>
       </div>
 
+      {/* Modal tambah/edit bahan — preFillNama di-pass saat dibuka dari ResepModal */}
       {modal && (
         <KulkasModal
           item={modal === "add" ? null : modal}
-          onClose={() => setModal(null)}
+          preFillNama={modal === "add" ? preFillNama : null}
+          onClose={() => { setModal(null); setPreFillNama(null); }}
           onSave={handleSaveModal}
         />
       )}
+
+      {/* Modal resep — render di sini agar punya akses ke items dan handleTambahBahan */}
+      <ResepModal
+        recipe={selectedResep}
+        onClose={() => setSelectedResep(null)}
+        userIngredients={items}
+        masterData={masterData}
+        onTambahBahan={handleTambahBahanDariResep}
+      />
     </>
   );
 }
