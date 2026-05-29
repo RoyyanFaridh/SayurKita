@@ -331,7 +331,7 @@ const completeSurplusPost = async (req, res) => {
     const carbonOffsetGram = hitungCarbonOffset(post.category, post.quantity);
     const carbonOffsetKg   = carbonOffsetGram / 1000;
 
-    const [updatedPost, updatedDonor] = await prisma.$transaction([
+    const [updatedPost, updatedDonor, poinLog] = await prisma.$transaction([
       prisma.surplusPost.update({
         where: { id: postId },
         data: { status: "Selesai" },
@@ -339,10 +339,19 @@ const completeSurplusPost = async (req, res) => {
       prisma.user.update({
         where: { id: post.userId },
         data: {
-          points:           { increment: 10 },
-          totalCarbonSaved: { increment: carbonOffsetKg },
+          points:               { increment: 10 },
+          totalKarbonAkumulasi: { increment: carbonOffsetKg },
         },
       }),
+      prisma.poinLog.create({
+        data: {
+          userId: post.userId,
+          delta: 10,
+          source: "KARBON",
+          note: `Donasi surplus diselesaikan! (+10 Poin)`,
+          refId: postId.toString(),
+        }
+      })
     ]);
 
     emitStatusUpdate(req, "statusUpdated", updatedPost);
