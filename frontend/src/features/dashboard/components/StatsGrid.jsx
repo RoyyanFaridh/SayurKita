@@ -83,11 +83,6 @@ export default function StatsGrid({ stats }) {
             <p className="text-compact-sm m-0" style={{ color: 'var(--text-secondary)' }}>{label}</p>
           </div>
 
-          {/* Value row
-              - text-2xl (24px) bukan text-3xl (30px) — lebih proporsional terhadap card compact
-              - font-semibold bukan font-bold — cukup kuat tanpa terlalu berat
-              - lineHeight 1.1 bukan 2 — line-height 200% tidak ada alasan visual
-              - ml-1 dihapus — tidak ada elemen kiri yang perlu di-offset */}
           <div className="flex items-baseline gap-1.5 mb-2.5">
             <p
               className="text-2xl font-semibold m-0 max-[400px]:text-xl"
