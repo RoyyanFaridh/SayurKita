@@ -1,36 +1,5 @@
 import { Package, MapPin, Clock, Users } from 'lucide-react'
 
-const STATS_CONFIG = [
-  {
-    key:      'surplus',
-    icon:     Package,
-    value:    '5',
-    label:    'Surplus aktif',
-    iconType: 'primary',
-  },
-  {
-    key:      'radius',
-    icon:     MapPin,
-    value:    '5 km',
-    label:    'Radius lokasi',
-    iconType: 'neutral',
-  },
-  {
-    key:      'expiring',
-    icon:     Clock,
-    value:    '3',
-    label:    'Segera kadaluwarsa',
-    iconType: 'warning',
-  },
-  {
-    key:      'saved',
-    icon:     Users,
-    value:    '12',
-    label:    'Diselamatkan bulan ini',
-    iconType: 'success',
-  },
-]
-
 const ICON_STYLE = {
   primary: { background: 'var(--bg-primary-subtle)', color: 'var(--text-brand)'    },
   neutral: { background: 'var(--bg-subtle)',          color: 'var(--text-muted)'    },
@@ -38,7 +7,38 @@ const ICON_STYLE = {
   success: { background: 'var(--bg-success-subtle)', color: 'var(--text-success)'  },
 }
 
-export default function SelamatkanStatsBar() {
+export default function SelamatkanStatsBar({ stats = { active: 0, radius: 5, expiring: 0, savedThisMonth: 0 } }) {
+  const STATS_CONFIG = [
+    {
+      key:      'surplus',
+      icon:     Package,
+      value:    stats.active.toString(),
+      label:    'Surplus aktif',
+      iconType: 'primary',
+    },
+    {
+      key:      'radius',
+      icon:     MapPin,
+      value:    `${stats.radius} km`,
+      label:    'Radius lokasi',
+      iconType: 'neutral',
+    },
+    {
+      key:      'expiring',
+      icon:     Clock,
+      value:    stats.expiring.toString(),
+      label:    'Segera kadaluwarsa',
+      iconType: 'warning',
+    },
+    {
+      key:      'saved',
+      icon:     Users,
+      value:    stats.savedThisMonth.toString(),
+      label:    'Diselamatkan bulan ini',
+      iconType: 'success',
+    },
+  ]
+
   return (
     <div className="grid grid-cols-4 gap-2.5 max-sm:grid-cols-2 max-sm:gap-2">
       {STATS_CONFIG.map(({ key, icon: Icon, value, label, iconType }) => (

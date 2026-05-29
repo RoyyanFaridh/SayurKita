@@ -1,13 +1,21 @@
 // SelamatkanMapPanel.jsx
+import { useEffect, useRef } from 'react'
 import { MapPin, Navigation } from 'lucide-react'
 import { KONDISI_MAP } from '../selamatkanData'
-import { Map, AdvancedMarker } from '@vis.gl/react-google-maps'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import L from 'leaflet'
 
-const MARKER_CLS = {
-  success: 'text-success-500',
-  warning: 'text-warning-500',
-  danger:  'text-danger-500',
-}
+// Fix untuk Leaflet icon default
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
+import iconUrl from 'leaflet/dist/images/marker-icon.png'
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: iconRetina,
+  iconUrl: iconUrl,
+  shadowUrl: shadowUrl,
+})
 
 const DOT_CLS = {
   success: 'bg-success-500',
@@ -21,14 +29,54 @@ const PIN_BG = {
   danger:  '#ef4444',
 }
 
-const DEFAULT_CENTER = { lat: -7.7956, lng: 110.3695 }
+const DEFAULT_CENTER = [-7.7956, 110.3695] // Yogyakarta fallback (atau bisa diganti Medan)
+
+// Komponen pembantu untuk memindahkan kamera peta ketika posisi user berubah
+function MapController({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, 14, { duration: 1.5 });
+    }
+  }, [center, map]);
+  return null;
+}
+
+// Custom DivIcon untuk membuat pin bulat berwarna sesuai kondisi
+const createCustomIcon = (colorKey) => {
+  const bgColor = PIN_BG[colorKey] || PIN_BG.success;
+  return L.divIcon({
+    className: 'custom-leaflet-marker',
+    html: `<div style="background-color: ${bgColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
+  });
+}
+
+// Custom DivIcon untuk User (Lokasiku)
+const userIcon = L.divIcon({
+  className: 'custom-leaflet-user-marker',
+  html: `
+    <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+      <div style="width: 12px; height: 12px; border-radius: 50%; background-color: #2563eb; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); z-index: 10;"></div>
+      <div style="position: absolute; width: 24px; height: 24px; border-radius: 50%; background-color: rgba(37,99,235,0.2); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+    </div>
+  `,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12]
+});
 
 export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate, locating }) {
-  const center = userCoords ?? DEFAULT_CENTER
+  const center = userCoords ? [userCoords.lat, userCoords.lng] : DEFAULT_CENTER;
 
   return (
     <div className="bg-(--color-bg-primary) border border-(--border-subtle) rounded-xl overflow-hidden flex flex-col sticky top-20">
-
+      <style>{`
+        @keyframes ping {
+          75%, 100% { transform: scale(2); opacity: 0; }
+        }
+      `}</style>
+      
       {/* Header */}
       <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-(--border-subtle)">
         <h2 className="text-xs font-semibold text-(--text-primary) m-0">Peta Sekitarmu</h2>
@@ -42,33 +90,45 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
         </button>
       </div>
 
-      {/* Map */}
-      <div className="h-56">
-        <Map
-          mapId="b9ea8f23872bbcd4a9eddc22"
-          style={{ width: '100%', height: '100%' }}
-          defaultCenter={center}
-          center={center}
-          defaultZoom={14}
-          gestureHandling="greedy"
-          disableDefaultUI
+      {/* Map (React-Leaflet) */}
+      <div className="h-56 z-0">
+        <MapContainer 
+          center={center} 
+          zoom={14} 
+          scrollWheelZoom={true} 
+          style={{ height: '100%', width: '100%', zIndex: 0 }}
         >
-          <AdvancedMarker position={center}>
-            <div className="relative flex items-center justify-center">
-              <div className="w-3 h-3 rounded-full bg-primary-600 border-2 border-white shadow-sm z-10" />
-              <div className="absolute w-6 h-6 rounded-full bg-primary-600/20 animate-ping" />
-            </div>
-          </AdvancedMarker>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapController center={center} />
+          
+          {/* Marker Lokasi User */}
+          {userCoords && (
+            <Marker position={[userCoords.lat, userCoords.lng]} icon={userIcon}>
+              <Popup>Lokasi Anda saat ini</Popup>
+            </Marker>
+          )}
+
+          {/* Marker Data Surplus */}
           {items.map(item => {
             if (!item.lat || !item.lng) return null
             const color = KONDISI_MAP[item.kondisi]?.color ?? 'success'
             return (
-              <AdvancedMarker key={item.id} position={{ lat: item.lat, lng: item.lng }} title={item.nama}>
-                <MapPin size={18} strokeWidth={2} className={`${MARKER_CLS[color]} drop-shadow-sm`} fill={PIN_BG[color]} />
-              </AdvancedMarker>
+              <Marker 
+                key={item.id} 
+                position={[item.lat, item.lng]} 
+                icon={createCustomIcon(color)}
+              >
+                <Popup>
+                  <div className="text-sm font-semibold m-0">{item.nama}</div>
+                  <div className="text-xs text-gray-500 m-0">{item.pemilik}</div>
+                </Popup>
+              </Marker>
             )
           })}
-        </Map>
+        </MapContainer>
       </div>
 
       {/* Radius info */}

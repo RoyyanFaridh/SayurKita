@@ -1,10 +1,12 @@
-generator client {
-  provider = "prisma-client-js"
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis] // 👈 Tambahkan baris ini
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"] // 👈 Tambahkan ini agar Prisma mendukung ekstensi database
 }
 
 model User {
@@ -24,6 +26,7 @@ model User {
   ingredients Ingredient[]
   surplusPosts SurplusPost[] @relation("PostedSurplus")
   receivedSurplus SurplusPost[] @relation("ReceivedSurplus")
+  chatMessages  ChatMessage[]
 }
 
 model Ingredient {
@@ -58,7 +61,23 @@ model SurplusPost {
   longitude   Float
   imageUrl    String?
   status      String   @default("Tersedia")
+  claimedAt   DateTime?
+  expiredReceivers String[] @default([])
   createdAt   DateTime @default(now())
+  messages    ChatMessage[]
 
   @@index([userId])
+}
+
+model ChatMessage {
+  id            Int         @id @default(autoincrement())
+  surplusPostId Int
+  surplusPost   SurplusPost @relation(fields: [surplusPostId], references: [id], onDelete: Cascade)
+  senderId      String
+  sender        User        @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  message       String
+  createdAt     DateTime    @default(now())
+
+  @@index([surplusPostId])
+  @@index([senderId])
 }
