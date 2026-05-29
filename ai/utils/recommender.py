@@ -28,7 +28,7 @@ class RecipeRecommender:
         print(f"TF-IDF Recommender siap. {len(self.valid_indices)} resep valid, "
               f"dimensi vektor: {self.recipe_vectors.shape[1]}")
     
-    def recommend(self, user_ingredients, expired=None, top_k=5):
+    def recommend(self, user_ingredients, expired=None, top_k=10):
         """
         Rekomendasi resep berdasarkan bahan yang dimiliki.
         - expired: list of int (opsional), panjang harus sama dengan user_ingredients.
