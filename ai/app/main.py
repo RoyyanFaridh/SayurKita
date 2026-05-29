@@ -11,6 +11,7 @@ from utils.recommender import recommender
 from utils.carbon import hitung_co2e
 from utils.fraud import cek_aksi
 from utils.shelf_life import get_shelf_life
+from utils.genai_helper import generate_cooking_tip
 
 app = FastAPI()
 
@@ -57,6 +58,13 @@ class FraudResponse(BaseModel):
     message: str
     points_earned: int = 0
 
+class TipsRequest(BaseModel):
+    ingredients: List[str]
+
+class TipsResponse(BaseModel):
+    ingredients: List[str]
+    tip: str
+
 
 @app.get("/")
 def root():
@@ -99,6 +107,14 @@ def check_shelf_life(ingredient: str):
         return hasil
     else:
         raise HTTPException(status_code=404, detail="Bahan tidak ditemukan")
+
+@app.post("/cooking-tips", response_model=TipsResponse)
+def get_cooking_tips(req: TipsRequest):
+    if not req.ingredients:
+        raise HTTPException(status_code=400, detail="Daftar bahan kosong")
+    
+    tip = generate_cooking_tip(req.ingredients)
+    return TipsResponse(ingredients=req.ingredients, tip=tip)
 
 if __name__ == "__main__":
     import uvicorn
