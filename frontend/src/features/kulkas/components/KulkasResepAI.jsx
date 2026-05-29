@@ -32,7 +32,7 @@ export default function KulkasResepAI({ ingredients = [], onSelectResep }) {
       else if (result.data && Array.isArray(result.data)) rawRecipes = result.data
       else if (result.data && Array.isArray(result.data.recipes)) rawRecipes = result.data.recipes
       else if (Array.isArray(result.recipes)) rawRecipes = result.recipes
-      const formatted = rawRecipes.slice(0, 5).map(formatRecipe)
+      const formatted = rawRecipes.slice(0, 10).map(formatRecipe)
       setRecommendations(formatted)
     } catch (err) {
       setError(err.message || 'Terjadi kesalahan saat memuat rekomendasi resep')

@@ -6,19 +6,20 @@ import {
   MapPin,
   Star,
   Bell,
+  Flame,
 } from "lucide-react";
 import { API_ORIGIN } from "../../config/api";
 import UserBlock from "../../components/UserBlock";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Beranda", end: true, Icon: LayoutDashboard },
-  { to: "/kulkas", label: "Lihat Kulkas", Icon: Refrigerator },
+  { to: "/kulkas",    label: "Lihat Kulkas",  Icon: Refrigerator },
   { to: "/selamatkan", label: "Selamatkan!", Icon: MapPin },
-  { to: "/poin", label: "Poin Berkah", Icon: Star },
+  { to: "/poin",      label: "Poin Berkah",  Icon: Star },
 ];
 
 const DEFAULT_USER = { name: "User", role: "Pengguna", initials: "U" };
-const STREAK = ["S", "S", "R", "K", "J", "S", "M"];
+const HARI = ["S", "S", "R", "K", "J", "S", "M"];
 
 function getInitials(name) {
   if (!name) return "U";
@@ -28,36 +29,83 @@ function getInitials(name) {
     : name.substring(0, 2).toUpperCase();
 }
 
-function PoinBlock() {
+/**
+ * Hitung array 7 boolean (Senin–Minggu minggu ini) yang aktif,
+ * berdasarkan lastActiveDate dan streakCount dari API.
+ */
+function hitungStreakMingguIni(streakCount, lastActiveDate) {
+  const active = Array(7).fill(false);
+  if (!lastActiveDate || streakCount === 0) return active;
+
+  const last = new Date(lastActiveDate);
+  last.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+  if (diffDays > 1) return active; // streak putus
+
+  const hariIniIndex = (today.getDay() + 6) % 7; // Senin=0, Minggu=6
+  const jumlahAktif = Math.min(streakCount, hariIniIndex + 1);
+  for (let i = 0; i < jumlahAktif; i++) {
+    active[hariIniIndex - i] = true;
+  }
+
+  return active;
+}
+
+function PoinBlock({ poinData }) {
+  const points      = poinData?.points      ?? 0;
+  const streakCount = poinData?.streakCount ?? 0;
+  const lastActive  = poinData?.lastActiveDate ?? null;
+
+  const aktif        = hitungStreakMingguIni(streakCount, lastActive);
+  const hariIniIndex = (new Date().getDay() + 6) % 7;
+
   return (
     <div className="mx-3 mb-2 rounded-lg bg-primary-800 px-3.5 py-3">
       <p className="text-compact-xs font-semibold uppercase tracking-wide text-white/35">
         Total Poin Berkah
       </p>
       <p className="my-0.5 text-2xl font-bold leading-[1.1] text-secondary-400">
-        1.240
+        {points.toLocaleString("id-ID")}
       </p>
-      <p className="text-compact-xs text-white/60">
-        Donatur Aktif · Peringkat #12 Yogyakarta
-      </p>
-      <p className="mb-1.5 mt-3 text-compact-xs text-white/35">
+
+      {/* Streak count */}
+      <div className="flex items-center gap-1.5 mb-3">
+        <Flame size={12} strokeWidth={1.75} className="text-secondary-400" />
+        <p className="text-compact-xs text-white/60 m-0">
+          Streak {streakCount} hari
+        </p>
+      </div>
+
+      <p className="mb-1.5 text-compact-xs text-white/35">
         Streak minggu ini
       </p>
       <div className="flex gap-1">
-        {STREAK.map((d, i) => (
-          <div
-            key={i}
-            className={`flex h-7 w-7 items-center justify-center rounded-full text-compact-xs font-semibold ${
-              i < 4
-                ? "bg-secondary-400 text-primary-900"
-                : i === 4
-                  ? "bg-white text-primary-900 outline-2 -outline-offset-2 outline-secondary-400"
-                  : "bg-white/8 text-white/35"
-            }`}
-          >
-            {d}
-          </div>
-        ))}
+        {HARI.map((d, i) => {
+          const isToday  = i === hariIniIndex;
+          const isAktif  = aktif[i];
+          const isFuture = i > hariIniIndex;
+
+          return (
+            <div
+              key={i}
+              className={`flex h-7 w-7 items-center justify-center rounded-full text-compact-xs font-semibold
+                ${isFuture
+                  ? "bg-white/8 text-white/30"
+                  : isAktif && isToday
+                    ? "bg-white text-primary-900 outline-2 -outline-offset-2 outline-secondary-400"
+                    : isAktif
+                      ? "bg-secondary-400 text-primary-900"
+                      : "bg-white/8 text-white/35"
+                }
+              `}
+            >
+              {d}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -84,9 +132,7 @@ function NavItems() {
         >
           {({ isActive }) => (
             <>
-              <span
-                className={`flex shrink-0 items-center ${isActive ? "opacity-100" : "opacity-70"}`}
-              >
+              <span className={`flex shrink-0 items-center ${isActive ? "opacity-100" : "opacity-70"}`}>
                 <Icon size={16} strokeWidth={1.75} />
               </span>
               {label}
@@ -100,15 +146,17 @@ function NavItems() {
 
 export default function DashboardLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [user, setUser] = useState(DEFAULT_USER);
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [user, setUser]             = useState(DEFAULT_USER);
+  const [poinData, setPoinData]     = useState(null);
+  const location  = useLocation();
+  const navigate  = useNavigate();
 
   function handleLogout() {
     localStorage.removeItem("token");
     navigate("/login");
   }
 
+  // Fetch user profile
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -119,11 +167,25 @@ export default function DashboardLayout() {
       .then((data) => {
         if (data?.data?.name) {
           setUser({
-            name: data.data.name,
-            role: "Donatur Aktif",
+            name:     data.data.name,
+            role:     "Donatur Aktif",
             initials: getInitials(data.data.name),
           });
         }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fetch poin summary — dipakai PoinBlock sidebar
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    fetch(`${API_ORIGIN}/api/poin`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.ok && res.json())
+      .then((data) => {
+        if (data?.data) setPoinData(data.data);
       })
       .catch(() => {});
   }, []);
@@ -134,9 +196,7 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [drawerOpen]);
 
   useEffect(() => {
@@ -161,7 +221,7 @@ export default function DashboardLayout() {
           <NavItems />
         </nav>
 
-        <PoinBlock />
+        <PoinBlock poinData={poinData} />
       </aside>
 
       {/* Header mobile */}
@@ -237,7 +297,7 @@ export default function DashboardLayout() {
           <NavItems />
         </nav>
 
-        <PoinBlock />
+        <PoinBlock poinData={poinData} />
       </div>
 
       <main className="ml-55 flex min-h-screen flex-1 flex-col overflow-x-hidden max-[640px]:ml-0 max-[640px]:pt-14">

@@ -1,4 +1,7 @@
-import { Refrigerator, Snowflake, ThermometerSun } from 'lucide-react'
+import { useState } from 'react'
+import { Refrigerator, Snowflake, ThermometerSun, ChevronLeft, ChevronRight } from 'lucide-react'
+
+const PAGE_SIZE = 10
 
 const STORAGE_ICON = {
   kulkas:  { Icon: Refrigerator,   label: 'Kulkas'     },
@@ -51,7 +54,48 @@ function ExpBadge({ expLabel, expType }) {
   )
 }
 
+function Pagination({ page, totalPages, onChange }) {
+  if (totalPages <= 1) return null
+  return (
+    <div
+      className="flex items-center justify-between px-4 py-3 border-t border-(--border-subtle)"
+      style={{ background: 'var(--bg-alt)' }}
+    >
+      <p className="text-compact-sm" style={{ color: 'var(--text-muted)' }}>
+        Halaman {page} dari {totalPages}
+      </p>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onChange(page - 1)}
+          disabled={page === 1}
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-(--border-default) bg-transparent transition-colors duration-150 hover:bg-(--bg-surface-3) disabled:opacity-40 disabled:cursor-not-allowed"
+          aria-label="Halaman sebelumnya"
+        >
+          <ChevronLeft size={14} strokeWidth={2} style={{ color: 'var(--text-secondary)' }} />
+        </button>
+        <button
+          onClick={() => onChange(page + 1)}
+          disabled={page === totalPages}
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-(--border-default) bg-transparent transition-colors duration-150 hover:bg-(--bg-surface-3) disabled:opacity-40 disabled:cursor-not-allowed"
+          aria-label="Halaman berikutnya"
+        >
+          <ChevronRight size={14} strokeWidth={2} style={{ color: 'var(--text-secondary)' }} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export default function KulkasItemList({ items, onEdit }) {
+  const [page, setPage] = useState(1)
+
+  const totalPages = Math.ceil(items.length / PAGE_SIZE)
+  const offset     = (page - 1) * PAGE_SIZE
+  const paginated  = items.slice(offset, offset + PAGE_SIZE)
+
+  // Reset ke halaman 1 kalau items berubah (search/filter) dan halaman aktif jadi out of range
+  if (page > totalPages && totalPages > 0) setPage(1)
+
   if (items.length === 0) {
     return (
       <div className="overflow-hidden rounded-md border border-(--border-subtle) bg-white shadow-xs">
@@ -65,17 +109,19 @@ export default function KulkasItemList({ items, onEdit }) {
 
   return (
     <>
+      {/* Desktop table */}
       <div className="overflow-hidden rounded-md border border-(--border-subtle) bg-white shadow-xs max-sm:hidden">
         <table className="w-full border-collapse">
           <thead>
             <tr>
               {[
-                { label: 'Nama Bahan', align: 'text-center'   },
-                { label: 'Kategori',   align: 'text-center' },
+                { label: 'No',          align: 'text-center' },
+                { label: 'Nama Bahan',  align: 'text-center'   },
+                { label: 'Kategori',    align: 'text-center' },
                 { label: 'Penyimpanan', align: 'text-center' },
-                { label: 'Jumlah',     align: 'text-center' },
+                { label: 'Jumlah',      align: 'text-center' },
                 { label: 'Kadaluwarsa', align: 'text-center' },
-                { label: '',           align: 'text-center' },
+                { label: '',            align: 'text-center' },
               ].map(col => (
                 <th
                   key={col.label}
@@ -88,11 +134,14 @@ export default function KulkasItemList({ items, onEdit }) {
             </tr>
           </thead>
           <tbody>
-            {items.map(item => (
+            {paginated.map((item, i) => (
               <tr
                 key={item.id}
                 className="border-b border-(--border-subsub) transition-colors duration-150 last:border-b-0 hover:bg-(--bg-alt)"
               >
+                <td className="px-2 py-3 text-center align-middle text-compact-sm" style={{ color: 'var(--text-muted)' }}>
+                  {offset + i + 1}
+                </td>
                 <td className="px-4 py-3 text-left align-middle text-compact-base font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
                   {item.nama}
                 </td>
@@ -123,17 +172,21 @@ export default function KulkasItemList({ items, onEdit }) {
             ))}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>
 
       {/* Mobile cards */}
       <div className="hidden flex-col gap-2 max-sm:flex">
-        {items.map(item => (
+        {paginated.map((item, i) => (
           <div
             key={item.id}
             className={`flex items-center justify-between gap-3 rounded-md border border-(--border-subtle) border-l-[3px] bg-white px-4 py-3 shadow-xs ${borderAccent[item.expType]}`}
           >
             <div className="min-w-0 flex-1">
-              <p className="truncate text-compact-lg font-medium capitalize" style={{ color: 'var(--text-primary)' }}>
+              <p className="truncate text-compact-lg font-medium capitalize flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <span className="shrink-0 text-compact-xs font-normal" style={{ color: 'var(--text-muted)' }}>
+                  {offset + i + 1}.
+                </span>
                 {item.nama}
               </p>
               <div className="mt-1 flex items-center gap-1.5 flex-wrap">
@@ -167,6 +220,7 @@ export default function KulkasItemList({ items, onEdit }) {
             </div>
           </div>
         ))}
+        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>
     </>
   )

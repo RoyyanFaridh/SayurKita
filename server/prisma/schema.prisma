@@ -17,11 +17,16 @@ model User {
   isVerified Boolean  @default(false)
   otpCode    String?
   otpExpires DateTime?
-  cookingLogs CookingLog[]
+  streakCount    Int       @default(0)
+  lastActiveDate DateTime?
+  totalKarbonAkumulasi Float @default(0)
+  poinKarbonAwarded    Int   @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   ingredients Ingredient[]
+  cookingLogs CookingLog[]
+  poinLogs     PoinLog[]
 }
 
 model Ingredient {
@@ -51,4 +56,22 @@ model CookingLog {
   createdAt   DateTime @default(now())
 
   @@index([userId])
+}
+
+model PoinLog {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  delta      Int         
+  source     PoinSource
+  note       String?
+  refId      String?     
+  createdAt  DateTime    @default(now())
+
+  @@index([userId])
+}
+
+enum PoinSource {
+  KARBON
+  STREAK
 }

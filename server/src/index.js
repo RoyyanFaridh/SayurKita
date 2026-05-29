@@ -7,6 +7,7 @@ const ingredientsMasterRoutes = require('./routes/ingredientMasterRoutes')
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const recommendRoutes = require("./routes/recommendRoutes");
 const cookingLogRoutes = require('./routes/cookingLogRoutes')
+const poinRoutes = require("./routes/poinRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +33,7 @@ app.use('/api/ingredients-master', ingredientsMasterRoutes)
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/recommend", recommendRoutes);
 app.use('/api/cooking-logs', cookingLogRoutes)
+app.use("/api/poin", poinRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error("Unhandled error:", err);

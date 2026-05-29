@@ -113,9 +113,10 @@ const getDashboardSummary = async (req, res) => {
 
     // ─── 5. Placeholder stats (model Surplus belum dibuat) ───────────────────
     const postingAktif = 0;
-    const surplusDiselamatkan = user.points > 0
-      ? Math.floor(user.points / 10)
-      : 0;
+    // const surplusDiselamatkan = user.points > 0
+    //   ? Math.floor(user.points / 10)
+    //   : 0;
+    const surplusDiselamatkan = 0; // TODO: hitung dari model Surplus saat sudah dibuat
       
     const cookingLogs = await prisma.cookingLog.findMany({
       where: { userId },

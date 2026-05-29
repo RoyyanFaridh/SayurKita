@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const { awardPoin } = require("../services/poinService");
 const prisma = new PrismaClient();
 
 /**
@@ -34,7 +35,6 @@ const createCookingLog = async (req, res) => {
       });
     }
 
-    // Validasi setiap item di bahanUsed
     for (const b of bahanUsed) {
       if (!b.nama || typeof b.karbon_co2e !== "number") {
         return res.status(400).json({
@@ -44,8 +44,6 @@ const createCookingLog = async (req, res) => {
       }
     }
 
-    // Hitung total karbon: sum karbon_co2e semua bahan yang dipakai
-    // Flat per bahan — bukan per gram, karena quantity tidak bisa di-parse reliably.
     const totalKarbon = parseFloat(
       bahanUsed.reduce((sum, b) => sum + (b.karbon_co2e || 0), 0).toFixed(3)
     );
@@ -55,15 +53,24 @@ const createCookingLog = async (req, res) => {
         userId,
         resepNama,
         resepId: resepId ? String(resepId) : null,
-        bahanUsed,      // Prisma simpan sebagai JSON
+        bahanUsed,
         totalKarbon,
       },
     });
+
+    // Award poin — jika gagal, cooking log tetap tersimpan (non-fatal)
+    let poinResult = null;
+    try {
+      poinResult = await awardPoin(userId, totalKarbon, log.id);
+    } catch (poinErr) {
+      console.error("awardPoin error (non-fatal):", poinErr);
+    }
 
     return res.status(201).json({
       success: true,
       message: "Log memasak berhasil disimpan.",
       data: log,
+      poin: poinResult, // null jika awardPoin gagal
     });
   } catch (err) {
     console.error("createCookingLog error:", err);
