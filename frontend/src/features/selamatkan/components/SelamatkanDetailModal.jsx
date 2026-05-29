@@ -1,5 +1,5 @@
 import { X, MapPin, Package, Leaf, Clock, CheckSquare, MessageCircle, CheckCircle2 } from 'lucide-react'
-import { API_ORIGIN } from '../../../../config/api'
+import { API_ORIGIN } from '../../../config/api'
 
 // Kalkulator estimasi jejak karbon disalin agar konsisten
 const CARBON_FACTOR_GRAM = {
