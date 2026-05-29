@@ -15,10 +15,10 @@ const getDashboardSummary = async (req, res) => {
       });
     }
 
-    // ─── 1. Data User (nama + poin + totalCarbonSaved) ───────────────────────
+    // ─── 1. Data User (nama + poin + totalKarbonAkumulasi) ───────────────────────
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { name: true, points: true, totalCarbonSaved: true },
+      select: { name: true, points: true, totalKarbonAkumulasi: true },
     });
 
     if (!user) {
@@ -111,12 +111,22 @@ const getDashboardSummary = async (req, res) => {
       };
     });
 
-    // ─── 5. Placeholder stats (model Surplus belum dibuat) ───────────────────
-    const postingAktif = 0;
-    const surplusDiselamatkan = user.points > 0
-      ? Math.floor(user.points / 10)
-      : 0;
-    const karbonDiselamatkan = user.totalCarbonSaved || 0;
+    // ─── 5. Placeholder stats & Gamification ───────────────────────────────────
+    const postingAktif = await prisma.surplusPost.count({
+      where: { userId, status: 'Tersedia' }
+    });
+    const surplusDiselamatkan = await prisma.surplusPost.count({
+      where: { receiverId: userId, status: 'Selesai' }
+    });
+    
+    // Using cookingLogs as added by gamification to count karbon
+    const cookingLogs = await prisma.cookingLog.findMany({
+      where: { userId },
+      select: { totalKarbon: true },
+    });
+    const karbonDiselamatkan = parseFloat(
+      cookingLogs.reduce((sum, log) => sum + log.totalKarbon, 0).toFixed(2)
+    ) + (user.totalKarbonAkumulasi || 0);
 
     // ─── 6. Susun response ───────────────────────────────────────────────────
     return res.status(200).json({
