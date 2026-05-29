@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react'
-import { X, ExternalLink, ChefHat, Leaf, AlertCircle, CheckCircle2, Plus } from 'lucide-react'
+import { X, ExternalLink, ChefHat, Leaf, AlertCircle, CheckCircle2, Plus, Loader2, Sparkles } from 'lucide-react'
 import { parseIngredients, parseSteps, categoryColor } from '../../../utils/resepUtils'
 import { API_ORIGIN } from '../../../config/api'
 
@@ -107,6 +107,9 @@ function StokIndikator({ bahan, onTambah }) {
  * Tampilan hasil karbon setelah log disimpan
  */
 function CarbonResult({ recipe, result }) {
+  const poinAwarded = result.poin?.delta || 0
+  const deletedCount = result.deletedIngredients?.length || 0
+
   return (
     <div className="flex flex-col items-center gap-5 py-4 text-center">
       <div
@@ -118,7 +121,7 @@ function CarbonResult({ recipe, result }) {
 
       <div className="flex flex-col gap-1">
         <p className="text-compact-xl font-semibold m-0" style={{ color: 'var(--text-primary)' }}>
-          Log memasak disimpan
+          Resep berhasil dimasak! 🎉
         </p>
         <p className="text-compact-sm m-0" style={{ color: 'var(--text-muted)' }}>
           Estimasi jejak karbon dari resep{' '}
@@ -137,6 +140,32 @@ function CarbonResult({ recipe, result }) {
           kg CO₂e (estimasi)
         </span>
       </div>
+
+      {/* Info bahan yang dihapus dari kulkas */}
+      {deletedCount > 0 && (
+        <div
+          className="w-full flex items-center gap-2 px-4 py-3 rounded-md"
+          style={{ background: 'var(--bg-info-subtle)', border: '0.5px solid var(--border-subtle)' }}
+        >
+          <CheckCircle2 size={16} strokeWidth={2} style={{ color: 'var(--text-info)' }} />
+          <p className="text-compact-sm m-0" style={{ color: 'var(--text-info)' }}>
+            <strong>{deletedCount} bahan</strong> telah dikurangi dari kulkasmu
+          </p>
+        </div>
+      )}
+
+      {/* Info poin yang didapat */}
+      {poinAwarded > 0 && (
+        <div
+          className="w-full flex items-center gap-2 px-4 py-3 rounded-md"
+          style={{ background: 'var(--bg-warning-subtle)', border: '0.5px solid var(--border-subtle)' }}
+        >
+          <Sparkles size={16} strokeWidth={2} style={{ color: 'var(--text-warning)' }} />
+          <p className="text-compact-sm m-0" style={{ color: 'var(--text-warning)' }}>
+            Kamu mendapat <strong>+{poinAwarded} Poin Berkah</strong>!
+          </p>
+        </div>
+      )}
 
       <ul className="list-none p-0 m-0 w-full flex flex-col gap-0">
         {result.bahanUsed.map((b, i) => (
@@ -166,17 +195,19 @@ function CarbonResult({ recipe, result }) {
 const STEPS = { DETAIL: 'detail', SUCCESS: 'success' }
 
 export default function ResepModal({ recipe, onClose, userIngredients = [], masterData = [], onTambahBahan, onCookingLogged }) {
-  const [step, setStep]       = useState(STEPS.DETAIL)
-  const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState(null)
-  const [result, setResult]   = useState(null)
+  const [step, setStep]         = useState(STEPS.DETAIL)
+  const [isCooking, setIsCooking] = useState(false)
+  const [hasCooked, setHasCooked] = useState(false)
+  const [error, setError]       = useState(null)
+  const [result, setResult]     = useState(null)
 
   // Reset state saat resep berganti
   useEffect(() => {
     setStep(STEPS.DETAIL)
     setError(null)
     setResult(null)
-    setLoading(false)
+    setIsCooking(false)
+    setHasCooked(false)
   }, [recipe?.id])
 
   const ingredients = recipe ? parseIngredients(recipe.ingredients_raw) : []
@@ -208,30 +239,54 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
   const semuaTerpenuhi = bahanAnalysis.every((b) => b.adaDiStok)
   const jumlahKurang   = bahanAnalysis.filter((b) => !b.adaDiStok).length
 
-  const handlePakaiResep = async () => {
-    setLoading(true)
+  const handleCookRecipe = async () => {
+    setIsCooking(true)
     setError(null)
 
-    const bahanUsed   = bahanAnalysis.map((b) => ({ nama: b.rawNama, karbon_co2e: b.karbonCo2e }))
-    const totalKarbon = parseFloat(bahanUsed.reduce((sum, b) => sum + b.karbon_co2e, 0).toFixed(3))
+    // Prepare payload
+    const ingredientsUsed = bahanAnalysis.map((b) => b.rawNama)
+    const bahanUsed       = bahanAnalysis.map((b) => ({ nama: b.rawNama, karbon_co2e: b.karbonCo2e }))
+    const totalKarbon     = parseFloat(bahanUsed.reduce((sum, b) => sum + b.karbon_co2e, 0).toFixed(3))
 
     try {
       const token = localStorage.getItem('token')
-      const res   = await fetch(`${API_ORIGIN}/api/cooking-logs`, {
+      const res   = await fetch(`${API_ORIGIN}/api/recommend/cook`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ resepNama: recipe.name, resepId: recipe.id ?? null, bahanUsed }),
+        headers: { 
+          'Content-Type': 'application/json', 
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ 
+          resepNama: recipe.name, 
+          resepId: recipe.id ?? null, 
+          ingredientsUsed,
+          bahanUsed,
+          totalKarbon
+        }),
       })
-      const data = await res.json()
-      if (!data.success) throw new Error(data.message)
 
-      setResult({ totalKarbon, bahanUsed })
+      const data = await res.json()
+      
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Gagal menyimpan log memasak.')
+      }
+
+      // Success! Set result dan pindah ke step SUCCESS
+      setResult({
+        totalKarbon,
+        bahanUsed,
+        deletedIngredients: data.data?.deletedIngredients || [],
+        poin: data.data?.poin || null,
+      })
+      setHasCooked(true)
       setStep(STEPS.SUCCESS)
+      
+      // Notify parent untuk refresh data
       onCookingLogged?.()
     } catch (err) {
       setError(err.message || 'Gagal menyimpan log memasak.')
     } finally {
-      setLoading(false)
+      setIsCooking(false)
     }
   }
 
@@ -409,9 +464,15 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
               </section>
 
               {error && (
-                <p className="text-compact-sm m-0" style={{ color: 'var(--color-danger-700)' }}>
-                  {error}
-                </p>
+                <div
+                  className="flex items-center gap-2 px-4 py-3 rounded-md"
+                  style={{ background: 'var(--bg-danger-subtle)', border: '0.5px solid var(--border-danger)' }}
+                >
+                  <AlertCircle size={16} strokeWidth={2} style={{ color: 'var(--color-danger-700)' }} />
+                  <p className="text-compact-sm m-0" style={{ color: 'var(--color-danger-700)' }}>
+                    {error}
+                  </p>
+                </div>
               )}
             </>
           )}
@@ -446,18 +507,42 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
 
           {step === STEPS.DETAIL && (
             <button
-              onClick={handlePakaiResep}
-              disabled={!semuaTerpenuhi || loading}
+              onClick={handleCookRecipe}
+              disabled={!semuaTerpenuhi || isCooking || hasCooked}
               className="inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-compact-sm font-semibold border-0 cursor-pointer transition-all duration-150"
               style={{
-                background: semuaTerpenuhi ? 'var(--color-primary-600)' : 'var(--bg-surface-3)',
-                color: semuaTerpenuhi ? '#fff' : 'var(--text-disabled)',
-                cursor: semuaTerpenuhi && !loading ? 'pointer' : 'not-allowed',
-                opacity: loading ? 0.6 : 1,
+                background: hasCooked 
+                  ? 'var(--bg-success-subtle)' 
+                  : semuaTerpenuhi 
+                    ? 'var(--color-primary-600)' 
+                    : 'var(--bg-surface-3)',
+                color: hasCooked
+                  ? 'var(--text-success)'
+                  : semuaTerpenuhi 
+                    ? '#fff' 
+                    : 'var(--text-disabled)',
+                cursor: (semuaTerpenuhi && !isCooking && !hasCooked) ? 'pointer' : 'not-allowed',
+                opacity: isCooking ? 0.6 : 1,
               }}
             >
-              <Leaf size={14} strokeWidth={2} />
-              {loading ? 'Menyimpan…' : semuaTerpenuhi ? 'Pakai Resep Ini' : 'Cek Bahan'}
+              {isCooking ? (
+                <>
+                  <Loader2 size={14} strokeWidth={2} className="animate-spin" />
+                  Menyimpan...
+                </>
+              ) : hasCooked ? (
+                <>
+                  <CheckCircle2 size={14} strokeWidth={2} />
+                  Sudah Dimasak 🎉
+                </>
+              ) : semuaTerpenuhi ? (
+                <>
+                  <Leaf size={14} strokeWidth={2} />
+                  Sudah Dimasak
+                </>
+              ) : (
+                'Cek Bahan'
+              )}
             </button>
           )}
 

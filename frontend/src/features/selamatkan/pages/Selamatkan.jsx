@@ -24,7 +24,7 @@ export default function Selamatkan() {
   const [detailModalItem, setDetailModalItem] = useState(null)
   const [userCoords, setUserCoords] = useState(null)
   const [locating,   setLocating]   = useState(false)
-  const [loading,    setLoading]    = useState(false)
+  const [loading,    setLoading]    = useState(true)  // true dari awal agar spinner tampil sebelum data
   const [currentUserId, setCurrentUserId] = useState(null)
   const [activeTab, setActiveTab] = useState('feed') // 'feed' | 'my-donations'
   const [stats, setStats] = useState({
