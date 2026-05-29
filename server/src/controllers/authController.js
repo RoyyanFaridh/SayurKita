@@ -227,27 +227,34 @@ exports.login = async (req, res) => {
       });
     }
 
+    let user;
+
     if (identity.phone) {
       const normalizedPhone = normalizePhone(identity.phone);
       if (!normalizedPhone) {
-        return res.status(400).json({
-          success: false,
-          message: "Format nomor HP harus menggunakan +62.",
+        // Coba cari berdasarkan Name (username) sebagai fallback
+        user = await prisma.user.findFirst({
+          where: {
+            name: {
+              equals: identity.phone,
+              mode: "insensitive",
+            },
+          },
+        });
+      } else {
+        user = await prisma.user.findUnique({
+          where: { phone: normalizedPhone },
         });
       }
-      identity.phone = normalizedPhone;
-    }
-
-    if (identity.email) {
+    } else if (identity.email) {
       identity.email = identity.email.toLowerCase();
+      user = await prisma.user.findUnique({ where: { email: identity.email } });
     }
-
-    const user = await prisma.user.findUnique({ where: identity });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Email/nomor HP atau password salah.",
+        message: "Email/nomor HP/Nama atau password salah.",
       });
     }
 

@@ -1,42 +1,85 @@
-import { useMemo } from 'react'
-import { ArrowRight, MapPin } from 'lucide-react'
+import { useState, useEffect, useMemo } from 'react'
+import { ArrowRight, MapPin, Loader2, AlertCircle } from 'lucide-react'
 import { hitungJarak, formatJarak } from '../../../utils/geoUtils'
+import { API_ORIGIN } from '../../../config/api'
 
-const SURPLUS = [
-  { id: 1, name: 'Nasi Kotak Sisa Acara RT', by: 'Sari',   qty: '10 box',  status: 'segar',    lat: -7.7934, lng: 110.3658 },
-  { id: 2, name: 'Rendang sisa lebaran',      by: 'Sri',    qty: '2 porsi', status: 'segar',    lat: -7.8012, lng: 110.3714 },
-  { id: 3, name: 'Sayur campur',              by: 'Joko',   qty: 'Banyak',  status: 'mau-basi', lat: -7.7889, lng: 110.3801 },
-  { id: 4, name: 'Nasi Kemarin',              by: 'Aminah', qty: '4 porsi', status: 'basi',     lat: -7.8103, lng: 110.3592 },
-]
-
+// Pemetaan status visual
 const STATUS_MAP = {
-  // spasi ganda dibersihkan
-  'segar':    { cls: 'bg-(--status-segar-bg) text-(--status-segar-text) border border-(--status-segar-border)',    label: 'Segar'    },
-  'mau-basi': { cls: 'bg-(--status-hati-bg) text-(--status-hati-text) border border-(--status-hati-border)',       label: 'Mau basi' },
-  'basi':     { cls: 'bg-(--status-basi-bg) text-(--status-basi-text) border border-(--status-basi-border)',       label: 'Basi'     },
+  'segar':    { cls: 'bg-(--status-segar-bg) text-(--status-segar-text) border border-(--status-segar-border)',  label: 'Segar'    },
+  'mau-basi': { cls: 'bg-(--status-hati-bg) text-(--status-hati-text) border border-(--status-hati-border)',     label: 'Mau basi' },
+  'basi':     { cls: 'bg-(--status-basi-bg) text-(--status-basi-text) border border-(--status-basi-border)',     label: 'Basi'     },
+}
+
+// Petakan pickupTime dari backend ke status visual
+// Backend tidak punya field segar/basi — kita inferensikan dari pickupTime
+function resolveStatus(pickupTime = '') {
+  const t = pickupTime.toLowerCase()
+  if (t.includes('segera') || t.includes('hari ini')) return 'mau-basi'
+  if (t.includes('besok') || t.includes('2 hari'))    return 'segar'
+  return 'segar' // default aman
 }
 
 export default function SurplusDashWidget({ userCoords }) {
+  const [rawData, setRawData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState('')
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) { setLoading(false); return }
+
+    setLoading(true)
+    setError('')
+
+    // Kirim koordinat jika tersedia agar backend sort by distance via PostGIS
+    // radius=9999 memastikan semua data muncul meski koordinat default jauh
+    const params = new URLSearchParams()
+    if (userCoords?.lat) params.set('lat', userCoords.lat)
+    if (userCoords?.lng) params.set('lng', userCoords.lng)
+    params.set('radius', '9999')
+
+    fetch(`${API_ORIGIN}/api/surplus?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(`HTTP ${res.status}`))
+      .then(data => setRawData(data.data || []))
+      .catch(() => setError('Gagal memuat data surplus.'))
+      .finally(() => setLoading(false))
+  }, [userCoords])
+
+  // Sort by jarak di sisi frontend sebagai fallback
+  // (jika backend tidak kirim distanceKm karena tidak ada koordinat)
   const items = useMemo(() => {
-    return SURPLUS
+    return rawData
+      .slice(0, 4) // tampilkan max 4 item di widget
       .map(item => {
-        if (!userCoords) return { ...item, _jarakRaw: Infinity, jarakLabel: null }
-        const km = hitungJarak(userCoords.lat, userCoords.lng, item.lat, item.lng)
-        return { ...item, _jarakRaw: km, jarakLabel: formatJarak(km) }
+        // Gunakan distanceKm dari backend (PostGIS) jika ada, fallback ke Haversine
+        const km = item.distanceKm != null
+          ? item.distanceKm
+          : userCoords
+            ? hitungJarak(userCoords.lat, userCoords.lng, item.latitude, item.longitude)
+            : null
+
+        return {
+          id:         item.id,
+          name:       item.title,
+          by:         item.user?.name ?? 'Anonim',
+          qty:        item.quantity,
+          status:     resolveStatus(item.pickupTime),
+          jarakLabel: km != null ? formatJarak(km) : null,
+          _jarakRaw:  km ?? Infinity,
+        }
       })
       .sort((a, b) => a._jarakRaw - b._jarakRaw)
-  }, [userCoords])
+  }, [rawData, userCoords])
 
   return (
     <div
-      // rounded-md — konsisten, rounded-xl dihapus
-      // border-[0.5px] + inline borderColor — --border-subsub dihapus
-      // shadow via inline style — konsisten dengan semua card lain
       className="rounded-md overflow-hidden border-[0.5px]"
       style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subtle)', boxShadow: 'var(--shadow-xs)' }}
     >
+      {/* Header */}
       <div
-        // pt-4 pb-2 px-4 — konsisten dengan pola header card lain
         className="flex justify-between items-start gap-3 px-4 pt-4 pb-2 border-b"
         style={{ borderColor: 'var(--border-subtle)' }}
       >
@@ -45,9 +88,6 @@ export default function SurplusDashWidget({ userCoords }) {
             Surplus Dekatmu
           </h2>
           <p className="flex items-center gap-1.5 text-compact-sm mt-0.5 m-0" style={{ color: 'var(--text-muted)' }}>
-            {/* animate-pulse via Tailwind class, bukan inline style
-                bg-secondary-500 (hijau brand) bukan bg-danger-500 (merah) —
-                live indicator positif lebih seirama dengan palet SayurKita */}
             <span
               className="inline-block w-1.5 h-1.5 rounded-full shrink-0 bg-secondary-500 animate-pulse"
               aria-hidden="true"
@@ -56,7 +96,6 @@ export default function SurplusDashWidget({ userCoords }) {
           </p>
         </div>
         <button
-          // hover:opacity-75 — konsisten dengan semua button link lain
           className="inline-flex items-center gap-1 text-compact-base font-medium border-none bg-transparent cursor-pointer shrink-0 transition-opacity duration-150 hover:opacity-75"
           style={{ color: 'var(--text-brand)' }}
         >
@@ -64,7 +103,23 @@ export default function SurplusDashWidget({ userCoords }) {
         </button>
       </div>
 
-      {items.length === 0 ? (
+      {/* Body */}
+      {loading ? (
+        <div className="flex items-center justify-center gap-2 py-8">
+          <Loader2 size={16} className="animate-spin" style={{ color: 'var(--color-secondary-600)' }} />
+          <p className="text-compact-sm m-0" style={{ color: 'var(--text-muted)' }}>
+            Memuat surplus terdekat...
+          </p>
+        </div>
+      ) : error ? (
+        <div
+          className="flex items-center gap-2 mx-4 my-4 px-3 py-2.5 rounded-md"
+          style={{ background: 'var(--bg-warning-subtle)', border: '0.5px solid var(--border-warning)' }}
+        >
+          <AlertCircle size={14} className="shrink-0" style={{ color: 'var(--color-warning-600)' }} />
+          <p className="text-compact-sm m-0" style={{ color: 'var(--color-warning-800)' }}>{error}</p>
+        </div>
+      ) : items.length === 0 ? (
         <p className="text-compact-sm py-6 text-center m-0" style={{ color: 'var(--text-muted)' }}>
           Belum ada surplus di sekitarmu.
         </p>
@@ -85,7 +140,6 @@ export default function SurplusDashWidget({ userCoords }) {
                   {jarakLabel && (
                     <>
                       <span className="w-px h-3 shrink-0" style={{ background: 'var(--border-default)' }} />
-                      {/* size={12} bukan size={10} — 10px terlalu kecil untuk inline icon */}
                       <MapPin size={12} strokeWidth={2} className="shrink-0" />
                       {jarakLabel}
                     </>
