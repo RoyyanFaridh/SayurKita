@@ -82,8 +82,8 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
-  const fetchDashboard = useCallback(async () => {
-    setLoading(true);
+  const fetchDashboard = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
     setFetchError(false);
     try {
       const token = localStorage.getItem("token");
@@ -115,7 +115,7 @@ export default function Dashboard() {
       console.error("fetchDashboard error:", err);
       setFetchError(true);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   }, [navigate]);
 
@@ -234,7 +234,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 gap-5 max-[900px]:grid-cols-1 max-sm:px-4">
           <div className="flex flex-col gap-5">
             <KulkasDashWidget items={kulkasPreview} />
-            <ResepWidget onCookingLogged={fetchDashboard} />
+            <ResepWidget onCookingLogged={() => fetchDashboard(true)} />
           </div>
           <div className="flex flex-col gap-5">
             <SurplusDashWidget userCoords={userCoords} />

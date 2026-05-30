@@ -33,7 +33,7 @@ export default function SelamatkanDetailModal({
   const hasExpired = item.expiredReceivers?.includes(String(currentUserId))
   
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-xl flex flex-col max-h-[90vh]">
         
         {/* Gambar Atas */}
@@ -58,16 +58,16 @@ export default function SelamatkanDetailModal({
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="inline-flex px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-md uppercase tracking-wide">
+              <span className="inline-flex px-2.5 py-1 bg-primary-100 text-primary-800 text-compact-sm font-bold rounded-md uppercase tracking-wide">
                 {item.kategori}
               </span>
-              <span className="inline-flex items-center gap-1 text-emerald-600 text-compact-xs font-semibold bg-emerald-50 px-2 py-1 rounded-md">
+              <span className="inline-flex items-center gap-1 text-primary-600 text-compact-xs font-semibold bg-primary-50 px-2 py-1 rounded-md">
                 <Leaf size={12} /> -{estimasiCarbon}g CO₂
               </span>
             </div>
             <h2 className="text-xl font-bold text-slate-800 leading-tight mb-1">{item.nama}</h2>
             <div className="flex items-center gap-1.5 text-compact-sm text-slate-500">
-              <div className="w-5 h-5 rounded-full bg-primary-100 text-primary-700 text-[10px] font-bold flex items-center justify-center shrink-0">
+              <div className="w-5 h-5 rounded-full bg-primary-100 text-primary-700 text-compact-xs font-bold flex items-center justify-center shrink-0">
                 {item.pemilik?.[0]?.toUpperCase()}
               </div>
               <span className="font-medium text-slate-700">{item.pemilik}</span>
@@ -114,7 +114,7 @@ export default function SelamatkanDetailModal({
               {item.status === 'Tersedia' && !isOwner && !hasExpired && (
                 <button
                   onClick={() => { onAction('claim'); onClose(); }}
-                  className="flex-1 inline-flex justify-center items-center gap-1.5 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-compact-sm font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+                  className="flex-1 inline-flex justify-center items-center gap-1.5 px-4 py-2.5 bg-primary-600 text-white rounded-xl text-compact-sm font-semibold hover:bg-primary-700 transition-colors shadow-sm"
                 >
                   <Package size={16} /> Klaim Makanan
                 </button>
@@ -146,7 +146,7 @@ export default function SelamatkanDetailModal({
                 </button>
               )}
               {item.status === 'Selesai' && (
-                <div className="w-full text-center p-2 text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-100 text-compact-sm font-medium">
+                <div className="w-full text-center p-2 text-primary-700 bg-primary-50 rounded-xl border border-primary-100 text-compact-sm font-medium">
                   <CheckCircle2 size={16} className="inline-block mr-1.5 mb-0.5" />
                   Terima kasih! Donasi ini berhasil diselesaikan.
                 </div>

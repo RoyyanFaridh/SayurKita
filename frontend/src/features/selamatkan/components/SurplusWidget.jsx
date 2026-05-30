@@ -3,7 +3,7 @@ export default function SurplusWidget({ item }) {
     <div
       className="flex w-55 max-w-full flex-col gap-1 rounded-md px-4 py-3 box-border overflow-hidden
                  max-md:w-45 max-md:px-3 max-md:py-2
-                 max-[480px]:w-[125px] max-[480px]:gap-0.5 max-[480px]:px-2.5 max-[480px]:py-1.5"
+                 max-[480px]:w-31.25 max-[480px]:gap-0.5 max-[480px]:px-2.5 max-[480px]:py-1.5"
       style={{
         background:  'var(--bg-surface-1)',
         borderWidth: '1px',

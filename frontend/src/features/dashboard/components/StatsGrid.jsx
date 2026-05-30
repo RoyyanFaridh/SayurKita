@@ -60,7 +60,7 @@ export default function StatsGrid({ stats }) {
     },
     {
       ...STAT_TEMPLATES[3],
-      value: stats ? String(stats.karbonDiselamatkan) : '—',
+      value: stats ? parseFloat(stats.karbonDiselamatkan.toFixed(2)).toLocaleString('id-ID', { maximumFractionDigits: 2 }) : '—',
       badge: 'Estimasi dampak',
     },
   ]
