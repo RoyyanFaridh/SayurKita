@@ -14,7 +14,6 @@ import { hitungJarak, formatJarak } from '../../../utils/geoUtils'
 
 const KONDISI_URGENCY = { segera: 0, 'mau-habis': 1, segar: 2 }
 
-// Validasi koordinat — dipakai untuk mencegah fetch dengan nilai NaN/null
 const isValidCoord  = (v) => Number.isFinite(Number(v))
 const isValidLatLng = (lat, lng) => isValidCoord(lat) && isValidCoord(lng)
 
@@ -26,17 +25,13 @@ export default function Selamatkan() {
   const [sortBy,          setSortBy]          = useState('jarak')
   const [modal,           setModal]           = useState(false)
   const [detailModalItem, setDetailModalItem] = useState(null)
-  const [userCoords,      setUserCoords]      = useState(null)   // null = belum dapat lokasi
+  const [userCoords,      setUserCoords]      = useState(null)
   const [locating,        setLocating]        = useState(false)
   const [loading,         setLoading]         = useState(true)
   const [currentUserId,   setCurrentUserId]   = useState(null)
-  const [activeTab,       setActiveTab]       = useState('feed') // 'feed' | 'my-donations'
+  const [activeTab,       setActiveTab]       = useState('feed')
   const [stats,           setStats]           = useState({ active: 0, expiring: 0, savedThisMonth: 0 })
 
-  // ─── Geolocation ──────────────────────────────────────────────────
-  // userCoords hanya di-set kalau koordinat yang datang dari browser valid.
-  // Ini mencegah state berisi { lat: NaN } atau { lat: undefined } yang akan
-  // lolos truthy check tapi crash di Leaflet.
   const handleLocate = useCallback(() => {
     if (!navigator.geolocation) return
     setLocating(true)
@@ -44,16 +39,13 @@ export default function Selamatkan() {
       pos => {
         const lat = pos.coords.latitude
         const lng = pos.coords.longitude
-        if (isValidLatLng(lat, lng)) {
-          setUserCoords({ lat, lng })
-        }
+        if (isValidLatLng(lat, lng)) setUserCoords({ lat, lng })
         setLocating(false)
       },
       () => setLocating(false)
     )
   }, [])
 
-  // ─── Auth ─────────────────────────────────────────────────────────
   const fetchUser = useCallback(async () => {
     try {
       const token = localStorage.getItem('token')
@@ -68,7 +60,6 @@ export default function Selamatkan() {
     }
   }, [])
 
-  // ─── Data Fetch ───────────────────────────────────────────────────
   const fetchSurplus = useCallback(async () => {
     setLoading(true)
     try {
@@ -80,8 +71,6 @@ export default function Selamatkan() {
       if (activeTab === 'my-donations') {
         url = `${API_ORIGIN}/api/surplus/my-posts`
       } else {
-        // Koordinat hanya dipakai kalau benar-benar valid — menghindari
-        // query backend dengan ?lat=NaN&lng=NaN yang akan dibalas error 400
         if (userCoords && isValidLatLng(userCoords.lat, userCoords.lng)) {
           url      += `?lat=${userCoords.lat}&lng=${userCoords.lng}&radius=${radius}`
           statsUrl += `?lat=${userCoords.lat}&lng=${userCoords.lng}&radius=${radius}`
@@ -93,13 +82,11 @@ export default function Selamatkan() {
         }
       }
 
-      // Fetch posts
       const response = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
       })
       const data = await response.json()
 
-      // Fetch stats (hanya saat tab feed)
       if (activeTab === 'feed') {
         const statsResponse = await fetch(statsUrl, {
           headers: { Authorization: `Bearer ${token}` },
@@ -120,9 +107,6 @@ export default function Selamatkan() {
                               : item.pickupTime === 'Segera ambil'
                               ? 'mau-habis'
                               : 'segar',
-          // Koordinat dari backend sudah di-sanitize oleh sanitizeCoords()
-          // di controller, tapi kita parseFloat ulang di sini sebagai lapisan
-          // terakhir sebelum masuk ke state React.
           lat:              item.latitude  != null ? parseFloat(item.latitude)  : null,
           lng:              item.longitude != null ? parseFloat(item.longitude) : null,
           lokasi:           item.address,
@@ -144,14 +128,12 @@ export default function Selamatkan() {
     }
   }, [userCoords, radius, kategori, activeTab])
 
-  // ─── Effects ──────────────────────────────────────────────────────
   useEffect(() => { handleLocate() }, [handleLocate])
   useEffect(() => { fetchUser()    }, [fetchUser])
   useEffect(() => {
     if (currentUserId) fetchSurplus()
   }, [fetchSurplus, currentUserId])
 
-  // ─── Derived State ────────────────────────────────────────────────
   const itemsWithJarak = useMemo(() => {
     return surplusItems.map(item => {
       if (
@@ -171,9 +153,7 @@ export default function Selamatkan() {
     return itemsWithJarak
       .filter(i => {
         if (activeTab === 'my-donations') return true
-
         if (i.expiredReceivers?.includes(String(currentUserId))) return false
-
         const matchKat    = kategori === 'Semua' || i.kategori === kategori
         const matchQ      = i.nama.toLowerCase().includes(search.toLowerCase()) ||
                             i.deskripsi.toLowerCase().includes(search.toLowerCase())
@@ -188,14 +168,12 @@ export default function Selamatkan() {
       })
   }, [itemsWithJarak, search, kategori, radius, sortBy, userCoords, activeTab, currentUserId])
 
-  // ─── Render ───────────────────────────────────────────────────────
   return (
     <>
       <SelamatkanTopbar totalAktif={surplusItems.length} onPosting={() => setModal(true)} />
 
       <div className="px-7 pt-6 pb-10 flex flex-col gap-5 max-[640px]:px-0 max-[640px]:pt-0 max-[640px]:pb-8 max-[640px]:gap-4">
 
-        {/* Mobile header */}
         <div className="hidden items-center justify-between bg-primary-600 px-4 pb-5 pt-4 rounded-b-xl max-[640px]:flex">
           <div>
             <h1 className="text-xl font-bold text-white leading-snug">Selamatkan!</h1>
@@ -215,7 +193,6 @@ export default function Selamatkan() {
           <SelamatkanStatsBar stats={{ ...stats, radius }} />
         </div>
 
-        {/* Tab switcher */}
         <div className="max-[640px]:px-4">
           <div className="flex bg-gray-100/80 p-1 rounded-xl w-max">
             {[
@@ -245,6 +222,20 @@ export default function Selamatkan() {
               radius={radius}     onRadius={setRadius}
               sortBy={sortBy}     onSort={setSortBy}
             />
+          </div>
+        )}
+
+        {activeTab === 'feed' && (
+          <div className="hidden max-[640px]:block max-[640px]:px-4">
+            <div className="h-48 rounded-xl overflow-hidden">
+              <SelamatkanMapPanel
+                items={filtered}
+                radius={radius}
+                userCoords={userCoords}
+                onLocate={handleLocate}
+                locating={locating}
+              />
+            </div>
           </div>
         )}
 

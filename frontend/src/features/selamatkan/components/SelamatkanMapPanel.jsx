@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Navigation } from 'lucide-react'
 import { KONDISI_MAP } from '../selamatkanData'
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
@@ -31,28 +31,37 @@ const DEFAULT_CENTER = [-7.7956, 110.3695]
 const isValidCoord  = (v) => Number.isFinite(Number(v))
 const isValidLatLng = (lat, lng) => isValidCoord(lat) && isValidCoord(lng)
 
-// ─── Map Controller ───────────────────────────────────────────────────
-// Menangani flyTo dengan tiga lapis perlindungan:
-//   1. Guard koordinat (isValidLatLng)
-//   2. map._loaded — Leaflet internal flag; false saat React Strict Mode
-//      double-invoke effect pada instance yang sudah/belum di-init.
-//      Tanpa ini, flyTo crash dengan "Invalid LatLng (NaN, NaN)" karena
-//      viewport belum punya ukuran valid.
-//   3. try/catch — safety net terakhir untuk race condition yang tidak
-//      bisa fully dicegah dari luar.
-function MapController({ center }) {
+function MapController({ center, isUserLocation }) {
   const map = useMap()
+  const prevCenter = useRef(null)
+
   useEffect(() => {
-    if (!center) return
+    const timer = setTimeout(() => {
+      map.invalidateSize()
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [map])
+
+  useEffect(() => {
+    if (!isUserLocation || !center) return
     const [lat, lng] = center
     if (!isValidLatLng(lat, lng)) return
-    try {
-      if (!map._loaded) return
-      map.flyTo([Number(lat), Number(lng)], 14, { duration: 1.5 })
-    } catch {
-      // Abaikan — hanya terjadi saat race condition Strict Mode
-    }
-  }, [center, map])
+
+    const prev = prevCenter.current
+    if (prev && prev[0] === lat && prev[1] === lng) return
+    prevCenter.current = center
+
+    const timer = setTimeout(() => {
+      try {
+        map.flyTo([Number(lat), Number(lng)], 14, { duration: 1.5 })
+      } catch {
+        // ignore race condition
+      }
+    }, 150)
+
+    return () => clearTimeout(timer)
+  }, [center, isUserLocation, map])
+
   return null
 }
 
@@ -132,12 +141,13 @@ export default function SelamatkanMapPanel({ items, radius, userCoords, onLocate
           zoom={14}
           scrollWheelZoom={true}
           style={{ height: '100%', width: '100%', zIndex: 0 }}
+          // ← hapus prop ref yang ada typo `map.invalidateSize()`
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <MapController center={center} />
+          <MapController center={center} isUserLocation={hasValidUserCoords} />
 
           {/* Marker user */}
           {hasValidUserCoords && (
