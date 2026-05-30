@@ -34,11 +34,25 @@ const DEFAULT_CENTER = [-7.7956, 110.3695] // Yogyakarta fallback (atau bisa dig
 // Komponen pembantu untuk memindahkan kamera peta ketika posisi user berubah
 function MapController({ center }) {
   const map = useMap();
+
   useEffect(() => {
-    if (center) {
-      map.flyTo(center, 14, { duration: 1.5 });
+    if (!center) return;
+
+    const [lat, lng] = center;
+
+    if (
+      !Number.isFinite(Number(lat)) ||
+      !Number.isFinite(Number(lng))
+    ) {
+      console.warn("Invalid center coords:", center);
+      return;
     }
+
+    map.flyTo([Number(lat), Number(lng)], 14, {
+      duration: 1.5,
+    });
   }, [center, map]);
+
   return null;
 }
 
