@@ -3,6 +3,7 @@ from tensorflow.keras.layers import (Dense, Dropout, Input, Layer)
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.utils import register_keras_serializable
+from tensorflow.keras.regularizers import l2
 
 # CUSTOM LAYER
 @register_keras_serializable()
@@ -42,11 +43,11 @@ def build_mlp_model(input_dim=5000, num_classes=8):
     input_layer = Input(shape=(input_dim,))
     x = IngredientsImportanceLayer()(input_layer)
 
-    x = Dense(128, activation='relu')(x)
+    x = Dense(128, activation='relu', kernel_regularizer=l2(0.001))(x)
     x = Dropout(0.4)(x)
 
-    x = Dense(64, activation='relu')(x)
-    x = Dropout(0.3)(x)
+    x = Dense(64, activation='relu', kernel_regularizer=l2(0.001))(x)
+    x = Dropout(0.4)(x)
 
     output_layer = Dense(num_classes, activation='softmax')(x)
 
