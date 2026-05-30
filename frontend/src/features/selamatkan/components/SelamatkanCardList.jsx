@@ -1,49 +1,59 @@
 import { useState, useEffect, useRef } from 'react'
-import { MapPin, Package, MessageCircle, CheckCircle2, CheckSquare, Clock, Leaf } from 'lucide-react'
+import { MapPin, Package, MessageCircle, CheckCircle2, CheckSquare, Clock, Leaf, Wind } from 'lucide-react'
 import { io } from 'socket.io-client'
 import { KONDISI_MAP } from '../selamatkanData'
 import { API_ORIGIN } from '../../../config/api'
 import SelamatkanChatOverlay from './SelamatkanChatOverlay'
 
-const BADGE_CLS = {
-  success: 'bg-(--bg-success-subtle) text-(--text-success)',
-  warning: 'bg-(--bg-warning-subtle) text-(--text-warning)',
-  danger:  'bg-(--bg-danger-subtle)  text-(--text-danger)',
+// ── Token-based badge styles ──────────────────────────────────────────────────
+const KONDISI_BADGE = {
+  success: { background: 'var(--bg-success-subtle)', color: 'var(--text-success)'  },
+  warning: { background: 'var(--bg-warning-subtle)', color: 'var(--text-warning)'  },
+  danger:  { background: 'var(--bg-danger-subtle)',  color: 'var(--text-danger)'   },
 }
 
-// ─── Kalkulator Jejak Karbon Sama Seperti Backend ──────────────
+const STATUS_BADGE = {
+  Diklaim:      { background: 'var(--bg-subtle)',           color: 'var(--text-secondary)' },
+  Dikonfirmasi: { background: 'var(--bg-success-subtle)',   color: 'var(--text-success)'   },
+  Selesai:      { background: 'var(--bg-subtle)',           color: 'var(--text-muted)'     },
+}
+
+// ── Carbon calculator ─────────────────────────────────────────────────────────
 const CARBON_FACTOR_GRAM = {
-  "Makanan Matang": 400,
-  "Sayuran":        200,
-  "Sayur":          200,
-  "Lauk":           350,
-  "Buah":           150,
-  "Lainnya":        250,
-};
+  'Makanan Matang': 400,
+  'Sayuran':        200,
+  'Sayur':          200,
+  'Lauk':           350,
+  'Buah':           150,
+  'Lainnya':        250,
+}
 
 function hitungCarbonOffset(category, quantity) {
-  const factorGram = CARBON_FACTOR_GRAM[category] || 250;
-  const match = String(quantity).match(/([\d,.]+)/);
-  const jumlahUnit = match ? parseFloat(match[1].replace(",", ".")) : 1;
-  return Math.round(factorGram * jumlahUnit);
+  const factorGram = CARBON_FACTOR_GRAM[category] || 250
+  const match      = String(quantity).match(/([\d,.]+)/)
+  const jumlahUnit = match ? parseFloat(match[1].replace(',', '.')) : 1
+  return Math.round(factorGram * jumlahUnit)
 }
 
+// ── Sub-components ────────────────────────────────────────────────────────────
 function KondisiBadge({ kondisi, status }) {
   if (status && status !== 'Tersedia') {
-    let statusCls = 'bg-(--bg-secondary-subtle) text-secondary-600';
-    if (status === 'Diklaim') statusCls = 'bg-blue-50 text-blue-600';
-    if (status === 'Dikonfirmasi') statusCls = 'bg-indigo-50 text-indigo-600';
-    if (status === 'Selesai') statusCls = 'bg-gray-100 text-gray-500';
+    const style = STATUS_BADGE[status] ?? STATUS_BADGE['Selesai']
     return (
-      <span className={`inline-block px-2 py-0.5 rounded-full text-compact-sm font-bold whitespace-nowrap shrink-0 ${statusCls}`}>
+      <span
+        className="inline-block px-2 py-0.5 rounded-full text-compact-xs font-semibold whitespace-nowrap shrink-0"
+        style={style}
+      >
         {status}
       </span>
     )
   }
-
   const { label, color } = KONDISI_MAP[kondisi] ?? { label: kondisi, color: 'success' }
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-compact-sm font-medium whitespace-nowrap shrink-0 ${BADGE_CLS[color]}`}>
+    <span
+      className="inline-block px-2 py-0.5 rounded-full text-compact-xs font-medium whitespace-nowrap shrink-0"
+      style={KONDISI_BADGE[color]}
+    >
       {label}
     </span>
   )
@@ -52,191 +62,199 @@ function KondisiBadge({ kondisi, status }) {
 function FotoPlaceholder({ nama, imageUrl }) {
   if (imageUrl) {
     return (
-      <div className="w-12 h-12 rounded-xl shrink-0 overflow-hidden bg-(--bg-subtle)">
+      <div className="w-12 h-12 rounded-xl shrink-0 overflow-hidden"
+        style={{ background: 'var(--bg-subtle)' }}>
         <img src={imageUrl} alt={nama} className="w-full h-full object-cover" />
       </div>
     )
   }
   const initials = nama.split(' ').slice(0, 2).map(w => w[0].toUpperCase()).join('')
   return (
-    <div className="w-12 h-12 rounded-xl bg-(--bg-subtle) flex items-center justify-center shrink-0">
-      <span className="text-sm font-bold text-(--text-brand)">{initials}</span>
+    <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+      style={{ background: 'var(--bg-subtle)', color: 'var(--text-brand)' }}>
+      <span className="text-compact-sm font-bold">{initials}</span>
     </div>
   )
 }
 
-// ─── Komponen Timer 1 Jam ──────────────
 function CountdownTimer({ claimedAt }) {
-  const [timeLeft, setTimeLeft] = useState('');
+  const [timeLeft, setTimeLeft] = useState('')
 
   useEffect(() => {
-    if (!claimedAt) return;
-
+    if (!claimedAt) return
     const interval = setInterval(() => {
-      // Waktu 1 jam dari saat diklaim
-      const endTime = new Date(claimedAt).getTime() + (60 * 60 * 1000); 
-      const now = new Date().getTime();
-      const distance = endTime - now;
+      const endTime  = new Date(claimedAt).getTime() + 60 * 60 * 1000
+      const distance = endTime - Date.now()
+      if (distance < 0) { setTimeLeft('Expired'); clearInterval(interval); return }
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+      const s = Math.floor((distance % (1000 * 60)) / 1000)
+      setTimeLeft(`${m}m ${s}s`)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [claimedAt])
 
-      if (distance < 0) {
-        setTimeLeft('Expired');
-        clearInterval(interval);
-        return;
-      }
-
-      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((distance % (1000 * 60)) / 1000);
-      setTimeLeft(`${m}m ${s}s`);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [claimedAt]);
-
-  if (!timeLeft) return null;
+  if (!timeLeft) return null
 
   return (
-    <span className="inline-flex items-center gap-1 text-compact-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+    <span
+      className="inline-flex items-center gap-1 text-compact-xs font-semibold px-2 py-0.5 rounded-md"
+      style={{ background: 'var(--bg-subtle)', color: 'var(--text-secondary)' }}
+    >
       <Clock size={12} /> {timeLeft}
     </span>
-  );
+  )
 }
+
+// Action button styles — konsisten dengan tombol di halaman lain
+const btnPrimary = "inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-compact-xs font-medium cursor-pointer transition-colors duration-fast border-0 bg-primary-600 text-white hover:bg-primary-700"
+const btnSubtle  = "inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-compact-xs font-medium cursor-pointer transition-colors duration-fast border-[0.5px]"
 
 function SurplusCard({ item, onDetail, currentUserId, onRefresh, activeTab }) {
   const [showChat, setShowChat] = useState(false)
 
-  // Tutup overlay chat secara otomatis jika postingan direvert / statusnya berubah jadi Tersedia (misal akibat expired timer)
   useEffect(() => {
-    if (item.status === 'Tersedia' && showChat) {
-      setShowChat(false);
-    }
-  }, [item.status, showChat]);
+    if (item.status === 'Tersedia' && showChat) setShowChat(false)
+  }, [item.status, showChat])
 
   const handleAction = async (action) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_ORIGIN}/api/surplus/${item.id}/${action}`, {
-        method: 'PATCH',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
+      const token = localStorage.getItem('token')
+      const res   = await fetch(`${API_ORIGIN}/api/surplus/${item.id}/${action}`, {
+        method:  'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
       if (data.success) {
-        alert(data.message);
-        if (onRefresh) onRefresh();
+        alert(data.message)
+        onRefresh?.()
       } else {
-        alert(data.message || 'Terjadi kesalahan');
+        alert(data.message || 'Terjadi kesalahan')
       }
-    } catch (err) {
-      console.error(err);
-      alert('Gagal memproses permintaan');
+    } catch {
+      alert('Gagal memproses permintaan')
     }
   }
 
-  const isOwner = String(currentUserId) === String(item.userId);
-  const isReceiver = String(currentUserId) === String(item.receiverId);
-  const hasExpired = item.expiredReceivers?.includes(String(currentUserId));
-  const estimasiCarbon = hitungCarbonOffset(item.kategori, item.jumlah);
+  const isOwner      = String(currentUserId) === String(item.userId)
+  const isReceiver   = String(currentUserId) === String(item.receiverId)
+  const hasExpired   = item.expiredReceivers?.includes(String(currentUserId))
+  const estimasiCarbon = hitungCarbonOffset(item.kategori, item.jumlah)
 
   return (
     <div
-      className="flex items-start gap-3 rounded-2xl p-3 border transition-[box-shadow,border-color] duration-150 max-[580px]:flex-col max-[580px]:gap-2"
+      className="flex items-start gap-3 rounded-xl p-4 border-[0.5px] transition-shadow duration-fast max-[580px]:flex-col max-[580px]:gap-2"
       style={{
-        background:   'var(--bg-surface-1)',
-        borderColor:  'var(--border-subtle)',
-        boxShadow:    'var(--shadow-xs)',
+        background:  'var(--bg-surface-1)',
+        borderColor: 'var(--border-subtle)',
+        boxShadow:   'var(--shadow-xs)',
       }}
     >
       <FotoPlaceholder nama={item.nama} imageUrl={item.imageUrl} />
 
       <div className="flex-1 min-w-0 flex flex-col gap-1.5">
 
+        {/* Title + badge */}
         <div className="flex items-start justify-between gap-2 flex-wrap">
-          <h3 className="text-compact-base font-semibold text-(--text-primary) leading-snug">{item.nama}</h3>
-          <div className="flex gap-2 items-center">
+          <h3 className="text-compact-base font-semibold leading-snug m-0"
+            style={{ color: 'var(--text-primary)' }}>
+            {item.nama}
+          </h3>
+          <div className="flex gap-1.5 items-center">
             {item.status === 'Diklaim' && <CountdownTimer claimedAt={item.claimedAt} />}
             <KondisiBadge kondisi={item.kondisi} status={item.status} />
           </div>
         </div>
 
-        <p className="text-compact-sm text-(--text-secondary) leading-relaxed line-clamp-2">{item.deskripsi}</p>
+        {/* Deskripsi */}
+        <p className="text-compact-sm leading-relaxed line-clamp-2 m-0"
+          style={{ color: 'var(--text-secondary)' }}>
+          {item.deskripsi}
+        </p>
 
+        {/* Meta info */}
         <div className="flex items-center gap-3 flex-wrap">
           {[
-            { icon: MapPin,  text: <>{item.lokasi} · <strong className="text-(--text-secondary) font-semibold">{item.jarak}</strong></> },
+            {
+              icon: MapPin,
+              text: <>{item.lokasi} · <strong className="font-semibold" style={{ color: 'var(--text-secondary)' }}>{item.jarak}</strong></>
+            },
             { icon: Package, text: item.jumlah },
-            { icon: Leaf, text: <span className="text-green-600 font-medium">-{estimasiCarbon}g CO₂</span> }
+            {
+              icon: Leaf,
+              text: <span style={{ color: 'var(--text-success)', fontWeight: 500 }}>-{estimasiCarbon}g CO₂</span>
+            },
           ].map(({ icon: Icon, text }, i) => (
-            <span key={i} className="inline-flex items-center gap-1 text-compact-xs text-(--text-muted)">
+            <span key={i} className="inline-flex items-center gap-1 text-compact-xs"
+              style={{ color: 'var(--text-muted)' }}>
               <Icon size={12} strokeWidth={2} />{text}
             </span>
           ))}
         </div>
 
-        <div className="flex items-center justify-between gap-2 pt-1.5 border-t border-(--border-subsub)">
+        {/* Footer: avatar + actions */}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t-[0.5px] flex-wrap"
+          style={{ borderColor: 'var(--border-subtle)' }}>
 
+          {/* Avatar pemilik */}
           <div className="flex items-center gap-1.5">
-            <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 text-compact-xs font-bold flex items-center justify-center shrink-0">
+            <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-compact-xs font-bold"
+              style={{ background: 'var(--bg-success-subtle)', color: 'var(--text-success)' }}>
               {item.pemilik[0].toUpperCase()}
             </div>
-            <span className="text-compact-sm text-(--text-secondary) font-medium">{item.pemilik}</span>
+            <span className="text-compact-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+              {item.pemilik}
+            </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          {/* Action buttons */}
+          <div className="flex items-center gap-1.5 flex-wrap">
             {activeTab === 'feed' ? (
               <>
                 {item.status === 'Tersedia' && !isOwner && !hasExpired && (
-                  <button
-                    onClick={() => handleAction('claim')}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-primary-600 text-white border-0 rounded-lg text-compact-xs font-medium cursor-pointer transition-colors duration-150 hover:bg-primary-700"
-                  >
+                  <button onClick={() => handleAction('claim')} className={btnPrimary}>
                     Klaim Makanan
                   </button>
                 )}
-
                 {item.status === 'Tersedia' && !isOwner && hasExpired && (
-                  <span className="inline-flex items-center px-3 py-1 bg-red-50 text-red-700 border-0 rounded-lg text-compact-xs font-medium border-red-200">
-                    Batas waktu klaim Anda habis
+                  <span className={btnSubtle}
+                    style={{ background: 'var(--bg-danger-subtle)', borderColor: 'var(--border-subtle)', color: 'var(--text-danger)' }}>
+                    Batas waktu habis
                   </span>
                 )}
-                
                 {item.status === 'Dikonfirmasi' && !isOwner && isReceiver && (
-                  <span className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 border-0 rounded-lg text-compact-xs font-medium border-green-200">
-                    Menunggu diselesaikan pendonor
+                  <span className={btnSubtle}
+                    style={{ background: 'var(--bg-success-subtle)', borderColor: 'var(--border-subtle)', color: 'var(--text-success)' }}>
+                    Menunggu pendonor
                   </span>
                 )}
               </>
             ) : (
               <>
                 {item.status === 'Tersedia' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-50 text-orange-700 border-0 rounded-lg text-compact-xs font-medium border-orange-200">
+                  <span className={btnSubtle}
+                    style={{ background: 'var(--bg-warning-subtle)', borderColor: 'var(--border-subtle)', color: 'var(--text-warning)' }}>
                     <Clock size={12} /> Menunggu Pengklaim
                   </span>
                 )}
-
                 {item.status === 'Diklaim' && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-compact-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg">
-                      Diklaim oleh {item.receiver?.name || 'Seseorang'}
+                  <div className="flex items-center gap-1.5">
+                    <span className={btnSubtle}
+                      style={{ background: 'var(--bg-success-subtle)', borderColor: 'var(--border-subtle)', color: 'var(--text-success)' }}>
+                      {item.receiver?.name || 'Seseorang'}
                     </span>
-                    <button
-                      onClick={() => handleAction('confirm')}
-                      className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-500 text-white border-0 rounded-lg text-compact-xs font-medium cursor-pointer transition-colors duration-150 hover:bg-indigo-600"
-                    >
-                      <CheckSquare size={13} /> Konfirmasi Diambil
+                    <button onClick={() => handleAction('confirm')} className={btnPrimary}>
+                      <CheckSquare size={13} /> Konfirmasi
                     </button>
                   </div>
                 )}
-
                 {item.status === 'Dikonfirmasi' && (
-                  <button
-                    onClick={() => handleAction('complete')}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-green-500 text-white border-0 rounded-lg text-compact-xs font-medium cursor-pointer transition-colors duration-150 hover:bg-green-600"
-                  >
+                  <button onClick={() => handleAction('complete')} className={btnPrimary}>
                     <CheckCircle2 size={13} /> Selesai (+10 Poin)
                   </button>
                 )}
-
                 {item.status === 'Selesai' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 border-0 rounded-lg text-compact-xs font-medium">
+                  <span className={btnSubtle}
+                    style={{ background: 'var(--bg-success-subtle)', borderColor: 'var(--border-subtle)', color: 'var(--text-success)' }}>
                     <CheckCircle2 size={13} /> Donasi Berhasil (+10 Poin)
                   </span>
                 )}
@@ -246,85 +264,76 @@ function SurplusCard({ item, onDetail, currentUserId, onRefresh, activeTab }) {
             {(item.status === 'Diklaim' || item.status === 'Dikonfirmasi') && (isOwner || isReceiver) && (
               <button
                 onClick={() => setShowChat(true)}
-                className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-700 border-0 rounded-lg text-compact-xs font-bold cursor-pointer transition-colors duration-150 hover:bg-emerald-200"
+                className={btnSubtle}
+                style={{ background: 'var(--bg-success-subtle)', borderColor: 'var(--border-subtle)', color: 'var(--text-success)' }}
               >
-                <MessageCircle size={13} strokeWidth={2} /> Chat {isOwner ? 'Klaimer' : 'Pendonor'}
+                <MessageCircle size={13} strokeWidth={2} />
+                Chat {isOwner ? 'Klaimer' : 'Pendonor'}
               </button>
             )}
 
             <button
               onClick={() => onDetail?.(item)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-transparent border border-(--border-default) rounded-lg text-compact-xs font-medium text-(--text-secondary) cursor-pointer transition-all duration-150 hover:bg-(--bg-surface-3) hover:border-(--border-strong) hover:text-(--text-primary) max-[580px]:hidden"
+              className={`${btnSubtle} max-[580px]:hidden`}
+              style={{ background: 'var(--bg-surface-1)', borderColor: 'var(--border-subtle)', color: 'var(--text-secondary)' }}
             >
               Detail
             </button>
           </div>
-
         </div>
       </div>
-      
+
       {showChat && (
-        <SelamatkanChatOverlay 
-          item={item} 
-          currentUserId={currentUserId} 
-          onClose={() => setShowChat(false)} 
+        <SelamatkanChatOverlay
+          item={item}
+          currentUserId={currentUserId}
+          onClose={() => setShowChat(false)}
         />
       )}
     </div>
   )
 }
 
+// ── List wrapper ──────────────────────────────────────────────────────────────
 export default function SelamatkanCardList({ items, onDetail, currentUserId, onRefresh, activeTab, loading }) {
-  const onRefreshRef = useRef(onRefresh);
+  const onRefreshRef = useRef(onRefresh)
 
-  // Simpan fungsi terbaru di ref agar Socket tidak perlu dibuat ulang jika onRefresh berubah
+  useEffect(() => { onRefreshRef.current = onRefresh }, [onRefresh])
+
   useEffect(() => {
-    onRefreshRef.current = onRefresh;
-  }, [onRefresh]);
-  
-  useEffect(() => {
-    // Membangun koneksi socket.io ke API server hanya sekali
-    const socket = io(API_ORIGIN);
-    
-    socket.on('statusUpdated', (updatedPost) => {
-      if (onRefreshRef.current) {
-        onRefreshRef.current();
-      }
-    });
-
-    socket.on('newSurplus', (newPost) => {
-      if (onRefreshRef.current) {
-        onRefreshRef.current();
-      }
-    });
-
-    return () => {
-      socket.disconnect();
-    }
-  }, []); // Kosongkan dependency agar tidak terjadi connect-disconnect loop
+    const socket = io(API_ORIGIN)
+    socket.on('statusUpdated', () => onRefreshRef.current?.())
+    socket.on('newSurplus',    () => onRefreshRef.current?.())
+    return () => socket.disconnect()
+  }, [])
 
   if (loading) {
     return (
       <div className="flex flex-col gap-3">
-        {[1, 2, 3].map((n) => (
-          <div key={n} className="h-36 w-full bg-slate-100 animate-pulse rounded-2xl border border-slate-200" />
+        {[1, 2, 3].map(n => (
+          <div key={n} className="h-36 w-full rounded-xl animate-pulse border-[0.5px]"
+            style={{ background: 'var(--bg-subtle)', borderColor: 'var(--border-subtle)' }} />
         ))}
       </div>
-    );
+    )
   }
 
   if (items.length === 0) {
     return (
-      <div
-        className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center border border-dashed rounded-2xl bg-emerald-50/50 border-emerald-100"
-      >
-        <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mb-1">
-          <Leaf size={28} strokeWidth={1.5} />
+      <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center rounded-xl border-[0.5px]"
+        style={{
+          background:  'var(--bg-surface-1)',
+          borderColor: 'var(--border-subtle)',
+          boxShadow:   'var(--shadow-xs)',
+        }}>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-1"
+          style={{ background: 'var(--bg-subtle)', color: 'var(--text-muted)' }}>
+          <Wind size={22} strokeWidth={1.5} />
         </div>
-        <p className="text-compact-base font-medium text-emerald-800">
-          Belum ada makanan surplus di sekitarmu saat ini. Tetap pantau ya! 🌿
+        <p className="text-compact-base font-medium m-0" style={{ color: 'var(--text-secondary)' }}>
+          Belum ada makanan surplus di sekitarmu
         </p>
-        <p className="text-compact-sm text-emerald-600/70">
+        <p className="text-compact-sm m-0" style={{ color: 'var(--text-muted)' }}>
           Coba perluas radius pencarian atau ubah filter kategori.
         </p>
       </div>
@@ -333,7 +342,16 @@ export default function SelamatkanCardList({ items, onDetail, currentUserId, onR
 
   return (
     <div className="flex flex-col gap-2">
-      {items.map(item => <SurplusCard key={item.id} item={item} onDetail={onDetail} currentUserId={currentUserId} onRefresh={onRefresh} activeTab={activeTab} />)}
+      {items.map(item => (
+        <SurplusCard
+          key={item.id}
+          item={item}
+          onDetail={onDetail}
+          currentUserId={currentUserId}
+          onRefresh={onRefresh}
+          activeTab={activeTab}
+        />
+      ))}
     </div>
   )
 }

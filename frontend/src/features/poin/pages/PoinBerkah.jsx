@@ -7,12 +7,12 @@ const HARI = ['S', 'S', 'R', 'K', 'J', 'S', 'M']
 
 // ── Tier config ───────────────────────────────────────────────────────────────
 const TIERS = [
-  { nama: 'Benih',      min: 0,    max: 100  },
-  { nama: 'Tunas',      min: 100,  max: 300  },
-  { nama: 'Tumbuh',     min: 300,  max: 600  },
-  { nama: 'Hijau Muda', min: 600,  max: 1000 },
-  { nama: 'Hijau Tua',  min: 1000, max: 2000 },
-  { nama: 'Panen',      min: 2000, max: null },
+  { nama: 'Benih',      min: 0,    max: 500  },
+  { nama: 'Tunas',      min: 500,  max: 1500  },
+  { nama: 'Tumbuh',     min: 1500,  max: 4000  },
+  { nama: 'Hijau Muda', min: 4000,  max: 10000 },
+  { nama: 'Hijau Tua',  min: 10000, max: 25000 },
+  { nama: 'Panen',      min: 25000, max: null },
 ]
 
 function getTierInfo(points) {
