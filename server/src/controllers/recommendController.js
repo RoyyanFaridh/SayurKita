@@ -3,6 +3,7 @@ const { awardPoin } = require("../services/poinService");
 const prisma = new PrismaClient();
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
+const DAILY_CAP      = 5;
 
 /**
  * POST /api/recommend/dashboard
@@ -20,7 +21,6 @@ const getDashboardRecommendation = async (req, res) => {
       });
     }
 
-    // Ambil SEMUA bahan user di kulkas (tanpa filter tanggal)
     const allIngredients = await prisma.ingredient.findMany({
       where: { userId },
       select: { nama: true, expDate: true },
@@ -37,35 +37,26 @@ const getDashboardRecommendation = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Hitung sisa hari expired per bahan
-    // Jika tidak ada expDate, beri nilai default 15 hari (aman, tapi tetap < 30 agar urgency_boost aktif)
     const ingredientNames = [];
-    const expiredDays = [];
+    const expiredDays     = [];
 
     for (const item of allIngredients) {
       ingredientNames.push(item.nama);
-
       if (item.expDate) {
         const exp = new Date(item.expDate);
         exp.setHours(0, 0, 0, 0);
-        const diffMs = exp - today;
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-        expiredDays.push(diffDays);
+        expiredDays.push(Math.round((exp - today) / (1000 * 60 * 60 * 24)));
       } else {
-        expiredDays.push(15); // default aman: < 30 hari agar urgency_boost aktif
+        expiredDays.push(15);
       }
     }
 
-    // Kirim ingredients + expired ke FastAPI AI
     let upstream;
     try {
       upstream = await fetch(`${AI_SERVICE_URL}/recommend-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ingredients: ingredientNames,
-          expired: expiredDays,
-        }),
+        body: JSON.stringify({ ingredients: ingredientNames, expired: expiredDays }),
       });
     } catch (fetchErr) {
       console.error("Fetch error connecting to AI service:", fetchErr.message);
@@ -97,10 +88,7 @@ const getDashboardRecommendation = async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      data: { recipes: payload },
-    });
+    return res.status(200).json({ success: true, data: { recipes: payload } });
   } catch (err) {
     console.error("getDashboardRecommendation error:", err);
     return res.status(500).json({
@@ -114,17 +102,10 @@ const getDashboardRecommendation = async (req, res) => {
 /**
  * POST /api/recommend/cook
  * Menangani aksi "Sudah Dimasak" dengan atomic transaction:
- * 1. Menghapus bahan dari kulkas user
- * 2. Mencatat cooking log + emisi karbon
- * 3. Award poin (non-fatal jika gagal)
- *
- * Body: {
- *   resepNama: string,
- *   resepId?: string,
- *   ingredientsUsed: Array<string>, // nama bahan yang digunakan
- *   bahanUsed: Array<{ nama: string, karbon_co2e: number }>, // untuk cooking log
- *   totalKarbon: number
- * }
+ * 1. Anti-abuse: cooldown per resep (8 jam) + daily cap (5/hari)
+ * 2. Menghapus bahan dari kulkas user
+ * 3. Mencatat cooking log + emisi karbon
+ * 4. Award poin (non-fatal jika gagal)
  */
 const cookRecipe = async (req, res) => {
   try {
@@ -139,7 +120,6 @@ const cookRecipe = async (req, res) => {
 
     const { resepNama, resepId, ingredientsUsed, bahanUsed, totalKarbon } = req.body;
 
-    // Validasi input
     if (!resepNama || !Array.isArray(ingredientsUsed) || ingredientsUsed.length === 0) {
       return res.status(400).json({
         success: false,
@@ -161,33 +141,55 @@ const cookRecipe = async (req, res) => {
       });
     }
 
-    // Atomic transaction: hapus bahan + catat cooking log
+    // ─── Batas waktu: awal hari ini ──────────────────────────────────────────
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    // ─── Anti-abuse: 1 resep yang sama hanya bisa dicatat sekali per hari ────
+    if (resepId) {
+      const sudahDimasak = await prisma.cookingLog.findFirst({
+        where: {
+          userId,
+          resepId: String(resepId),
+          createdAt: { gte: todayStart },
+        },
+      });
+      if (sudahDimasak) {
+        return res.status(429).json({
+          success: false,
+          message: "Resep ini sudah pernah dimasak hari ini. Coba lagi besok.",
+        });
+      }
+    }
+
+    // ─── Anti-abuse: daily cap ────────────────────────────────────────────────
+    const todayCount = await prisma.cookingLog.count({
+      where: { userId, createdAt: { gte: todayStart } },
+    });
+    if (todayCount >= DAILY_CAP) {
+      return res.status(429).json({
+        success: false,
+        message: `Batas ${DAILY_CAP} log memasak per hari telah tercapai. Coba lagi besok.`,
+      });
+    }
+
+    // ─── Atomic transaction: hapus bahan + catat log ─────────────────────────
     const result = await prisma.$transaction(async (tx) => {
       const deletedIngredients = [];
 
-      // Loop setiap bahan yang digunakan
       for (const ingredientName of ingredientsUsed) {
-        // Cari bahan di kulkas user (case-insensitive)
         const found = await tx.ingredient.findFirst({
           where: {
             userId,
-            nama: {
-              equals: ingredientName,
-              mode: "insensitive",
-            },
+            nama: { equals: ingredientName, mode: "insensitive" },
           },
         });
-
-        // Jika ditemukan, hapus dari kulkas
         if (found) {
-          await tx.ingredient.delete({
-            where: { id: found.id },
-          });
+          await tx.ingredient.delete({ where: { id: found.id } });
           deletedIngredients.push(found.nama);
         }
       }
 
-      // Catat cooking log
       const cookingLog = await tx.cookingLog.create({
         data: {
           userId,
@@ -201,7 +203,7 @@ const cookRecipe = async (req, res) => {
       return { cookingLog, deletedIngredients };
     });
 
-    // Award poin (non-fatal jika gagal)
+    // Award poin — non-fatal jika gagal
     let poinResult = null;
     try {
       poinResult = await awardPoin(userId, totalKarbon, result.cookingLog.id);
@@ -230,7 +232,7 @@ const cookRecipe = async (req, res) => {
 
 /**
  * POST /api/recommend
- * Proxy umum ke endpoint AI (backward compatibility dengan implementasi sebelumnya)
+ * Proxy umum ke endpoint AI (backward compatibility)
  */
 const getGeneralRecommendation = async (req, res) => {
   try {
