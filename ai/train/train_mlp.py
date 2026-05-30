@@ -68,15 +68,24 @@ print(f"Jumlah kelas kategori: {len(label_encoder.classes_)}")
 print(label_encoder.classes_)
 
 # split data
-X_train, X_test, y_train, y_test = train_test_split(
+X_train, X_temp, y_train, y_temp = train_test_split(
     X,
     y,
-    test_size=0.2,
+    test_size=0.3,
     random_state=42,
     stratify=y
 )
 
+X_val, X_test, y_val, y_test = train_test_split(
+    X_temp,
+    y_temp,
+    test_size=0.5,
+    random_state=42,
+    stratify=y_temp
+)
+
 print(f"Jumlah data training: {len(X_train)}")
+print(f"Jumlah data validation: {len(X_val)}")
 print(f"Jumlah data testing: {len(X_test)}")
 
 # model
@@ -107,7 +116,7 @@ log_dir = os.path.join(
 writer = tf.summary.create_file_writer(log_dir)
 
 # custom training loop
-epochs = 10
+epochs = 5
 for epoch in range(epochs):
     epoch_losses = []
     epoch_accs = []
@@ -155,10 +164,28 @@ for epoch in range(epochs):
     avg_loss = np.mean(epoch_losses)
     avg_acc = np.mean(epoch_accs)
 
+    val_predictions = model(
+        X_val, training=False
+    )
+
+    val_pred_class = np.argmax(
+        val_predictions, axis=1
+    )
+
+    val_acc = accuracy_score(
+        y_val, val_pred_class
+    )
+
+    val_loss = custom_recipe_loss(
+        y_val, val_predictions
+    ).numpy()
+
     print(
         f"Epoch {epoch+1}/{epochs}"
         f" | Loss={avg_loss:.4f}"
         f" | Accuracy={avg_acc:.4f}"
+        f" | Val Loss={val_loss:.4f}"
+        f" | Val Accuracy={val_acc:.4f}"
     )
 
     with writer.as_default():
@@ -172,6 +199,18 @@ for epoch in range(epochs):
         tf.summary.scalar(
             "accuracy",
             avg_acc,
+            step=epoch
+        )
+
+        tf.summary.scalar(
+            "val_loss",
+            val_loss,
+            step=epoch
+        )
+
+        tf.summary.scalar(
+            "val_accuracy",
+            val_acc,
             step=epoch
         )
 
