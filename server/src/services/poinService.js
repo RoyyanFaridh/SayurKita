@@ -22,11 +22,9 @@ const awardPoin = async (userId, totalKarbon, cookingLogId) => {
 
   const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
-  // ── Kalkulasi poin karbon (akumulasi) ──────────────────────────────────────
-  // Tambah karbon baru ke akumulasi, hitung selisih poin yang belum di-award
   const karbonBaru        = user.totalKarbonAkumulasi + totalKarbon;
-  const totalPoinKarbon   = Math.floor(karbonBaru / 10);
-  const poinKarbon        = totalPoinKarbon - user.poinKarbonAwarded; // selisih yg belum di-award
+  const totalPoinKarbon = Math.floor(karbonBaru / 20);
+  const poinKarbon        = totalPoinKarbon - user.poinKarbonAwarded; 
 
   // ── Kalkulasi streak ───────────────────────────────────────────────────────
   let diffDays = null;

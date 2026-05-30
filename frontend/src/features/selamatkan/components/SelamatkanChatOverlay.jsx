@@ -105,7 +105,7 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-emerald-50 border-b border-emerald-100">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-emerald-200 text-emerald-700 flex flex-col items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-full bg-primary-200 text-emerald-700 flex flex-col items-center justify-center shrink-0">
               <User size={20} strokeWidth={2.5} />
             </div>
             <div className="min-w-0">
@@ -125,7 +125,7 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-slate-50">
           {loading ? (
             <div className="flex flex-col items-center justify-center h-full text-slate-400">
-              <span className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2"></span>
+              <span className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mb-2"></span>
               <p className="text-compact-sm">Memuat obrolan...</p>
             </div>
           ) : messages.length === 0 ? (
@@ -139,17 +139,17 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
               
               return (
                 <div key={msg.id || idx} className={`flex flex-col max-w-[80%] ${isMe ? 'self-end items-end' : 'self-start items-start'}`}>
-                  {!isMe && <span className="text-[10px] text-slate-500 ml-1 mb-0.5 font-medium">{senderName}</span>}
+                  {!isMe && <span className="text-compact-xs text-slate-500 ml-1 mb-0.5 font-medium">{senderName}</span>}
                   <div 
                     className={`px-3 py-2 rounded-2xl text-compact-sm shadow-sm ${
                       isMe 
-                        ? 'bg-emerald-600 text-white rounded-tr-sm' 
+                        ? 'bg-primary-600 text-white rounded-tr-sm' 
                         : 'bg-white border border-slate-100 text-slate-800 rounded-tl-sm'
                     }`}
                   >
                     {msg.message}
                   </div>
-                  <span className="text-[10px] text-slate-400 mt-1 mx-1">
+                  <span className="text-compact-xs text-slate-400 mt-1 mx-1">
                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -172,7 +172,7 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
             <button 
               type="submit"
               disabled={!inputText.trim()}
-              className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white shrink-0 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white shrink-0 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <Send size={18} className="ml-1" />
             </button>
