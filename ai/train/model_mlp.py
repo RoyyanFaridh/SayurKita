@@ -5,12 +5,22 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.utils import register_keras_serializable
 
 # CUSTOM LAYER
+@register_keras_serializable()
 class IngredientsImportanceLayer(Layer):
-    def __init__(self, factor=1.2):
-        super().__init__()
+
+    def __init__(self, factor=1.2, **kwargs):
+        super().__init__(**kwargs)
         self.factor = factor
+
     def call(self, inputs):
         return inputs * self.factor
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            "factor": self.factor
+        })
+        return config
 
 # CUSTOM LOSS FUNCTION
 @register_keras_serializable()
@@ -23,8 +33,8 @@ class TrainingLogger(Callback):
     def on_epoch_end(self, epoch, logs=None):
         print(
             f"\nEpoch {epoch+1} selesai | "
-            f"Loss: {logs['loss']:.4f} | "
-            f"Accuracy: {logs['accuracy']:.4f}"
+            f"Loss: {logs.get('loss', 0):.4f} | "
+            f"Accuracy: {logs.get('accuracy', 0):.4f}"
         )
 
 # function build model mlp
