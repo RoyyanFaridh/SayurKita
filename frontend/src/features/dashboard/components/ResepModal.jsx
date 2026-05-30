@@ -19,12 +19,7 @@ function stripSatuan(s) {
 function fuzzyMatch(a, b) {
   const na = normalizeNama(a)
   const nb = normalizeNama(b)
-
-  // 1. substring match
   if (nb.includes(na) || (na.includes(nb) && nb.length >= 4)) return true
-
-  // 2. token match: semua kata dari string pendek ada di string panjang
-  //    menangani kasus kata sisipan seperti "penyedap rasa sapi" vs "penyedap sapi"
   const shorter = na.length <= nb.length ? na : nb
   const longer  = na.length <= nb.length ? nb : na
   const tokens  = shorter.split(' ').filter(t => t.length >= 3)
@@ -40,14 +35,10 @@ function fuzzyMatchBahan(resepBahan, stokNama) {
 
 function findMasterMatch(resepBahan, masterData) {
   if (!masterData?.length) return null
-
   const cleanResep = stripSatuan(resepBahan)
   const exact = masterData.find((m) => normalizeNama(m.nama) === cleanResep)
   if (exact) return exact
-
-  const candidates = masterData.filter(
-    (m) => fuzzyMatch(cleanResep, normalizeNama(m.nama))
-  )
+  const candidates = masterData.filter((m) => fuzzyMatch(cleanResep, normalizeNama(m.nama)))
   return candidates.length
     ? candidates.sort((a, b) => b.nama.length - a.nama.length)[0]
     : null
@@ -55,9 +46,6 @@ function findMasterMatch(resepBahan, masterData) {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-/**
- * Satu baris bahan — dipakai di DETAIL (inline stok) dan SUCCESS (karbon breakdown)
- */
 function BahanRow({ index, total, left, right }) {
   const isLast = index === total - 1
   return (
@@ -73,9 +61,6 @@ function BahanRow({ index, total, left, right }) {
   )
 }
 
-/**
- * Indikator stok per bahan: centang, silang + tombol tambah
- */
 function StokIndikator({ bahan, onTambah }) {
   if (bahan.adaDiStok) {
     return (
@@ -87,7 +72,6 @@ function StokIndikator({ bahan, onTambah }) {
       </>
     )
   }
-
   return (
     <>
       <AlertCircle size={14} strokeWidth={2} style={{ color: 'var(--color-danger-700)' }} />
@@ -103,11 +87,9 @@ function StokIndikator({ bahan, onTambah }) {
   )
 }
 
-/**
- * Tampilan hasil karbon setelah log disimpan
- */
 function CarbonResult({ recipe, result }) {
-  const poinAwarded = result.poin?.delta || 0
+  // Backend mengembalikan poinKarbon, bukan delta
+  const poinAwarded  = result.poin?.poinKarbon || result.poin?.delta || 0
   const deletedCount = result.deletedIngredients?.length || 0
 
   return (
@@ -141,7 +123,6 @@ function CarbonResult({ recipe, result }) {
         </span>
       </div>
 
-      {/* Info bahan yang dihapus dari kulkas */}
       {deletedCount > 0 && (
         <div
           className="w-full flex items-center gap-2 px-4 py-3 rounded-md"
@@ -154,7 +135,6 @@ function CarbonResult({ recipe, result }) {
         </div>
       )}
 
-      {/* Info poin yang didapat */}
       {poinAwarded > 0 && (
         <div
           className="w-full flex items-center gap-2 px-4 py-3 rounded-md"
@@ -195,16 +175,17 @@ function CarbonResult({ recipe, result }) {
 const STEPS = { DETAIL: 'detail', SUCCESS: 'success' }
 
 export default function ResepModal({ recipe, onClose, userIngredients = [], masterData = [], onTambahBahan, onCookingLogged }) {
-  const [step, setStep]         = useState(STEPS.DETAIL)
-  const [isCooking, setIsCooking] = useState(false)
-  const [hasCooked, setHasCooked] = useState(false)
-  const [error, setError]       = useState(null)
-  const [result, setResult]     = useState(null)
+  const [step,          setStep]          = useState(STEPS.DETAIL)
+  const [isCooking,     setIsCooking]     = useState(false)
+  const [hasCooked,     setHasCooked]     = useState(false)
+  const [error,         setError]         = useState(null)
+  const [isRateLimited, setIsRateLimited] = useState(false)
+  const [result,        setResult]        = useState(null)
 
-  // Reset state saat resep berganti
   useEffect(() => {
     setStep(STEPS.DETAIL)
     setError(null)
+    setIsRateLimited(false)
     setResult(null)
     setIsCooking(false)
     setHasCooked(false)
@@ -242,8 +223,8 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
   const handleCookRecipe = async () => {
     setIsCooking(true)
     setError(null)
+    setIsRateLimited(false)
 
-    // Prepare payload
     const ingredientsUsed = bahanAnalysis.map((b) => b.rawNama)
     const bahanUsed       = bahanAnalysis.map((b) => ({ nama: b.rawNama, karbon_co2e: b.karbonCo2e }))
     const totalKarbon     = parseFloat(bahanUsed.reduce((sum, b) => sum + b.karbon_co2e, 0).toFixed(3))
@@ -252,36 +233,40 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
       const token = localStorage.getItem('token')
       const res   = await fetch(`${API_ORIGIN}/api/recommend/cook`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${token}` 
-        },
-        body: JSON.stringify({ 
-          resepNama: recipe.name, 
-          resepId: recipe.id ?? null, 
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          resepNama: recipe.name,
+          resepId:   recipe.id ?? null,
           ingredientsUsed,
           bahanUsed,
-          totalKarbon
+          totalKarbon,
         }),
       })
 
       const data = await res.json()
-      
+      console.log('cook response:', res.status, data.success, data)
+
+      // Anti-abuse: rate limit
+      if (res.status === 429) {
+        setIsRateLimited(true)
+        setError(data.message || 'Terlalu sering memasak resep ini.')
+        return
+      }
+
       if (!res.ok || !data.success) {
         throw new Error(data.message || 'Gagal menyimpan log memasak.')
       }
 
-      // Success! Set result dan pindah ke step SUCCESS
+      console.log('sebelum setResult dan setStep')
       setResult({
         totalKarbon,
         bahanUsed,
         deletedIngredients: data.data?.deletedIngredients || [],
-        poin: data.data?.poin || null,
+        poin:               data.data?.poin || null,
       })
       setHasCooked(true)
       setStep(STEPS.SUCCESS)
-      
-      // Notify parent untuk refresh data
+      console.log('setelah setStep SUCCESS')
       onCookingLogged?.()
     } catch (err) {
       setError(err.message || 'Gagal menyimpan log memasak.')
@@ -368,10 +353,21 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
         {/* Body */}
         <div className="overflow-y-auto px-5 py-5 flex flex-col gap-6">
 
-          {/* STEP: DETAIL */}
           {step === STEPS.DETAIL && (
             <>
-              {/* Bahan-bahan + indikator stok inline */}
+              {/* Rate limit warning — amber */}
+              {isRateLimited && error && (
+                <div
+                  className="flex items-start gap-2 px-4 py-3 rounded-md"
+                  style={{ background: 'var(--bg-warning-subtle)', border: '0.5px solid var(--border-warning)' }}
+                >
+                  <AlertCircle size={16} strokeWidth={2} className="shrink-0 mt-0.5" style={{ color: 'var(--color-warning-600)' }} />
+                  <p className="text-compact-sm m-0" style={{ color: 'var(--color-warning-800)' }}>
+                    {error}
+                  </p>
+                </div>
+              )}
+
               <section>
                 <div className="flex items-center justify-between mb-3">
                   <h4
@@ -381,19 +377,13 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
                     Bahan-bahan
                   </h4>
                   {jumlahKurang > 0 && (
-                    <span
-                      className="text-compact-xs flex items-center gap-1"
-                      style={{ color: 'var(--color-danger-700)' }}
-                    >
+                    <span className="text-compact-xs flex items-center gap-1" style={{ color: 'var(--color-danger-700)' }}>
                       <AlertCircle size={12} strokeWidth={2} />
                       {jumlahKurang} belum di stok
                     </span>
                   )}
                   {semuaTerpenuhi && ingredients.length > 0 && (
-                    <span
-                      className="text-compact-xs flex items-center gap-1"
-                      style={{ color: 'var(--text-success)' }}
-                    >
+                    <span className="text-compact-xs flex items-center gap-1" style={{ color: 'var(--text-success)' }}>
                       <CheckCircle2 size={12} strokeWidth={2} />
                       Semua bahan tersedia
                     </span>
@@ -431,7 +421,6 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
                 </ul>
               </section>
 
-              {/* Cara membuat */}
               <section>
                 <h4
                   className="text-compact-sm font-semibold uppercase tracking-wide m-0 mb-3"
@@ -452,10 +441,7 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
                       >
                         {i + 1}
                       </span>
-                      <span
-                        className="text-compact-base leading-relaxed"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
+                      <span className="text-compact-base leading-relaxed" style={{ color: 'var(--text-primary)' }}>
                         {s.replace(/^\d+\)\s*/, '')}
                       </span>
                     </li>
@@ -463,12 +449,13 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
                 </ol>
               </section>
 
-              {error && (
+              {/* Error biasa — merah */}
+              {error && !isRateLimited && (
                 <div
-                  className="flex items-center gap-2 px-4 py-3 rounded-md"
+                  className="flex items-start gap-2 px-4 py-3 rounded-md"
                   style={{ background: 'var(--bg-danger-subtle)', border: '0.5px solid var(--border-danger)' }}
                 >
-                  <AlertCircle size={16} strokeWidth={2} style={{ color: 'var(--color-danger-700)' }} />
+                  <AlertCircle size={16} strokeWidth={2} className="shrink-0 mt-0.5" style={{ color: 'var(--color-danger-700)' }} />
                   <p className="text-compact-sm m-0" style={{ color: 'var(--color-danger-700)' }}>
                     {error}
                   </p>
@@ -477,7 +464,6 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
             </>
           )}
 
-          {/* STEP: SUCCESS */}
           {step === STEPS.SUCCESS && result && (
             <CarbonResult recipe={recipe} result={result} />
           )}
@@ -508,20 +494,24 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
           {step === STEPS.DETAIL && (
             <button
               onClick={handleCookRecipe}
-              disabled={!semuaTerpenuhi || isCooking || hasCooked}
+              disabled={!semuaTerpenuhi || isCooking || hasCooked || isRateLimited}
               className="inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-compact-sm font-semibold border-0 cursor-pointer transition-all duration-150"
               style={{
-                background: hasCooked 
-                  ? 'var(--bg-success-subtle)' 
-                  : semuaTerpenuhi 
-                    ? 'var(--color-primary-600)' 
-                    : 'var(--bg-surface-3)',
+                background: hasCooked
+                  ? 'var(--bg-success-subtle)'
+                  : isRateLimited
+                    ? 'var(--bg-warning-subtle)'
+                    : semuaTerpenuhi
+                      ? 'var(--color-primary-600)'
+                      : 'var(--bg-surface-3)',
                 color: hasCooked
                   ? 'var(--text-success)'
-                  : semuaTerpenuhi 
-                    ? '#fff' 
-                    : 'var(--text-disabled)',
-                cursor: (semuaTerpenuhi && !isCooking && !hasCooked) ? 'pointer' : 'not-allowed',
+                  : isRateLimited
+                    ? 'var(--color-warning-800)'
+                    : semuaTerpenuhi
+                      ? '#fff'
+                      : 'var(--text-disabled)',
+                cursor: (semuaTerpenuhi && !isCooking && !hasCooked && !isRateLimited) ? 'pointer' : 'not-allowed',
                 opacity: isCooking ? 0.6 : 1,
               }}
             >
@@ -534,6 +524,11 @@ export default function ResepModal({ recipe, onClose, userIngredients = [], mast
                 <>
                   <CheckCircle2 size={14} strokeWidth={2} />
                   Sudah Dimasak 🎉
+                </>
+              ) : isRateLimited ? (
+                <>
+                  <AlertCircle size={14} strokeWidth={2} />
+                  Cooldown Aktif
                 </>
               ) : semuaTerpenuhi ? (
                 <>

@@ -3,14 +3,25 @@ from tensorflow.keras.layers import (Dense, Dropout, Input, Layer)
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.utils import register_keras_serializable
+from tensorflow.keras.regularizers import l2
 
 # CUSTOM LAYER
+@register_keras_serializable()
 class IngredientsImportanceLayer(Layer):
-    def __init__(self, factor=1.2):
-        super().__init__()
+
+    def __init__(self, factor=1.2, **kwargs):
+        super().__init__(**kwargs)
         self.factor = factor
+
     def call(self, inputs):
         return inputs * self.factor
+
+    def get_config(self):
+        config = super().get_config()
+        config.update({
+            "factor": self.factor
+        })
+        return config
 
 # CUSTOM LOSS FUNCTION
 @register_keras_serializable()
@@ -23,8 +34,8 @@ class TrainingLogger(Callback):
     def on_epoch_end(self, epoch, logs=None):
         print(
             f"\nEpoch {epoch+1} selesai | "
-            f"Loss: {logs['loss']:.4f} | "
-            f"Accuracy: {logs['accuracy']:.4f}"
+            f"Loss: {logs.get('loss', 0):.4f} | "
+            f"Accuracy: {logs.get('accuracy', 0):.4f}"
         )
 
 # function build model mlp
@@ -32,11 +43,11 @@ def build_mlp_model(input_dim=5000, num_classes=8):
     input_layer = Input(shape=(input_dim,))
     x = IngredientsImportanceLayer()(input_layer)
 
-    x = Dense(128, activation='relu')(x)
+    x = Dense(128, activation='relu', kernel_regularizer=l2(0.001))(x)
     x = Dropout(0.4)(x)
 
-    x = Dense(64, activation='relu')(x)
-    x = Dropout(0.3)(x)
+    x = Dense(64, activation='relu', kernel_regularizer=l2(0.001))(x)
+    x = Dropout(0.4)(x)
 
     output_layer = Dense(num_classes, activation='softmax')(x)
 

@@ -2,20 +2,9 @@ const { PrismaClient } = require("@prisma/client");
 const { awardPoin } = require("../services/poinService");
 const prisma = new PrismaClient();
 
-/**
- * POST /api/cooking-logs
- * Simpan log memasak + kalkulasi karbon dari bahan yang dipakai.
- *
- * Body: {
- *   resepNama: string,
- *   resepId?: string,
- *   bahanUsed: Array<{ nama: string, karbon_co2e: number }>
- * }
- *
- * Asumsi kalkulasi: karbon_co2e per bahan adalah flat per unit/porsi wajar,
- * karena jumlah di stok user adalah string bebas (tidak bisa di-parse reliably).
- * Label "Estimasi" wajib ditampilkan di frontend.
- */
+const COOLDOWN_HOURS = 8;
+const DAILY_CAP      = 5;
+
 const createCookingLog = async (req, res) => {
   try {
     const userId = req.userId;
@@ -44,6 +33,38 @@ const createCookingLog = async (req, res) => {
       }
     }
 
+    // ─── Anti-abuse: cooldown per resep ──────────────────────────────────────
+    if (resepId) {
+      const cooldownSince = new Date(Date.now() - COOLDOWN_HOURS * 60 * 60 * 1000);
+      const recentSame = await prisma.cookingLog.findFirst({
+        where: {
+          userId,
+          resepId: String(resepId),
+          createdAt: { gte: cooldownSince },
+        },
+      });
+      if (recentSame) {
+        return res.status(429).json({
+          success: false,
+          message: `Resep ini baru saja dimasak. Tunggu ${COOLDOWN_HOURS} jam sebelum mencatat resep yang sama.`,
+        });
+      }
+    }
+
+    // ─── Anti-abuse: daily cap ────────────────────────────────────────────────
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayCount = await prisma.cookingLog.count({
+      where: { userId, createdAt: { gte: todayStart } },
+    });
+    if (todayCount >= DAILY_CAP) {
+      return res.status(429).json({
+        success: false,
+        message: `Batas ${DAILY_CAP} log memasak per hari telah tercapai. Coba lagi besok.`,
+      });
+    }
+
+    // ─── Simpan log ───────────────────────────────────────────────────────────
     const totalKarbon = parseFloat(
       bahanUsed.reduce((sum, b) => sum + (b.karbon_co2e || 0), 0).toFixed(3)
     );
@@ -70,7 +91,7 @@ const createCookingLog = async (req, res) => {
       success: true,
       message: "Log memasak berhasil disimpan.",
       data: log,
-      poin: poinResult, // null jika awardPoin gagal
+      poin: poinResult,
     });
   } catch (err) {
     console.error("createCookingLog error:", err);
