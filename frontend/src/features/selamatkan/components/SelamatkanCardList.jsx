@@ -193,13 +193,13 @@ function SurplusCard({ item, onDetail, currentUserId, onRefresh, activeTab }) {
                 )}
 
                 {item.status === 'Tersedia' && !isOwner && hasExpired && (
-                  <span className="inline-flex items-center px-3 py-1 bg-red-50 text-red-700 border-0 rounded-lg text-compact-xs font-medium border border-red-200">
+                  <span className="inline-flex items-center px-3 py-1 bg-red-50 text-red-700 border-0 rounded-lg text-compact-xs font-medium border-red-200">
                     Batas waktu klaim Anda habis
                   </span>
                 )}
                 
                 {item.status === 'Dikonfirmasi' && !isOwner && isReceiver && (
-                  <span className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 border-0 rounded-lg text-compact-xs font-medium border border-green-200">
+                  <span className="inline-flex items-center px-3 py-1 bg-green-50 text-green-700 border-0 rounded-lg text-compact-xs font-medium border-green-200">
                     Menunggu diselesaikan pendonor
                   </span>
                 )}
@@ -207,7 +207,7 @@ function SurplusCard({ item, onDetail, currentUserId, onRefresh, activeTab }) {
             ) : (
               <>
                 {item.status === 'Tersedia' && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-50 text-orange-700 border-0 rounded-lg text-compact-xs font-medium border border-orange-200">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-50 text-orange-700 border-0 rounded-lg text-compact-xs font-medium border-orange-200">
                     <Clock size={12} /> Menunggu Pengklaim
                   </span>
                 )}

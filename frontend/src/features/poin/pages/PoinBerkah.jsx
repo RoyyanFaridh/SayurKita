@@ -96,7 +96,7 @@ function HeroCard({ points, streakCount, lastActiveDate }) {
             Total Poin Berkah
           </p>
           <div className="flex items-baseline gap-2">
-            <p className="text-5xl font-bold leading-[1] m-0"
+            <p className="text-5xl font-bold leading-none m-0"
               style={{ color: 'var(--text-primary)' }}>
               {points.toLocaleString('id-ID')}
             </p>
@@ -297,7 +297,7 @@ function RiwayatItem({ log }) {
         <span className="text-compact-xs font-medium px-2 py-0.5 rounded-full" style={src.style}>
           {src.label}
         </span>
-        <span className="text-compact-base font-bold min-w-[2.5rem] text-right"
+        <span className="text-compact-base font-bold min-w-10 text-right"
           style={{ color: 'var(--text-success)' }}>
           +{log.delta}
         </span>
@@ -504,7 +504,7 @@ export default function PoinBerkah() {
           <JejakHijau totalKarbon={totalKarbon} />
           <KartuBerkah />
         </div>
-        <div className="w-80 shrink-0 sticky top-[73px] max-[900px]:w-64">
+        <div className="w-80 shrink-0 sticky top-18.25 max-[900px]:w-64">
           <RiwayatPanel compact={true} />
         </div>
       </div>
