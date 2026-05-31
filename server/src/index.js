@@ -20,20 +20,20 @@ const server = http.createServer(app);
 const prisma = new PrismaClient();
 const PORT   = process.env.PORT || 5000;
 
-// Daftar origin yang diizinkan — tambahkan domain baru di sini jika diperlukan
 const ALLOWED_ORIGINS = [
-  "https://sayurkita-berkah.netlify.app", // Netlify production
-  "http://localhost:5173",                // Vite dev
-  "http://localhost:3000",                // React dev
+  "https://sayurkita-berkah.netlify.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
 ];
+
+const corsOptions = {
+  origin: ALLOWED_ORIGINS,
+  credentials: true,
+};
 
 // ─── Socket.io Setup ────────────────────────────────────────────────
 const io = new Server(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST", "PATCH"],
-    credentials: true,
-  },
+  cors: corsOptions,
 });
 
 app.set("io", io);
@@ -57,12 +57,7 @@ io.on("connection", (socket) => {
 });
 
 // ─── Middleware ──────────────────────────────────────────────────────
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    credentials: true,
-  }),
-);
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
@@ -96,4 +91,3 @@ server.listen(PORT, () => {
   console.log(`SayurKita server running on http://localhost:${PORT}`);
   console.log(`[Socket.io] WebSocket server ready on port ${PORT}`);
 });
-
