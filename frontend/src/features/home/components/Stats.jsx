@@ -4,7 +4,7 @@ import { Users, Leaf, Wind } from 'lucide-react';
 const BORDER_SUBTLE = 'rgba(255,255,255,0.08)';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-export default function StatsSection() {
+export default function Stats() {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalSaved: 0,
