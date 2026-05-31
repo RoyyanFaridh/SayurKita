@@ -2,10 +2,6 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-/**
- * GET /api/ingredients
- * Ambil semua ingredients user yang login
- */
 const getIngredients = async (req, res) => {
   try {
     const userId = req.userId;
@@ -34,11 +30,6 @@ const getIngredients = async (req, res) => {
   }
 };
 
-/**
- * POST /api/ingredients
- * Tambah ingredient baru
- * Body: { nama, kategori, jumlah, storage, beliDate, expDate }
- */
 const addIngredient = async (req, res) => {
   try {
     const userId = req.userId;
@@ -63,7 +54,7 @@ const addIngredient = async (req, res) => {
     if (expDate) {
       finalExpDate = new Date(expDate);
     } else {
-      let extraDays = 3; // Fallback jika API AI 404 atau mati
+      let extraDays = 3; 
       try {
         const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
         const response = await fetch(`${AI_SERVICE_URL}/shelf-life?ingredient=${encodeURIComponent(nama)}`);
@@ -95,9 +86,7 @@ const addIngredient = async (req, res) => {
       },
     });
 
-    // --- LOGIKA HITUNG JEJAK KARBON OTOMATIS MENGGUNAKAN API AI ---
     try {
-      // Parsing jumlah (contoh "200 g" -> 200)
       const parsedJumlah = parseFloat(jumlah);
       
       if (!isNaN(parsedJumlah) && parsedJumlah > 0) {
@@ -116,7 +105,6 @@ const addIngredient = async (req, res) => {
         if (carbonResponse.ok) {
           const carbonData = await carbonResponse.json();
           if (carbonData && carbonData.co2e_kg) {
-            // Tambahkan nilai carbon ke totalCarbonSaved user
             await prisma.user.update({
               where: { id: userId },
               data: {
@@ -130,7 +118,6 @@ const addIngredient = async (req, res) => {
         }
       }
     } catch (carbonError) {
-      // Jika error, log saja tanpa menggagalkan proses tambah bahan
       console.error("Gagal terhubung ke API Carbon AI atau update user:", carbonError.message);
     }
 
@@ -148,11 +135,6 @@ const addIngredient = async (req, res) => {
   }
 };
 
-/**
- * PUT /api/ingredients/:id
- * Update ingredient
- * Body: { nama, kategori, jumlah, storage, beliDate, expDate }
- */
 const updateIngredient = async (req, res) => {
   try {
     const userId = req.userId;
@@ -204,10 +186,6 @@ const updateIngredient = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/ingredients/:id
- * Hapus ingredient
- */
 const deleteIngredient = async (req, res) => {
   try {
     const userId = req.userId;
@@ -220,7 +198,6 @@ const deleteIngredient = async (req, res) => {
       });
     }
 
-    // Cek apakah ingredient milik user
     const ingredient = await prisma.ingredient.findFirst({
       where: { id, userId },
     });
@@ -249,12 +226,6 @@ const deleteIngredient = async (req, res) => {
   }
 };
 
-/**
- * GET /api/ingredients/alerts/expiry
- * Ambil semua ingredients user yang hampir kadaluwarsa (<=3 hari dari hari ini)
- * Filter: expDate <= today + 3 days
- * Sort: paling kritis (terdekat) di atas
- */
 const getExpiryAlerts = async (req, res) => {
   try {
     const userId = req.userId;
@@ -264,28 +235,23 @@ const getExpiryAlerts = async (req, res) => {
         message: "Token tidak valid atau expired.",
       });
     }
-
-    // Dapatkan tanggal hari ini (midnight, local timezone)
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Hitung 3 hari dari hari ini
     const threeDaysFromNow = new Date(today);
     threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
 
-    // Query: ambil ingredients yang expDate <= 3 hari dari sekarang
     const alerts = await prisma.ingredient.findMany({
       where: {
         userId,
         expDate: {
-          lte: threeDaysFromNow, // Less than or equal to 3 days from now
-          gte: today, // Greater than or equal to today (exclude already expired)
+          lte: threeDaysFromNow, 
+          gte: today,
         },
       },
-      orderBy: { expDate: "asc" }, // Paling kritis di atas (terdekat duluan)
+      orderBy: { expDate: "asc" }, 
     });
 
-    // Map data dan tambahkan status alert berdasarkan days remaining
     const alertsWithStatus = alerts.map((item) => {
       const expDate = new Date(item.expDate);
       expDate.setHours(0, 0, 0, 0);
@@ -295,9 +261,9 @@ const getExpiryAlerts = async (req, res) => {
 
       let alertStatus = "warning";
       if (daysRemaining <= 1) {
-        alertStatus = "danger"; // Merah: sisa 1 hari
+        alertStatus = "danger"; 
       } else if (daysRemaining <= 3) {
-        alertStatus = "warning"; // Orange: sisa 2-3 hari
+        alertStatus = "warning";
       }
 
       return {
@@ -321,11 +287,6 @@ const getExpiryAlerts = async (req, res) => {
   }
 };
 
-/**
- * GET /api/ingredients/stats/summary
- * Ambil ringkasan statistik ingredients user
- * Total bahan, aman, dan kritis
- */
 const getIngredientsSummary = async (req, res) => {
   try {
     const userId = req.userId;
@@ -336,7 +297,6 @@ const getIngredientsSummary = async (req, res) => {
       });
     }
 
-    // Dapatkan semua ingredients user
     const ingredients = await prisma.ingredient.findMany({
       where: { userId },
     });
@@ -344,7 +304,6 @@ const getIngredientsSummary = async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Hitung statistik
     let safe = 0;
     let critical = 0;
 

@@ -71,6 +71,7 @@ app.get("/", (_req, res) => {
   });
 });
 
+
 app.use("/api/auth",               authRoutes);
 app.use("/api/ingredients",        ingredientRoutes);
 app.use("/api/ingredients-master", ingredientsMasterRoutes);
@@ -88,6 +89,15 @@ app.use((err, _req, res, _next) => {
     message: "Terjadi kesalahan pada server.",
   });
 });
+
+const { runExpiryNotifier, runExpiryCheck } = require('../src/utils/expiryNotifier');
+
+app.get('/api/test-expiry', async (_req, res) => {
+  const total = await runExpiryCheck();
+  res.json({ success: true, message: `Email dikirim ke ${total} user` });
+});
+
+runExpiryNotifier();
 
 server.listen(PORT, () => {
   console.log(`SayurKita server running on http://localhost:${PORT}`);
