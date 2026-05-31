@@ -38,7 +38,7 @@ export default function AuthLayout({
         </p>
       </aside>
 
-      <main className="bg-white flex items-center justify-center py-16 px-8 overflow-y-auto max-[640px]:items-start max-[640px]:px-5 max-[640px]:pt-10 max-[640px]:pb-10 max-[400px]:px-4">
+      <main className="bg-white flex items-center justify-center py-16 px-8 overflow-y-auto max-[640px]:px-5 max-[640px]:py-10 max-[400px]:px-4">
         <div className="w-full max-w-120 flex flex-col gap-6">
           {children}
         </div>

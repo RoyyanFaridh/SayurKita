@@ -5,7 +5,7 @@ import StepIndicator from '../components/StepIndicator';
 import { API_AUTH } from '../../../config/api';
 
 const OTP_LENGTH  = 6;
-const TIMER_START = 60;
+const TIMER_START = 300;
 
 function buildSteps(activeNum) {
   return [
@@ -65,6 +65,7 @@ export default function Verify() {
   }, [phone, navigate]);
 
   useEffect(() => {
+    if (timer <= 240) { setCanResend(true); } 
     if (timer <= 0) { setCanResend(true); return; }
     const id = setTimeout(() => setTimer(t => t - 1), 1000);
     return () => clearTimeout(id);
@@ -248,12 +249,11 @@ export default function Verify() {
           </div>
         </div>
 
-        <div className="flex gap-3 max-[640px]:flex-col-reverse">
-
+        <div className="flex flex-col min-[640px]:flex-row gap-3">
           <button
             type="button"
             onClick={goBack}
-            className="flex-1 h-13 text-base font-semibold rounded-xl border-[1.5px] border-(--border-subtle) bg-white text-(--text-primary) transition-[background-color,border-color] duration-150 hover:bg-neutral-50 hover:border-(--border-strong)"
+            className="w-full min-[640px]:flex-1 h-13 text-base font-semibold rounded-xl border-[1.5px] border-(--border-subtle) bg-white text-(--text-primary) transition-[background-color,border-color] duration-150 hover:bg-neutral-50 hover:border-(--border-strong)"
           >
             Kembali
           </button>
@@ -262,11 +262,10 @@ export default function Verify() {
             type="button"
             onClick={handleVerify}
             disabled={!isFilled || loading}
-            className="flex-[2_2_0%] h-13 text-base font-semibold rounded-xl bg-(--color-forest-900) text-white transition-[background-color,transform] duration-150 active:scale-[0.99] hover:bg-(--color-forest-800) disabled:opacity-45 disabled:cursor-not-allowed"
+            className="w-full min-[640px]:flex-[2_2_0%] h-13 text-base font-semibold rounded-xl bg-(--color-forest-900) text-white transition-[background-color,transform] duration-150 active:scale-[0.99] hover:bg-(--color-forest-800) disabled:opacity-45 disabled:cursor-not-allowed"
           >
             {loading ? 'Memverifikasi…' : 'Verifikasi'}
           </button>
-
         </div>
 
       </AuthLayout>
