@@ -1,7 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
+const { sendEmail } = require("../utils/sendEmail");
+const { claimTemplate, confirmTemplate } = require("../utils/emailTemplates");
+
 const prisma = new PrismaClient();
 
-// ─── Kalkulator Jejak Karbon (CO2 offset per kategori) ──────────────
 const CARBON_FACTOR_GRAM = {
   "Makanan Matang": 400,
   "Sayuran":        200,
@@ -18,15 +20,11 @@ function hitungCarbonOffset(category, quantity) {
   return Math.round(factorGram * jumlahUnit);
 }
 
-// ─── Helper: emit Socket.io event jika tersedia di req.app ──────────
 function emitStatusUpdate(req, eventName, data) {
   const io = req.app.get("io");
   if (io) io.emit(eventName, data);
 }
 
-// ─── Helper: sanitasi koordinat ─────────────────────────────────────
-// Memastikan lat/lng yang dikirim ke frontend selalu number finite atau null.
-// Ini mencegah Leaflet menerima NaN, undefined, atau string kosong.
 function sanitizeCoords(post) {
   const lat = parseFloat(post.latitude);
   const lng = parseFloat(post.longitude);
@@ -37,17 +35,13 @@ function sanitizeCoords(post) {
   };
 }
 
-// ─── Auto-Release: Cek apakah klaim sudah expired (>1 jam) ─────────
 const AUTO_RELEASE_HOURS = 1;
 
 async function autoReleaseExpiredClaims(req) {
   const cutoff = new Date(Date.now() - AUTO_RELEASE_HOURS * 60 * 60 * 1000);
 
   const expiredPosts = await prisma.surplusPost.findMany({
-    where: {
-      status: "Diklaim",
-      claimedAt: { lt: cutoff },
-    },
+    where: { status: "Diklaim", claimedAt: { lt: cutoff } },
   });
 
   if (expiredPosts.length === 0) return 0;
@@ -69,14 +63,12 @@ async function autoReleaseExpiredClaims(req) {
   return expiredPosts.length;
 }
 
-// ─── CREATE ─────────────────────────────────────────────────────────
 const createSurplusPost = async (req, res) => {
   try {
     const userId = req.userId;
     const { title, description, category, quantity, pickupTime, address, latitude, longitude } = req.body;
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
-    // Validasi koordinat sebelum disimpan
     const latFloat = parseFloat(latitude);
     const lngFloat = parseFloat(longitude);
 
@@ -93,14 +85,9 @@ const createSurplusPost = async (req, res) => {
 
     const newPost = await prisma.surplusPost.create({
       data: {
-        userId,
-        title,
-        description,
-        category,
-        quantity,
-        pickupTime,
-        address,
-        latitude:  latFloat,
+        userId, title, description, category, quantity,
+        pickupTime, address,
+        latitude: latFloat,
         longitude: lngFloat,
         imageUrl,
         status: "Tersedia",
@@ -116,15 +103,10 @@ const createSurplusPost = async (req, res) => {
     });
   } catch (error) {
     console.error("createSurplusPost error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal membuat postingan surplus.",
-      error: error.message,
-    });
+    return res.status(500).json({ success: false, message: "Gagal membuat postingan surplus.", error: error.message });
   }
 };
 
-// ─── GET ALL (PostGIS + Filter Kategori + Radius Dinamis) ───────────
 const getAllSurplusPosts = async (req, res) => {
   try {
     const { lat, lng, radius, category } = req.query;
@@ -136,16 +118,11 @@ const getAllSurplusPosts = async (req, res) => {
       const latFloat = parseFloat(lat);
       const lngFloat = parseFloat(lng);
 
-      // Tolak request kalau koordinat user sendiri tidak valid
       if (!Number.isFinite(latFloat) || !Number.isFinite(lngFloat)) {
-        return res.status(400).json({
-          success: false,
-          message: "Koordinat lokasi tidak valid.",
-        });
+        return res.status(400).json({ success: false, message: "Koordinat lokasi tidak valid." });
       }
 
       const radiusKm = parseFloat(radius) || 10;
-
       let categoryFilter = "";
       const params = [lngFloat, latFloat, radiusKm, currentUserId];
 
@@ -175,7 +152,6 @@ const getAllSurplusPosts = async (req, res) => {
         ...params
       );
 
-      // Sanitasi semua koordinat sebelum dikirim ke client
       const mappedPosts = postsRaw.map((p) => ({
         ...sanitizeCoords(p),
         user: { name: p.userName },
@@ -188,7 +164,6 @@ const getAllSurplusPosts = async (req, res) => {
       });
     }
 
-    // Fallback tanpa GPS
     const whereClause = {
       AND: [
         {
@@ -196,10 +171,7 @@ const getAllSurplusPosts = async (req, res) => {
             { status: "Tersedia" },
             {
               status: { in: ["Diklaim", "Dikonfirmasi"] },
-              OR: [
-                { userId: currentUserId },
-                { receiverId: currentUserId },
-              ],
+              OR: [{ userId: currentUserId }, { receiverId: currentUserId }],
             },
           ],
         },
@@ -223,15 +195,10 @@ const getAllSurplusPosts = async (req, res) => {
     });
   } catch (error) {
     console.error("getAllSurplusPosts error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal mengambil data surplus.",
-      error: error.message,
-    });
+    return res.status(500).json({ success: false, message: "Gagal mengambil data surplus.", error: error.message });
   }
 };
 
-// ─── CLAIM (+ claimedAt + Socket.io) ────────────────────────────────
 const claimSurplusPost = async (req, res) => {
   try {
     const receiverId = String(req.userId);
@@ -261,6 +228,18 @@ const claimSurplusPost = async (req, res) => {
 
     emitStatusUpdate(req, "statusUpdated", sanitizeCoords(updatedPost));
 
+    const poster = await prisma.user.findUnique({
+      where: { id: post.userId },
+      select: { email: true, name: true },
+    });
+    if (poster) {
+      await sendEmail({
+        to: poster.email,
+        subject: 'Ada yang mengklaim surplusmu! — SayurKita',
+        html: claimTemplate(poster.name, post.title),
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Berhasil mengklaim makanan! Menunggu konfirmasi dari pendonor.",
@@ -272,7 +251,6 @@ const claimSurplusPost = async (req, res) => {
   }
 };
 
-// ─── CONFIRM (+ Socket.io) ──────────────────────────────────────────
 const confirmSurplusPost = async (req, res) => {
   try {
     const userId = req.userId;
@@ -290,6 +268,18 @@ const confirmSurplusPost = async (req, res) => {
 
     emitStatusUpdate(req, "statusUpdated", sanitizeCoords(updatedPost));
 
+    const claimer = await prisma.user.findUnique({
+      where: { id: post.receiverId },
+      select: { email: true, name: true },
+    });
+    if (claimer) {
+      await sendEmail({
+        to: claimer.email,
+        subject: 'Klaimmu dikonfirmasi! — SayurKita',
+        html: confirmTemplate(claimer.name, post.title),
+      });
+    }
+
     return res.status(200).json({
       success: true,
       message: "Klaim berhasil dikonfirmasi! Silakan bertemu dengan penerima.",
@@ -301,7 +291,6 @@ const confirmSurplusPost = async (req, res) => {
   }
 };
 
-// ─── COMPLETE (+ Carbon Offset + Poin + Socket.io) ──────────────────
 const completeSurplusPost = async (req, res) => {
   try {
     const userId = req.userId;
@@ -315,7 +304,7 @@ const completeSurplusPost = async (req, res) => {
     const carbonOffsetGram = hitungCarbonOffset(post.category, post.quantity);
     const carbonOffsetKg   = carbonOffsetGram / 1000;
 
-    const [updatedPost, , ] = await prisma.$transaction([
+    const [updatedPost] = await prisma.$transaction([
       prisma.surplusPost.update({
         where: { id: postId },
         data: { status: "Selesai" },
@@ -352,7 +341,6 @@ const completeSurplusPost = async (req, res) => {
   }
 };
 
-// ─── CHAT GET & POST ────────────────────────────────────────────────
 const getChatMessages = async (req, res) => {
   try {
     const postId = parseInt(req.params.id);
@@ -408,7 +396,6 @@ const sendChatMessage = async (req, res) => {
   }
 };
 
-// ─── GET SURPLUS STATS ───────────────────────────────────────────────
 const getSurplusStats = async (req, res) => {
   try {
     const currentUserId = String(req.userId || 'guest');
@@ -467,7 +454,6 @@ const getSurplusStats = async (req, res) => {
   }
 };
 
-// ─── GET MY POSTS ────────────────────────────────────────────────────
 const getMySurplusPosts = async (req, res) => {
   try {
     const currentUserId = String(req.userId);

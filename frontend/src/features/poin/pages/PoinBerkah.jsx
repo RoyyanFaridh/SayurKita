@@ -193,6 +193,9 @@ function HeroCard({ points, streakCount, lastActiveDate }) {
 
 // ── Jejak Hijau — setema StatsGrid ────────────────────────────────────────────
 function JejakHijau({ totalKarbon }) {
+  const KM_PER_KG_CO2 = 1000 / 70; 
+  const kmSetara = (totalKarbon * KM_PER_KG_CO2).toFixed(1);
+
   return (
     <div
       className="rounded-xl border-[0.5px] px-5 py-4 flex items-center justify-between gap-4"
@@ -219,15 +222,15 @@ function JejakHijau({ totalKarbon }) {
           </p>
           <span className="text-compact-sm" style={{ color: 'var(--text-secondary)' }}>kg CO₂</span>
         </div>
-        <span
-          className="self-start text-compact-xs font-medium px-2 py-0.5 rounded-full mt-1"
-          style={{ background: 'var(--bg-success-subtle)', color: 'var(--text-success)' }}
-        >
-          Estimasi dampak
-        </span>
+        <p className="text-compact-xs m-0 mt-1" style={{ color: 'var(--text-tertiary)' }}>
+          ≈ setara berkendara motor sejauh{' '}
+          <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
+            {Number(kmSetara).toLocaleString('id-ID')} km
+          </span>
+        </p>
       </div>
     </div>
-  )
+  );
 }
 
 // ── Kartu Berkah placeholder ──────────────────────────────────────────────────
