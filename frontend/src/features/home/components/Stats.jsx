@@ -1,29 +1,46 @@
+import { useEffect, useState } from 'react';
 import { Users, Leaf, Wind } from 'lucide-react';
 
-const STATS = [
-  {
-    value: '1.200+',
-    unit: 'user',
-    label: 'Anggota aktif bergabung untuk menyelamatkan pangan',
-    icon: Users,
-  },
-  {
-    value: '38',
-    unit: 'ton',
-    label: 'Makanan berhasil diselamatkan dari pembuangan',
-    icon: Leaf,
-  },
-  {
-    value: '54',
-    unit: 'ton CO₂',
-    label: 'Emisi karbon berhasil dicegah dari pembusukan pangan',
-    icon: Wind,
-  },
-];
-
 const BORDER_SUBTLE = 'rgba(255,255,255,0.08)';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function StatsSection() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalSaved: 0,
+    totalKarbonTon: 0,
+  });
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/stats`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success) setStats(json.data);
+      })
+      .catch((err) => console.error('Stats fetch error:', err));
+  }, []);
+
+  const STATS = [
+    {
+      value: stats.totalUsers.toLocaleString('id-ID') + '+',
+      unit: 'user',
+      label: 'Anggota aktif bergabung untuk menyelamatkan pangan',
+      icon: Users,
+    },
+    {
+      value: stats.totalSaved.toLocaleString('id-ID'),
+      unit: 'porsi',
+      label: 'Makanan berhasil diselamatkan dari pembuangan',
+      icon: Leaf,
+    },
+    {
+      value: stats.totalKarbonTon.toLocaleString('id-ID'),
+      unit: 'kg CO₂',
+      label: 'Emisi karbon berhasil dicegah dari pembusukan pangan',
+      icon: Wind,
+    },
+  ];
+
   return (
     <section style={{ background: 'var(--bg-dark)' }}>
       <style>{`

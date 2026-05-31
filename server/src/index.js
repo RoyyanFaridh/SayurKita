@@ -14,6 +14,7 @@ const recommendRoutes         = require("./routes/recommendRoutes");
 const surplusRoutes           = require("./routes/surplusRoutes");
 const cookingLogRoutes        = require("./routes/cookingLogRoutes");
 const poinRoutes              = require("./routes/poinRoutes");
+const statsRoutes             = require("./routes/statsRoutes");
 
 const app    = express();
 const server = http.createServer(app);
@@ -78,6 +79,7 @@ app.use("/api/recommend",          recommendRoutes);
 app.use("/api/surplus",            surplusRoutes);
 app.use("/api/cooking-logs",       cookingLogRoutes);
 app.use("/api/poin",               poinRoutes);
+app.use("/api/stats",              statsRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error("Unhandled error:", err);
