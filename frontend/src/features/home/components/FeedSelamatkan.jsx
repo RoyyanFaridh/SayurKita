@@ -324,7 +324,7 @@ export default function FeedSelamatkan() {
                 + puluhan surplus lainnya tersedia hari ini
               </span>
               <a
-                href="#daftar"
+                href="/register"
                 className="font-semibold flex items-center gap-1"
                 style={{
                   fontSize: '0.8125rem',

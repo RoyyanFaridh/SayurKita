@@ -24,11 +24,11 @@ function Home() {
       <Navbar />
       <Hero />
       <Stats />
-      <FiturUtama />
+      <div id="fitur"><FiturUtama /></div>
       <KondisiMakanan />
       <FeedSelamatkan />
-      <CaraKerja />
-      <DariKomunitas />
+      <div id="cara-kerja"><CaraKerja /></div>
+      <div id="komunitas"><DariKomunitas /></div>
       <FooterMain />
       <FooterBottom />
     </>
