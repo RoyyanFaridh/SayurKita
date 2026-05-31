@@ -86,7 +86,7 @@ export default function Hero() {
 
           <div className="flex flex-col min-[1440px]:flex-row items-center gap-4 w-full min-[1440px]:w-auto">
             <a
-              href="#daftar"
+              href="/register"
               className="
                 btn btn--primary btn--lg
                 w-full
