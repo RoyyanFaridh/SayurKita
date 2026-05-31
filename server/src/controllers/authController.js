@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const axios = require("axios");
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
@@ -61,6 +62,33 @@ const resolveIdentity = ({ identity, identifier, email, phone }) => {
   return null;
 };
 
+const sendWhatsApp = async (phone, otp) => {
+  try {
+    const token = process.env.FONNTE_TOKEN;
+    if (!token) {
+      console.warn("[Fonnte] FONNTE_TOKEN tidak dikonfigurasi, OTP tidak dikirim via WA.");
+      return;
+    }
+
+    await axios.post(
+      "https://api.fonnte.com/send",
+      {
+        target: phone,
+        message: `Kode OTP SayurKita kamu adalah: *${otp}*\n\nBerlaku ${OTP_EXPIRE_MINUTES} menit. Jangan bagikan ke siapapun.\n\n_Jangan Buang, Jadikan Berkah._`,
+      },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    console.log(`[Fonnte] OTP berhasil dikirim ke ${phone}`);
+  } catch (err) {
+    console.error("[Fonnte] Gagal kirim OTP:", err.message);
+  }
+};
+
 exports.register = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
@@ -118,14 +146,13 @@ exports.register = async (req, res) => {
       },
     });
 
+    await sendWhatsApp(normalizedPhone, otpCode);
     console.log(`[SayurKita OTP] ${normalizedPhone} -> ${otpCode}`);
 
     return res.status(201).json({
       success: true,
-      message: "Registrasi berhasil. Verifikasi OTP untuk melanjutkan. Jangan Buang, Jadikan Berkah.",
+      message: "Registrasi berhasil. Kode OTP telah dikirim via WhatsApp.",
       data: user,
-      otpCode,
-      otpExpires,
     });
   } catch (error) {
     console.error("register error:", error);
@@ -232,7 +259,6 @@ exports.login = async (req, res) => {
     if (identity.phone) {
       const normalizedPhone = normalizePhone(identity.phone);
       if (!normalizedPhone) {
-        // Coba cari berdasarkan Name (username) sebagai fallback
         user = await prisma.user.findFirst({
           where: {
             name: {
@@ -345,13 +371,12 @@ exports.resendOTP = async (req, res) => {
       data: { otpCode, otpExpires },
     });
 
+    await sendWhatsApp(user.phone, otpCode);
     console.log(`[SayurKita OTP] Resend ${user.phone} -> ${otpCode}`);
 
     return res.status(200).json({
       success: true,
-      message: "OTP baru berhasil dikirim. Jangan Buang, Jadikan Berkah.",
-      otpCode,
-      otpExpires,
+      message: "OTP baru berhasil dikirim via WhatsApp. Jangan Buang, Jadikan Berkah.",
     });
   } catch (error) {
     console.error("resendOTP error:", error);
