@@ -1,10 +1,10 @@
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 import sys
 import os
+import json
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from utils.recommender import recommender
@@ -15,13 +15,17 @@ from utils.genai_helper import generate_cooking_tip
 
 app = FastAPI()
 
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Load ingredients master data
+data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'ingredients_master_final.json')
+with open(data_path, 'r', encoding='utf-8') as f:
+    master_data = json.load(f)
 
 
 class RekomendasiRequest(BaseModel):
@@ -73,6 +77,25 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+@app.get("/ingredients-master")
+def get_ingredients_master():
+    transformed = [
+        {
+            "nama":         item.get("nama_id"),
+            "kategori":     item.get("kategori"),
+            "umur_kulkas":  item.get("umur_kulkas", 0),
+            "umur_ruang":   item.get("umur_suhu_ruang", 0),
+            "umur_freezer": item.get("umur_freezer", 0),
+            "kkal":         item.get("kalori_per_100g", 0),
+            "protein":      item.get("protein_g", 0),
+            "lemak":        item.get("lemak_g", 0),
+            "karbo":        item.get("karbo_g", 0),
+            "karbon_co2e":  item.get("karbon_co2e", 0),
+        }
+        for item in master_data
+    ]
+    return {"success": True, "data": transformed}
 
 @app.post("/recommend-ai", response_model=List[ResepResponse])
 def recommend_ai(req: RekomendasiRequest):
