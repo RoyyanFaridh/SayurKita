@@ -99,14 +99,6 @@ const getDashboardRecommendation = async (req, res) => {
   }
 };
 
-/**
- * POST /api/recommend/cook
- * Menangani aksi "Sudah Dimasak" dengan atomic transaction:
- * 1. Anti-abuse: cooldown per resep (8 jam) + daily cap (5/hari)
- * 2. Menghapus bahan dari kulkas user
- * 3. Mencatat cooking log + emisi karbon
- * 4. Award poin (non-fatal jika gagal)
- */
 const cookRecipe = async (req, res) => {
   try {
     const userId = req.userId;
@@ -230,10 +222,6 @@ const cookRecipe = async (req, res) => {
   }
 };
 
-/**
- * POST /api/recommend
- * Proxy umum ke endpoint AI (backward compatibility)
- */
 const getGeneralRecommendation = async (req, res) => {
   try {
     let upstream;

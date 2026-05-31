@@ -89,6 +89,9 @@ app.use((err, _req, res, _next) => {
   });
 });
 
+const { runExpiryNotifier } = require('../src/utils/expiryNotifier');
+runExpiryNotifier();
+
 server.listen(PORT, () => {
   console.log(`SayurKita server running on http://localhost:${PORT}`);
   console.log(`[Socket.io] WebSocket server ready on port ${PORT}`);

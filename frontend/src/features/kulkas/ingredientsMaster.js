@@ -24,11 +24,8 @@ function fuzzyMatch(a, b) {
   const na = normalize(a)
   const nb = normalize(b)
 
-  // 1. substring match
   if (nb.includes(na) || (na.includes(nb) && nb.length >= 4)) return true
 
-  // 2. token match: semua kata dari string pendek ada di string panjang
-  //    menangani kasus kata sisipan seperti "penyedap rasa sapi" vs "penyedap sapi"
   const shorter = na.length <= nb.length ? na : nb
   const longer  = na.length <= nb.length ? nb : na
   const tokens  = shorter.split(' ').filter(t => t.length >= 3)
