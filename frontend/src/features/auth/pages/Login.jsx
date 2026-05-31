@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AuthLayout from '../../../components/layouts/AuthLayout';
 import AuthInput from '../components/AuthInput';
-import GoogleIcon from '../components/GoogleIcon';
 import { API_AUTH } from '../../../config/api';
 
 // FIX 4 & 8: Komponen toast sederhana menggantikan alert() native.
@@ -188,15 +187,6 @@ export default function Login() {
             <span className="text-sm text-neutral-400 whitespace-nowrap">atau</span>
             <span className="flex-1 h-px bg-(--border-subtle)" />
           </div>
-
-          {/* Google button — FIX 3: sama, hapus onMouseEnter/Leave */}
-          <button
-            type="button"
-            className="w-full h-13 bg-white text-sm font-medium border-[1.5px] border-(--border-subtle) rounded-xl flex items-center justify-center gap-3 transition-[background-color,border-color] duration-150 hover:bg-neutral-50 hover:border-(--border-strong) text-(--text-primary)"
-          >
-            <GoogleIcon />
-            Masuk dengan Google
-          </button>
 
         </form>
 
