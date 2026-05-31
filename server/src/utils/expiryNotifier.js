@@ -44,62 +44,64 @@ const expiryEmailTemplate = (userName, items) => {
   `;
 };
 
-const runExpiryNotifier = () => {
-  // Jalan setiap hari jam 07.00 pagi WIB (00.00 UTC)
-  cron.schedule('0 0 * * *', async () => {
-    console.log('[ExpiryNotifier] Menjalankan cek kadaluwarsa...');
+const runExpiryCheck = async () => {
+  console.log('[ExpiryNotifier] Menjalankan cek kadaluwarsa...');
 
-    try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-      const threeDaysFromNow = new Date(today);
-      threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
+    const threeDaysFromNow = new Date(today);
+    threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
 
-      // Ambil semua bahan yang akan kadaluwarsa dalam 3 hari
-      const ingredients = await prisma.ingredient.findMany({
-        where: {
-          expDate: { lte: threeDaysFromNow, gte: today },
-        },
-        include: {
-          user: { select: { id: true, name: true, email: true } },
-        },
-      });
+    const ingredients = await prisma.ingredient.findMany({
+      where: {
+        expDate: { lte: threeDaysFromNow, gte: today },
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true } },
+      },
+    });
 
-      if (ingredients.length === 0) {
-        console.log('[ExpiryNotifier] Tidak ada bahan yang akan kadaluwarsa.');
-        return;
-      }
-
-      // Kelompokkan per user
-      const byUser = {};
-      for (const item of ingredients) {
-        const uid = item.user.id;
-        if (!byUser[uid]) {
-          byUser[uid] = { user: item.user, items: [] };
-        }
-        const expDate = new Date(item.expDate);
-        expDate.setHours(0, 0, 0, 0);
-        const daysRemaining = Math.floor((expDate - today) / 86400000);
-        byUser[uid].items.push({ ...item, daysRemaining });
-      }
-
-      // Kirim email per user
-      for (const { user, items } of Object.values(byUser)) {
-        await sendEmail({
-          to: user.email,
-          subject: `⚠️ ${items.length} bahan akan kadaluwarsa — SayurKita`,
-          html: expiryEmailTemplate(user.name, items),
-        });
-        console.log(`[ExpiryNotifier] Email dikirim ke ${user.email} (${items.length} bahan)`);
-      }
-
-    } catch (err) {
-      console.error('[ExpiryNotifier] Error:', err.message);
+    if (ingredients.length === 0) {
+      console.log('[ExpiryNotifier] Tidak ada bahan yang akan kadaluwarsa.');
+      return 0;
     }
-  });
 
+    const byUser = {};
+    for (const item of ingredients) {
+      const uid = item.user.id;
+      if (!byUser[uid]) {
+        byUser[uid] = { user: item.user, items: [] };
+      }
+      const expDate = new Date(item.expDate);
+      expDate.setHours(0, 0, 0, 0);
+      const daysRemaining = Math.floor((expDate - today) / 86400000);
+      byUser[uid].items.push({ ...item, daysRemaining });
+    }
+
+    let totalSent = 0;
+    for (const { user, items } of Object.values(byUser)) {
+      await sendEmail({
+        to: user.email,
+        subject: `⚠️ ${items.length} bahan akan kadaluwarsa — SayurKita`,
+        html: expiryEmailTemplate(user.name, items),
+      });
+      console.log(`[ExpiryNotifier] Email dikirim ke ${user.email} (${items.length} bahan)`);
+      totalSent++;
+    }
+
+    return totalSent;
+  } catch (err) {
+    console.error('[ExpiryNotifier] Error:', err.message);
+    return 0;
+  }
+};
+
+const runExpiryNotifier = () => {
+  // Jalan setiap hari jam 07.00 WIB (00.00 UTC)
+  cron.schedule('0 0 * * *', runExpiryCheck);
   console.log('[ExpiryNotifier] Cron job aktif — cek setiap hari jam 07.00 WIB');
 };
 
-module.exports = { runExpiryNotifier };
+module.exports = { runExpiryNotifier, runExpiryCheck };
