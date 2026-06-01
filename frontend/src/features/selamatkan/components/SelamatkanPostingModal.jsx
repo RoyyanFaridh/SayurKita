@@ -35,7 +35,7 @@ function Toast({ message, type = 'error', onDismiss }) {
   return (
     <div
       role="alert"
-      className={`fixed top-5 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium shadow-md max-w-sm w-[calc(100%-2rem)] ${styles[type]}`}
+      className={`fixed top-5 left-1/2 -translate-x-1/2 z-60 flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium shadow-md max-w-sm w-[calc(100%-2rem)] ${styles[type]}`}
     >
       <span className="flex-1">{message}</span>
       <button onClick={onDismiss} className="text-current opacity-50 hover:opacity-100 transition-opacity text-base leading-none">✕</button>
