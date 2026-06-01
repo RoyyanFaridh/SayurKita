@@ -72,14 +72,20 @@ const createSurplusPost = async (req, res) => {
     const latFloat = parseFloat(latitude);
     const lngFloat = parseFloat(longitude);
 
-    if (
-      !title || !description || !category || !quantity ||
-      !pickupTime || !address ||
-      !Number.isFinite(latFloat) || !Number.isFinite(lngFloat)
-    ) {
+    const fieldErrors = {};
+    if (!title)                                          fieldErrors.nama      = 'Nama makanan wajib diisi';
+    if (!description)                                    fieldErrors.deskripsi = 'Deskripsi wajib diisi';
+    if (!quantity)                                       fieldErrors.jumlah    = 'Jumlah wajib diisi';
+    if (!address)                                        fieldErrors.lokasi    = 'Alamat wajib diisi';
+    if (!Number.isFinite(latFloat) || !Number.isFinite(lngFloat)) {
+      fieldErrors.lokasi = 'Koordinat tidak valid — klik "Gunakan lokasimu"';
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
       return res.status(400).json({
         success: false,
-        message: "Mohon lengkapi semua data form, termasuk koordinat lokasi yang valid.",
+        message: 'Mohon lengkapi semua data form.',
+        fields: fieldErrors,
       });
     }
 
