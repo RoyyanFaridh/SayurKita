@@ -180,14 +180,6 @@ export default function Login() {
           >
             {submitting ? 'Memproses…' : 'Masuk'}
           </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3">
-            <span className="flex-1 h-px bg-(--border-subtle)" />
-            <span className="text-sm text-neutral-400 whitespace-nowrap">atau</span>
-            <span className="flex-1 h-px bg-(--border-subtle)" />
-          </div>
-
         </form>
 
         {/* Footer legal */}
