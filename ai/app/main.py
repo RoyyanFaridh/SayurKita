@@ -130,7 +130,8 @@ def check_shelf_life(ingredient: str):
         return hasil
     else:
         raise HTTPException(status_code=404, detail="Bahan tidak ditemukan")
-
+    
+#gemini API
 @app.post("/cooking-tips", response_model=TipsResponse)
 def get_cooking_tips(req: TipsRequest):
     if not req.ingredients:
