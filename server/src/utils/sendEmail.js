@@ -1,8 +1,7 @@
 const { Resend } = require('resend');
 
-const resend = new Resend(
-  process.env.RESEND_API_KEY
-);
+const resend =
+  new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({
   to,
@@ -14,27 +13,29 @@ const sendEmail = async ({
 
     const result =
       await resend.emails.send({
+
         from:
           'SayurKita <onboarding@resend.dev>',
+
         to,
         subject,
         html,
       });
 
     console.log(
-      `[Resend] SUCCESS → ${to}`
+      `[Resend] SUCCESS -> ${to}`
     );
 
     return result;
 
-  } catch(err) {
+  } catch (err) {
 
     console.error(
-      `[Resend] FAILED → ${to}`,
+      `[Resend] FAILED -> ${to}`,
       err
     );
 
-    throw err;  
+    throw err;
   }
 };
 
