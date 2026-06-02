@@ -82,13 +82,33 @@ const runExpiryCheck = async () => {
 
     let totalSent = 0;
     for (const { user, items } of Object.values(byUser)) {
-      await sendEmail({
-        to: user.email,
-        subject: `⚠️ ${items.length} bahan akan kadaluwarsa — SayurKita`,
-        html: expiryEmailTemplate(user.name, items),
-      });
-      console.log(`[ExpiryNotifier] Email dikirim ke ${user.email} (${items.length} bahan)`);
-      totalSent++;
+
+      try {
+
+        console.log(
+          `[ExpiryNotifier] Attempt send -> ${user.id} | ${user.email}`
+        );
+
+        await sendEmail({
+          to: user.email,
+          subject: `⚠️ ${items.length} bahan akan kadaluwarsa — SayurKita`,
+          html: expiryEmailTemplate(user.name, items),
+        });
+
+        console.log(
+          `[ExpiryNotifier] SUCCESS -> ${user.email} (${items.length} bahan)`
+        );
+
+        totalSent++;
+
+      } catch (err) {
+
+        console.error(
+          `[ExpiryNotifier] FAILED -> ${user.email}`,
+          err.message
+        );
+
+      }
     }
 
     return totalSent;
