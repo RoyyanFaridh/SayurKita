@@ -131,7 +131,7 @@ def check_shelf_life(ingredient: str):
     else:
         raise HTTPException(status_code=404, detail="Bahan tidak ditemukan")
     
-#gemini API
+#gemini API AI untuk generate tips memasak bahan makanan dengan cepat berdasarkan bahan yang dimiliki
 @app.post("/cooking-tips", response_model=TipsResponse)
 def get_cooking_tips(req: TipsRequest):
     if not req.ingredients:
