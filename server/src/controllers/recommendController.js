@@ -5,11 +5,6 @@ const prisma = new PrismaClient();
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
 const DAILY_CAP      = 5;
 
-/**
- * POST /api/recommend/dashboard
- * Mengambil SEMUA bahan dari kulkas user dan meminta rekomendasi resep ke AI.
- * Expired days dihitung per bahan dan dikirim agar urgency_boost di Python bekerja.
- */
 const getDashboardRecommendation = async (req, res) => {
   try {
     const userId = req.userId;
@@ -272,8 +267,65 @@ const getGeneralRecommendation = async (req, res) => {
   }
 };
 
+const getCookingTips = async (req, res) => {
+  try {
+    const { ingredients } = req.body;
+
+    if (!Array.isArray(ingredients) || ingredients.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Daftar bahan kosong.",
+      });
+    }
+
+    let upstream;
+    try {
+      upstream = await fetch(`${AI_SERVICE_URL}/cooking-tips`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredients }),
+      });
+    } catch (fetchErr) {
+      console.error("Fetch error connecting to AI service:", fetchErr.message);
+      return res.status(502).json({
+        success: false,
+        message: "Layanan AI tidak dapat dijangkau.",
+        error: fetchErr.message,
+      });
+    }
+
+    const text = await upstream.text();
+    let payload;
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      return res.status(502).json({
+        success: false,
+        message: "Respons layanan AI tidak valid.",
+      });
+    }
+
+    if (!upstream.ok) {
+      return res.status(upstream.status).json({
+        success: false,
+        message: payload?.detail || "Layanan AI mengembalikan error.",
+      });
+    }
+
+    return res.status(200).json({ success: true, tip: payload.tip });
+  } catch (err) {
+    console.error("getCookingTips error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan saat mengambil tips memasak.",
+      error: err.message,
+    });
+  }
+};
+
 module.exports = {
   getDashboardRecommendation,
   cookRecipe,
   getGeneralRecommendation,
+  getCookingTips,
 };
