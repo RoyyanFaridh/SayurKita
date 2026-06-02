@@ -54,13 +54,18 @@ export default function KulkasResepAI({ ingredients = [], onSelectResep }) {
       setTipError('')
       setHasFetchedTip(true)
       const token = localStorage.getItem('token')
+
+      const ingredientNames = ingredients.map(i => 
+        typeof i === 'string' ? i : i.nama
+      ).filter(Boolean)
+      
       const response = await fetch(`${API_ORIGIN}/api/recommend/cooking-tips`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { Authorization: `Bearer ${token}` }),
         },
-        body: JSON.stringify({ ingredients }),
+        body: JSON.stringify({ ingredients: ingredientNames }),
       })
       if (!response.ok) throw new Error('Gagal mendapatkan tips memasak.')
       const result = await response.json()

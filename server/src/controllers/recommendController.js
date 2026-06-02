@@ -269,7 +269,6 @@ const getGeneralRecommendation = async (req, res) => {
 
 const getCookingTips = async (req, res) => {
   try {
-    console.log("getCookingTips body:", req.body)
     const { ingredients } = req.body;
 
     if (!Array.isArray(ingredients) || ingredients.length === 0) {
