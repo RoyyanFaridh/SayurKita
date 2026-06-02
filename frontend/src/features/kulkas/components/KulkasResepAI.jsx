@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowRight, Sparkles, AlertCircle, Loader2 } from 'lucide-react'
+import { ArrowRight, Sparkles, AlertCircle, Loader2, Lightbulb } from 'lucide-react'
 import { API_ORIGIN } from '../../../config/api'
 import { formatRecipe } from '../../../utils/resepUtils'
 
@@ -9,6 +9,11 @@ export default function KulkasResepAI({ ingredients = [], onSelectResep }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [hasRequested, setHasRequested] = useState(false)
+
+  const [tip, setTip] = useState('')
+  const [tipLoading, setTipLoading] = useState(false)
+  const [tipError, setTipError] = useState('')
+  const [hasFetchedTip, setHasFetchedTip] = useState(false)
 
   async function fetchRecommendations() {
     try {
@@ -39,6 +44,32 @@ export default function KulkasResepAI({ ingredients = [], onSelectResep }) {
       setRecommendations([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function fetchCookingTip() {
+    if (!ingredients.length) return
+    try {
+      setTipLoading(true)
+      setTipError('')
+      setHasFetchedTip(true)
+      const token = localStorage.getItem('token')
+      const response = await fetch(`${API_ORIGIN}/api/recommend/cooking-tips`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({ ingredients }),
+      })
+      if (!response.ok) throw new Error('Gagal mendapatkan tips memasak.')
+      const result = await response.json()
+      setTip(result.tip || '')
+    } catch (err) {
+      setTipError(err.message || 'Terjadi kesalahan saat memuat tips memasak')
+      setTip('')
+    } finally {
+      setTipLoading(false)
     }
   }
 
@@ -76,6 +107,71 @@ export default function KulkasResepAI({ ingredients = [], onSelectResep }) {
       )}
     </div>
   )
+
+  // Tips section — hanya muncul kalau ada rekomendasi dan ada ingredients
+  const TipsSection = () => {
+    if (!recommendations.length || !ingredients.length) return null
+
+    return (
+      <div className="mt-3 rounded-md border border-(--border-subtle) bg-(--bg-surface-2) p-3">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5">
+            <Lightbulb size={13} strokeWidth={2} style={{ color: 'var(--color-secondary-600)' }} />
+            <span className="text-compact-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
+              Tips Memasak
+            </span>
+          </div>
+          {hasFetchedTip && !tipLoading && (
+            <button
+              onClick={fetchCookingTip}
+              className="bg-transparent border-0 cursor-pointer text-compact-xs font-medium transition-opacity duration-150 hover:opacity-75"
+              style={{ color: 'var(--text-brand)' }}
+            >
+              Ganti tips
+            </button>
+          )}
+        </div>
+
+        {!hasFetchedTip && (
+          <div className="flex flex-col gap-2">
+            <p className="text-compact-xs" style={{ color: 'var(--text-muted)' }}>
+              Dapatkan tips memasak dari bahan kulkasmu
+            </p>
+            <button
+              onClick={fetchCookingTip}
+              className="inline-flex w-fit items-center gap-1.5 rounded-md border-0 px-3 py-1.5 text-compact-sm font-semibold cursor-pointer transition-colors duration-150 hover:opacity-90"
+              style={{ background: 'var(--color-secondary-500)', color: 'var(--color-primary-900)' }}
+            >
+              <Lightbulb size={12} strokeWidth={2} />
+              Dapatkan Tips
+            </button>
+          </div>
+        )}
+
+        {tipLoading && (
+          <div className="flex items-center gap-1.5">
+            <Loader2 size={12} className="animate-spin" style={{ color: 'var(--color-secondary-600)' }} />
+            <p className="text-compact-xs" style={{ color: 'var(--text-muted)' }}>
+              Memuat tips...
+            </p>
+          </div>
+        )}
+
+        {!tipLoading && tipError && (
+          <div className="flex items-center gap-1.5">
+            <AlertCircle size={12} className="shrink-0" style={{ color: 'var(--color-warning-600)' }} />
+            <p className="text-compact-xs" style={{ color: 'var(--color-warning-800)' }}>{tipError}</p>
+          </div>
+        )}
+
+        {!tipLoading && !tipError && tip && (
+          <p className="text-compact-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            {tip}
+          </p>
+        )}
+      </div>
+    )
+  }
 
   if (!hasRequested) {
     return (
@@ -178,6 +274,7 @@ export default function KulkasResepAI({ ingredients = [], onSelectResep }) {
           </li>
         ))}
       </ul>
+      <TipsSection />
     </div>
   )
 }
