@@ -5,11 +5,6 @@ const prisma = new PrismaClient();
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
 const DAILY_CAP      = 5;
 
-/**
- * POST /api/recommend/dashboard
- * Mengambil SEMUA bahan dari kulkas user dan meminta rekomendasi resep ke AI.
- * Expired days dihitung per bahan dan dikirim agar urgency_boost di Python bekerja.
- */
 const getDashboardRecommendation = async (req, res) => {
   try {
     const userId = req.userId;
