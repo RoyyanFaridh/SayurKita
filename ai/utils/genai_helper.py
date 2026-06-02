@@ -7,8 +7,8 @@ load_dotenv()
 def generate_cooking_tip(ingredients: list) -> str:
     """
     Menghasilkan tips memasak kreatif menggunakan API Gemini berdasarkan daftar bahan.
-    """
-    # API Key di-set di environment variables (bisa via file .env nantinya)
+    """ 
+    # API Key di-set di environment variables (buat file .env nantinya yang berisi API key )
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return "Tips memasak: Gunakan kreativitas Anda! (Catatan: GEMINI_API_KEY belum dikonfigurasi)"
