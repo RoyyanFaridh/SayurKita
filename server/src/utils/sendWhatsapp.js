@@ -6,25 +6,27 @@ const sendWhatsapp = async ({ target, message }) => {
 
     const response = await axios.post(
       'https://api.fonnte.com/send',
-
       {
         target,
         message,
       },
-
       {
         headers: {
-          Authorization:
-            process.env.FONNTE_API_KEY,
+          Authorization: process.env.FONNTE_API_KEY,
         },
       }
     );
 
-    console.log(
-      `[FONNTE] SUCCESS -> ${target}`
-    );
-
-    return response.data;
+    if (response.data.status === true) {
+      console.log(
+        `[FONNTE] SUCCESS -> ${target}`
+      );
+      return response.data;
+    } else {
+      throw new Error(
+        `FONNTE API returned false: ${response.data.reason || 'Unknown error'}`
+      );
+    }
 
   } catch (err) {
 
