@@ -65,11 +65,15 @@ export default function Verify() {
   }, [phone, navigate]);
 
   useEffect(() => {
-    if (timer <= 240) { setCanResend(true); } 
+    if (timer <= 270) { setCanResend(true); } 
     if (timer <= 0) { setCanResend(true); return; }
     const id = setTimeout(() => setTimer(t => t - 1), 1000);
     return () => clearTimeout(id);
   }, [timer]);
+
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
 
   const pad       = n => String(n).padStart(2, '0');
   const formatted = `${pad(Math.floor(timer / 60))}:${pad(timer % 60)}`;
@@ -104,25 +108,57 @@ export default function Verify() {
     if (!canResend || !phone.trim()) return;
     setResending(true);
     try {
-      const res  = await fetch(`${API_AUTH}/resend-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
-      });
-      const data = await res.json().catch(() => ({}));
+
+      const res = await fetch(
+        `${API_AUTH}/resend-otp`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            phone
+          }),
+        }
+      );
+
+      const data =
+        await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        showToast(data.message || 'Gagal mengirim ulang OTP');
+
+        showToast(
+          data.message ||
+          'Gagal mengirim ulang OTP.'
+        );
+
         return;
       }
+
       setTimer(TIMER_START);
       setCanResend(false);
-      setOtp(Array(OTP_LENGTH).fill(''));
+
+      setOtp(
+        Array(OTP_LENGTH).fill('')
+      );
+
       inputRefs.current[0]?.focus();
-      showToast('OTP baru telah dikirim ke nomormu.', 'info');
+
+      showToast(
+        'OTP baru berhasil dikirim ke WhatsApp.',
+        'info'
+      );
+
     } catch {
-      showToast('Tidak dapat menghubungi server. Pastikan koneksi internetmu aktif.');
+
+      showToast(
+        'Tidak dapat menghubungi server.'
+      );
+
     } finally {
+
       setResending(false);
+
     }
   };
 
@@ -130,19 +166,40 @@ export default function Verify() {
     if (!isFilled) return;
     setLoading(true);
     try {
-      const res  = await fetch(`${API_AUTH}/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otpCode: otp.join('') }),
-      });
-      const data = await res.json().catch(() => ({}));
+
+      const res = await fetch(
+        `${API_AUTH}/verify-otp`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            phone,
+            otpCode: otp.join('')
+          }),
+        }
+      );
+
+      const data =
+        await res.json().catch(() => ({}));
+
       if (res.ok) {
+        showToast(
+          'Verifikasi berhasil.',
+          'info'
+        );
         navigate('/success');
       } else {
-        showToast(data.message || 'Kode OTP salah. Coba lagi.');
+        showToast(
+          data.message ||
+          'Kode OTP salah atau sudah kedaluwarsa.'
+        );
       }
     } catch {
-      showToast('Tidak dapat menghubungi server. Pastikan koneksi internetmu aktif.');
+      showToast(
+        'Tidak dapat menghubungi server.'
+      );
     } finally {
       setLoading(false);
     }
@@ -158,7 +215,7 @@ export default function Verify() {
         eyebrow="Bergabung sekarang"
         title="Mulai dari"
         highlight="dapurmu"
-        subtitle="Daftar dua langkah saja. Akun langsung aktif tanpa proses approval dan tanpa biaya."
+        subtitle="Verifikasi OTP dikirim ke WhatsApp untuk mengaktifkan akunmu."
       >
         <StepIndicator steps={buildSteps(2)} />
 
@@ -167,7 +224,7 @@ export default function Verify() {
             Verifikasi Nomor HP
           </h2>
           <p className="text-sm m-0 leading-normal text-(--text-secondary)">
-            Masukkan 6 kode verifikasi yang dikirim ke nomormu.
+            Masukkan 6 digit kode OTP yang dikirim ke WhatsApp-mu.
           </p>
         </div>
 
@@ -184,7 +241,7 @@ export default function Verify() {
               Kode dikirim ke
             </span>
             <span className="text-base font-bold text-(--text-primary)">
-              +62 {phone}
+              +62 {phone.replace(/^62/, '')}
             </span>
           </div>
 
@@ -217,7 +274,9 @@ export default function Verify() {
             disabled={!canResend || resending}
             className="text-sm font-semibold text-(--accent-primary) bg-transparent border-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed hover:underline"
           >
-            {resending ? 'Mengirim…' : 'Kirim ulang'}
+            {resending
+              ? 'Mengirim OTP…'
+              : 'Kirim ulang OTP'}
           </button>
         </div>
 

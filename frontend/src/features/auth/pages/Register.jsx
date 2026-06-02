@@ -135,42 +135,95 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const errs = validate();
+
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
+
     setErrors({});
     setSubmitting(true);
 
     try {
+
+      const cleanedPhone = phone.replace(/-/g, '');
+
       const res = await fetch(`${API_AUTH}/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: nama, phone: phone.replace(/-/g, ''), email, password }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: nama,
+          email,
+          phone: cleanedPhone,
+          password
+        }),
       });
+
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        navigate(`/verify?phone=${encodeURIComponent(phone)}`);
+
+        showToast(
+          'OTP berhasil dikirim ke WhatsApp.',
+          'info'
+        );
+
+        navigate(
+          `/verify?phone=${encodeURIComponent(cleanedPhone)}`
+        );
+
       } else if (res.status === 409) {
-        // Email atau nomor HP sudah terdaftar
-        const msg = data.message || '';
-        if (msg.toLowerCase().includes('email')) {
-          setErrors(p => ({ ...p, email: 'Email sudah terdaftar' }));
-        } else if (msg.toLowerCase().includes('nomor') || msg.toLowerCase().includes('phone')) {
-          setErrors(p => ({ ...p, phone: 'Nomor HP sudah terdaftar' }));
+
+        const msg = (data.message || '').toLowerCase();
+
+        if (msg.includes('email')) {
+
+          setErrors(p => ({
+            ...p,
+            email: 'Email sudah terdaftar'
+          }));
+
+        } else if (
+          msg.includes('nomor') ||
+          msg.includes('phone')
+        ) {
+
+          setErrors(p => ({
+            ...p,
+            phone: 'Nomor HP sudah terdaftar'
+          }));
+
         } else {
-          showToast(msg || 'Email atau nomor HP sudah terdaftar.');
+
+          showToast(
+            data.message ||
+            'Email atau nomor HP sudah terdaftar.'
+          );
+
         }
+
       } else {
-        showToast(data.message || 'Registrasi gagal. Coba lagi.');
+
+        showToast(
+          data.message ||
+          'Registrasi gagal. Silakan coba lagi.'
+        );
+
       }
+
     } catch {
-      showToast('Tidak dapat menghubungi server. Pastikan koneksi internetmu aktif.');
+
+      showToast(
+        'Tidak dapat menghubungi server.'
+      );
+
     } finally {
+
       setSubmitting(false);
+
     }
   };
 
@@ -237,7 +290,7 @@ export default function Register() {
         eyebrow="Bergabung sekarang"
         title="Mulai dari"
         highlight="dapurmu"
-        subtitle="Daftar dua langkah saja. Akun langsung aktif tanpa proses approval dan tanpa biaya."
+        subtitle="Daftar dua langkah saja. Verifikasi OTP akan dikirim ke WhatsApp untuk mengaktifkan akunmu."
       >
         <StepIndicator steps={buildSteps(1)} />
 
@@ -275,7 +328,7 @@ export default function Register() {
               onChange={handlePhoneChange}
               autoComplete="tel"
               prefix="+62"
-              hint="9–13 digit tanpa awalan 0"
+              hint="Nomor WhatsApp aktif (8–13 digit tanpa awalan 0)"
               error={errors.phone}
             />
           </div>

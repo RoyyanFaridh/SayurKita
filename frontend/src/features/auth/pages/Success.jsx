@@ -16,22 +16,28 @@ function buildSteps(activeNum) {
 
 export default function Success() {
   const navigate = useNavigate();
+
   const [countdown, setCountdown] = useState(COUNTDOWN_START);
   const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused) return;
-    if (countdown <= 0) {
-      navigate('/login?registered=1', { replace: true });
-      return;
-    }
-    const id = setTimeout(() => setCountdown(c => c - 1), 1000);
-    return () => clearTimeout(id);
-  }, [countdown, navigate, paused]);
 
   const handleNavigate = useCallback(() => {
     navigate('/login?registered=1', { replace: true });
   }, [navigate]);
+
+  useEffect(() => {
+    if (paused) return;
+
+    if (countdown <= 0) {
+      handleNavigate();
+      return;
+    }
+
+    const timerId = setTimeout(() => {
+      setCountdown(prev => prev - 1);
+    }, 1000);
+
+    return () => clearTimeout(timerId);
+  }, [countdown, paused, handleNavigate]);
 
   return (
     <AuthLayout
@@ -43,6 +49,7 @@ export default function Success() {
       <StepIndicator steps={buildSteps(3)} />
 
       <div className="flex flex-col items-center gap-5 text-center">
+
         <div className="w-18 h-18 rounded-full flex items-center justify-center shrink-0 bg-(--accent-primary)">
           <Check
             size={28}
@@ -56,7 +63,9 @@ export default function Success() {
         </h2>
 
         <p className="text-sm leading-relaxed max-w-[38ch] m-0 text-(--text-secondary)">
-          Selamat datang di SayurKita. Masuk dengan email atau nomor HP dan password untuk melanjutkan ke dashboard.
+          Nomor HP kamu berhasil diverifikasi.
+          Sekarang kamu bisa login menggunakan
+          email / nomor HP dan password.
         </p>
 
         <button
@@ -68,12 +77,10 @@ export default function Success() {
         >
           {paused
             ? 'Lanjut ke halaman masuk →'
-            : `Lanjut ke halaman masuk (${countdown})`
-          }
+            : `Lanjut ke halaman masuk (${countdown})`}
         </button>
 
       </div>
-
     </AuthLayout>
   );
 }
