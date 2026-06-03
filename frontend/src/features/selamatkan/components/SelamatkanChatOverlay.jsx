@@ -7,6 +7,7 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
   const [messages, setMessages] = useState([])
   const [inputText, setInputText] = useState('')
   const [loading, setLoading] = useState(true)
+  const [sending, setSending] = useState(false)
   const messagesEndRef = useRef(null)
   const socketRef = useRef(null)
 
@@ -34,7 +35,7 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
   // Setup Socket.io for Real-time chat
   useEffect(() => {
     socketRef.current = io(API_ORIGIN)
-    
+
     // Join spesifik room untuk post ini
     socketRef.current.emit('joinChat', item.id)
 
@@ -42,8 +43,8 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
     const handleNewMessage = (msg) => {
       setMessages((prev) => {
         // Cegah duplikasi jika socket tidak sengaja terpanggil 2x
-        if (prev.some(m => m.id === msg.id)) return prev;
-        return [...prev, msg];
+        if (prev.some(m => m.id === msg.id)) return prev
+        return [...prev, msg]
       })
     }
 
@@ -60,18 +61,17 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
 
   // Auto-scroll ke bawah saat ada pesan baru
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
   const handleSendMessage = async (e) => {
     e.preventDefault()
-    
-    // Validasi Pesan Kosong: Jika hanya spasi atau string kosong, batalkan pengiriman
+
     const typedMessage = inputText.trim()
-    if (!typedMessage) {
-      setInputText('') // Reset input balikan menjadi bersih
-      return
-    }
+    if (!typedMessage || sending) return
+
+    setSending(true)
+    setInputText('') // Optimistic clear supaya user tidak tergoda pencet lagi
 
     const token = localStorage.getItem('token')
     try {
@@ -84,11 +84,14 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
         body: JSON.stringify({ message: typedMessage })
       })
       const data = await res.json()
-      if (data.success) {
-        setInputText('')
+      if (!data.success) {
+        setInputText(typedMessage) // Kembalikan teks kalau server menolak
       }
     } catch (error) {
       console.error('Failed to send message', error)
+      setInputText(typedMessage) // Kembalikan teks kalau network error
+    } finally {
+      setSending(false)
     }
   }
 
@@ -98,7 +101,7 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div 
+      <div
         className="w-full max-w-md bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
         style={{ height: '80vh', maxHeight: '600px' }}
       >
@@ -113,7 +116,7 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
               <p className="text-compact-xs text-emerald-700/80 truncate">Terkait: {item.nama}</p>
             </div>
           </div>
-          <button 
+          <button
             onClick={onClose}
             className="p-2 -mr-2 rounded-full text-emerald-700/60 hover:text-emerald-900 hover:bg-emerald-100 transition-colors"
           >
@@ -134,16 +137,16 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
             </div>
           ) : (
             messages.map((msg, idx) => {
-              const isMe = String(msg.senderId) === String(currentUserId);
-              const senderName = msg.sender?.name || (isMe ? 'Anda' : targetName);
-              
+              const isMe = String(msg.senderId) === String(currentUserId)
+              const senderName = msg.sender?.name || (isMe ? 'Anda' : targetName)
+
               return (
                 <div key={msg.id || idx} className={`flex flex-col max-w-[80%] ${isMe ? 'self-end items-end' : 'self-start items-start'}`}>
                   {!isMe && <span className="text-compact-xs text-slate-500 ml-1 mb-0.5 font-medium">{senderName}</span>}
-                  <div 
+                  <div
                     className={`px-3 py-2 rounded-2xl text-compact-sm shadow-sm ${
-                      isMe 
-                        ? 'bg-primary-600 text-white rounded-tr-sm' 
+                      isMe
+                        ? 'bg-primary-600 text-white rounded-tr-sm'
                         : 'bg-white border border-slate-100 text-slate-800 rounded-tl-sm'
                     }`}
                   >
@@ -162,19 +165,22 @@ export default function SelamatkanChatOverlay({ item, currentUserId, onClose }) 
         {/* Input Area */}
         <form onSubmit={handleSendMessage} className="p-3 bg-white border-t border-slate-100">
           <div className="flex items-center gap-2">
-            <input 
-              type="text" 
-              placeholder="Tulis pesan..." 
+            <input
+              type="text"
+              placeholder="Tulis pesan..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-800 text-compact-sm rounded-full outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all placeholder:text-slate-400"
             />
-            <button 
+            <button
               type="submit"
-              disabled={!inputText.trim()}
+              disabled={!inputText.trim() || sending}
               className="w-10 h-10 rounded-full bg-primary-600 flex items-center justify-center text-white shrink-0 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
-              <Send size={18} className="ml-1" />
+              {sending
+                ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : <Send size={18} className="ml-1" />
+              }
             </button>
           </div>
         </form>
