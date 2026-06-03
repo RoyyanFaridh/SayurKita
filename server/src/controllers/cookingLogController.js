@@ -1,6 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
 const { awardPoin } = require("../services/poinService");
-const prisma = new PrismaClient();
+const prisma = require("../lib/prisma");
 
 const COOLDOWN_HOURS = 8;
 const DAILY_CAP      = 5;

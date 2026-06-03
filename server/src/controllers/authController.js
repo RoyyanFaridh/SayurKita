@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("@prisma/client");
 
 const { sendWhatsapp } =
   require("../utils/sendWhatsapp");
@@ -9,7 +8,7 @@ const {
   otpWhatsappTemplate
 } = require("../utils/emailTemplates");
 
-const prisma = new PrismaClient();
+const prisma = require("../lib/prisma");
 
 const OTP_LENGTH = 6;
 const OTP_EXPIRE_MINUTES = 5;
@@ -213,7 +212,7 @@ exports.register =
       const hashedPassword =
         await bcrypt.hash(
           password,
-          10
+          8
         );
 
       const otpCode =
@@ -555,16 +554,10 @@ exports.resendOTP = async (req, res) => {
       }
     });
 
-    await sendWhatsapp({
-
-      target: user.phone,
-
-      message:
-        otpWhatsappTemplate(
-          otpCode,
-          OTP_EXPIRE_MINUTES
-        ),
-    });
+    sendWhatsapp({
+      target: normalizedPhone,
+      message: otpWhatsappTemplate(otpCode, OTP_EXPIRE_MINUTES),
+    }).catch(err => console.error("sendWhatsapp error:", err));
 
     console.log(
       `[OTP RESEND] ${user.phone} -> ${otpCode}`

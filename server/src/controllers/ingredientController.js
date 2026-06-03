@@ -1,15 +1,12 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../lib/prisma");
 
-const prisma = new PrismaClient();
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
 
 const getIngredients = async (req, res) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Token tidak valid atau expired.",
-      });
+      return res.status(401).json({ success: false, message: "Token tidak valid atau expired." });
     }
 
     const ingredients = await prisma.ingredient.findMany({
@@ -17,16 +14,10 @@ const getIngredients = async (req, res) => {
       orderBy: { expDate: "asc" },
     });
 
-    return res.status(200).json({
-      success: true,
-      data: ingredients,
-    });
+    return res.status(200).json({ success: true, data: ingredients });
   } catch (err) {
     console.error("getIngredients error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal mengambil data bahan.",
-    });
+    return res.status(500).json({ success: false, message: "Gagal mengambil data bahan." });
   }
 };
 
@@ -34,41 +25,32 @@ const addIngredient = async (req, res) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Token tidak valid atau expired.",
-      });
+      return res.status(401).json({ success: false, message: "Token tidak valid atau expired." });
     }
 
     const { nama, kategori, jumlah, storage, beliDate, expDate } = req.body;
 
-    // Validasi input
     if (!nama || !kategori || !jumlah) {
-      return res.status(400).json({
-        success: false,
-        message: "Nama, kategori, dan jumlah harus diisi.",
-      });
+      return res.status(400).json({ success: false, message: "Nama, kategori, dan jumlah harus diisi." });
     }
 
     let finalExpDate;
     if (expDate) {
       finalExpDate = new Date(expDate);
     } else {
-      let extraDays = 3; 
+      let extraDays = 3;
       try {
-        const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
         const response = await fetch(`${AI_SERVICE_URL}/shelf-life?ingredient=${encodeURIComponent(nama)}`);
-        
         if (response.ok) {
           const data = await response.json();
-          if (data && data.umur_kulkas !== undefined) {
+          if (data?.umur_kulkas !== undefined) {
             extraDays = parseInt(data.umur_kulkas, 10) || 3;
           }
         }
       } catch (error) {
         console.error("Gagal terhubung ke API Shelf-Life AI:", error.message);
       }
-      
+
       const baseDate = beliDate ? new Date(beliDate) : new Date();
       finalExpDate = new Date(baseDate);
       finalExpDate.setDate(finalExpDate.getDate() + extraDays);
@@ -86,39 +68,26 @@ const addIngredient = async (req, res) => {
       },
     });
 
-    try {
-      const parsedJumlah = parseFloat(jumlah);
-      
-      if (!isNaN(parsedJumlah) && parsedJumlah > 0) {
-        const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
-        const carbonResponse = await fetch(`${AI_SERVICE_URL}/carbon`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ingredient_name: nama,
-            weight_grams: parsedJumlah,
-          }),
-        });
-
-        if (carbonResponse.ok) {
+    // Fire and forget — carbon update tidak blocking response
+    const parsedJumlah = parseFloat(jumlah);
+    if (!isNaN(parsedJumlah) && parsedJumlah > 0) {
+      fetch(`${AI_SERVICE_URL}/carbon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ingredient_name: nama, weight_grams: parsedJumlah }),
+      })
+        .then(async (carbonResponse) => {
+          if (!carbonResponse.ok) return;
           const carbonData = await carbonResponse.json();
-          if (carbonData && carbonData.co2e_kg) {
+          if (carbonData?.co2e_kg) {
             await prisma.user.update({
               where: { id: userId },
-              data: {
-                totalCarbonSaved: {
-                  increment: carbonData.co2e_kg,
-                },
-              },
+              data: { totalKarbonAkumulasi: { increment: carbonData.co2e_kg } },
             });
             console.log(`Berhasil menambahkan ${carbonData.co2e_kg} kg CO2e ke total user ${userId}`);
           }
-        }
-      }
-    } catch (carbonError) {
-      console.error("Gagal terhubung ke API Carbon AI atau update user:", carbonError.message);
+        })
+        .catch((err) => console.error("Carbon update error:", err));
     }
 
     return res.status(201).json({
@@ -128,10 +97,7 @@ const addIngredient = async (req, res) => {
     });
   } catch (err) {
     console.error("addIngredient error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal menambah bahan.",
-    });
+    return res.status(500).json({ success: false, message: "Gagal menambah bahan." });
   }
 };
 
@@ -142,22 +108,15 @@ const updateIngredient = async (req, res) => {
     const { nama, kategori, jumlah, storage, beliDate, expDate } = req.body;
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Token tidak valid atau expired.",
-      });
+      return res.status(401).json({ success: false, message: "Token tidak valid atau expired." });
     }
 
-    // Cek apakah ingredient milik user
     const ingredient = await prisma.ingredient.findFirst({
       where: { id, userId },
     });
 
     if (!ingredient) {
-      return res.status(404).json({
-        success: false,
-        message: "Bahan tidak ditemukan.",
-      });
+      return res.status(404).json({ success: false, message: "Bahan tidak ditemukan." });
     }
 
     const updated = await prisma.ingredient.update({
@@ -172,17 +131,10 @@ const updateIngredient = async (req, res) => {
       },
     });
 
-    return res.status(200).json({
-      success: true,
-      message: "Bahan berhasil diperbarui.",
-      data: updated,
-    });
+    return res.status(200).json({ success: true, message: "Bahan berhasil diperbarui.", data: updated });
   } catch (err) {
     console.error("updateIngredient error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal memperbarui bahan.",
-    });
+    return res.status(500).json({ success: false, message: "Gagal memperbarui bahan." });
   }
 };
 
@@ -192,37 +144,21 @@ const deleteIngredient = async (req, res) => {
     const { id } = req.params;
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Token tidak valid atau expired.",
-      });
+      return res.status(401).json({ success: false, message: "Token tidak valid atau expired." });
     }
 
-    const ingredient = await prisma.ingredient.findFirst({
+    const deleted = await prisma.ingredient.deleteMany({
       where: { id, userId },
     });
 
-    if (!ingredient) {
-      return res.status(404).json({
-        success: false,
-        message: "Bahan tidak ditemukan.",
-      });
+    if (deleted.count === 0) {
+      return res.status(404).json({ success: false, message: "Bahan tidak ditemukan." });
     }
 
-    await prisma.ingredient.delete({
-      where: { id },
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Bahan berhasil dihapus.",
-    });
+    return res.status(200).json({ success: true, message: "Bahan berhasil dihapus." });
   } catch (err) {
     console.error("deleteIngredient error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal menghapus bahan.",
-    });
+    return res.status(500).json({ success: false, message: "Gagal menghapus bahan." });
   }
 };
 
@@ -230,11 +166,9 @@ const getExpiryAlerts = async (req, res) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Token tidak valid atau expired.",
-      });
+      return res.status(401).json({ success: false, message: "Token tidak valid atau expired." });
     }
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -244,46 +178,27 @@ const getExpiryAlerts = async (req, res) => {
     const alerts = await prisma.ingredient.findMany({
       where: {
         userId,
-        expDate: {
-          lte: threeDaysFromNow, 
-          gte: today,
-        },
+        expDate: { lte: threeDaysFromNow, gte: today },
       },
-      orderBy: { expDate: "asc" }, 
+      orderBy: { expDate: "asc" },
     });
 
     const alertsWithStatus = alerts.map((item) => {
       const expDate = new Date(item.expDate);
       expDate.setHours(0, 0, 0, 0);
-      const daysRemaining = Math.floor(
-        (expDate - today) / (1000 * 60 * 60 * 24),
-      );
-
-      let alertStatus = "warning";
-      if (daysRemaining <= 1) {
-        alertStatus = "danger"; 
-      } else if (daysRemaining <= 3) {
-        alertStatus = "warning";
-      }
+      const daysRemaining = Math.floor((expDate - today) / (1000 * 60 * 60 * 24));
 
       return {
         ...item,
         daysRemaining,
-        alertStatus,
+        alertStatus: daysRemaining <= 1 ? "danger" : "warning",
       };
     });
 
-    return res.status(200).json({
-      success: true,
-      data: alertsWithStatus,
-      count: alertsWithStatus.length,
-    });
+    return res.status(200).json({ success: true, data: alertsWithStatus, count: alertsWithStatus.length });
   } catch (err) {
     console.error("getExpiryAlerts error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal mengambil data peringatan kadaluwarsa.",
-    });
+    return res.status(500).json({ success: false, message: "Gagal mengambil data peringatan kadaluwarsa." });
   }
 };
 
@@ -291,14 +206,12 @@ const getIngredientsSummary = async (req, res) => {
   try {
     const userId = req.userId;
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Token tidak valid atau expired.",
-      });
+      return res.status(401).json({ success: false, message: "Token tidak valid atau expired." });
     }
 
     const ingredients = await prisma.ingredient.findMany({
       where: { userId },
+      select: { expDate: true },
     });
 
     const today = new Date();
@@ -310,31 +223,17 @@ const getIngredientsSummary = async (req, res) => {
     for (const item of ingredients) {
       const expDate = new Date(item.expDate);
       expDate.setHours(0, 0, 0, 0);
-      const daysRemaining = Math.floor(
-        (expDate - today) / (1000 * 60 * 60 * 24),
-      );
-
-      if (daysRemaining <= 3) {
-        critical++;
-      } else {
-        safe++;
-      }
+      const daysRemaining = Math.floor((expDate - today) / (1000 * 60 * 60 * 24));
+      daysRemaining <= 3 ? critical++ : safe++;
     }
 
     return res.status(200).json({
       success: true,
-      data: {
-        total: ingredients.length,
-        safe,
-        critical,
-      },
+      data: { total: ingredients.length, safe, critical },
     });
   } catch (err) {
     console.error("getIngredientsSummary error:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Gagal mengambil ringkasan data bahan.",
-    });
+    return res.status(500).json({ success: false, message: "Gagal mengambil ringkasan data bahan." });
   }
 };
 
