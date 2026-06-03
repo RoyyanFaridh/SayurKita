@@ -1,19 +1,16 @@
 import os
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
 
 def generate_cooking_tip(ingredients: list) -> str:
-    """
-    Menghasilkan tips memasak kreatif menggunakan API Gemini berdasarkan daftar bahan.
-    """
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         return "Tips memasak: Gunakan kreativitas Anda! (Catatan: GEMINI_API_KEY belum dikonfigurasi)"
 
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')  # model stabil
+    client = genai.Client(api_key=api_key)
 
     bahan_str = ", ".join(ingredients)
     prompt = f"""
@@ -24,16 +21,17 @@ def generate_cooking_tip(ingredients: list) -> str:
     """
 
     try:
-        response = model.generate_content(
-            prompt,
-            generation_config={
-                "temperature": 0.7,
-                "max_output_tokens": 100,
-            }
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.7,
+                max_output_tokens=100,
+            ),
         )
         if response and response.text:
             return response.text.strip()
         return "Tips memasak tidak tersedia untuk bahan-bahan ini."
     except Exception as e:
-        print(f"[Gemini Error] {e}")  # untuk debugging
+        print(f"[Gemini Error] {type(e).__name__}: {e}")
         return "Maaf, tips sedang tidak tersedia. Coba lagi nanti."
