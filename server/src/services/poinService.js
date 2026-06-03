@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../lib/prisma");
 
 function hitungBonusStreak(streak) {
   if (streak <= 3)  return 1;
@@ -9,18 +8,19 @@ function hitungBonusStreak(streak) {
 
 const awardPoin = async (userId, totalKarbon, cookingLogId) => {
   // Guard idempoten — cegah double-award untuk cookingLog yang sama
-  const sudahAda = await prisma.poinLog.findFirst({
-    where: { refId: cookingLogId, source: "KARBON" },
-  });
+  const [sudahAda, user] = await Promise.all([
+    prisma.poinLog.findFirst({
+      where: { refId: cookingLogId, source: "KARBON" },
+    }),
+    prisma.user.findUniqueOrThrow({ where: { id: userId } }),
+  ]);
+
   if (sudahAda) {
-    const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
     return { poinKarbon: 0, bonusStreak: 0, newStreak: user.streakCount };
   }
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
   const karbonBaru        = user.totalKarbonAkumulasi + totalKarbon;
   const totalPoinKarbon = Math.floor(karbonBaru / 20);

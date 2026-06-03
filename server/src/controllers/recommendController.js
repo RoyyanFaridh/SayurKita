@@ -1,6 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
 const { awardPoin } = require("../services/poinService");
-const prisma = new PrismaClient();
+const prisma = require("../lib/prisma");
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8003";
 const DAILY_CAP      = 5;
@@ -128,31 +127,30 @@ const cookRecipe = async (req, res) => {
       });
     }
 
-    // ─── Batas waktu: awal hari ini ──────────────────────────────────────────
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
-    // ─── Anti-abuse: 1 resep yang sama hanya bisa dicatat sekali per hari ────
-    if (resepId) {
-      const sudahDimasak = await prisma.cookingLog.findFirst({
-        where: {
-          userId,
-          resepId: String(resepId),
-          createdAt: { gte: todayStart },
-        },
-      });
-      if (sudahDimasak) {
-        return res.status(429).json({
-          success: false,
-          message: "Resep ini sudah pernah dimasak hari ini. Coba lagi besok.",
-        });
-      }
-    }
+    const [sudahDimasak, todayCount] = await Promise.all([
+      resepId
+        ? prisma.cookingLog.findFirst({
+            where: {
+              userId,
+              resepId: String(resepId),
+              createdAt: { gte: todayStart },
+            },
+          })
+        : Promise.resolve(null),
+      prisma.cookingLog.count({
+        where: { userId, createdAt: { gte: todayStart } },
+      }),
+    ]);
 
-    // ─── Anti-abuse: daily cap ────────────────────────────────────────────────
-    const todayCount = await prisma.cookingLog.count({
-      where: { userId, createdAt: { gte: todayStart } },
-    });
+    if (sudahDimasak) {
+      return res.status(429).json({
+        success: false,
+        message: "Resep ini sudah pernah dimasak hari ini. Coba lagi besok.",
+      });
+    }
     if (todayCount >= DAILY_CAP) {
       return res.status(429).json({
         success: false,
@@ -160,35 +158,18 @@ const cookRecipe = async (req, res) => {
       });
     }
 
-    // ─── Atomic transaction: hapus bahan + catat log ─────────────────────────
-    const result = await prisma.$transaction(async (tx) => {
-      const deletedIngredients = [];
-
-      for (const ingredientName of ingredientsUsed) {
-        const found = await tx.ingredient.findFirst({
-          where: {
-            userId,
-            nama: { equals: ingredientName, mode: "insensitive" },
-          },
-        });
-        if (found) {
-          await tx.ingredient.delete({ where: { id: found.id } });
-          deletedIngredients.push(found.nama);
-        }
-      }
-
-      const cookingLog = await tx.cookingLog.create({
-        data: {
-          userId,
-          resepNama,
-          resepId: resepId ? String(resepId) : null,
-          bahanUsed,
-          totalKarbon: parseFloat(totalKarbon.toFixed(3)),
-        },
-      });
-
-      return { cookingLog, deletedIngredients };
+    // ─── Catat log memasak ───────────────────────────────────────────────────
+    const cookingLog = await prisma.cookingLog.create({
+      data: {
+        userId,
+        resepNama,
+        resepId: resepId ? String(resepId) : null,
+        bahanUsed,
+        totalKarbon: parseFloat(totalKarbon.toFixed(3)),
+      },
     });
+
+    const result = { cookingLog, deletedIngredients: [] };
 
     // Award poin — non-fatal jika gagal
     let poinResult = null;

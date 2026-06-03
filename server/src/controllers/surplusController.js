@@ -1,8 +1,7 @@
-const { PrismaClient } = require("@prisma/client");
 const { sendEmail } = require("../utils/sendEmail");
 const { claimTemplate, confirmTemplate } = require("../utils/emailTemplates");
 
-const prisma = new PrismaClient();
+const prisma = require("../lib/prisma");
 
 const CARBON_FACTOR_GRAM = {
   "Makanan Matang": 400,
