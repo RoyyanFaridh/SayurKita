@@ -22,7 +22,7 @@ def generate_cooking_tip(ingredients: list) -> str:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-2.0-flash-lite",
             contents=prompt,
             config=types.GenerateContentConfig(
                 temperature=0.7,
