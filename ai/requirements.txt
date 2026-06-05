@@ -1,9 +1,8 @@
 fastapi
 uvicorn
 scikit-learn
-tensorflow
 numpy
-pandas
+pandas 
 joblib
 tensorboard
 google-genai
