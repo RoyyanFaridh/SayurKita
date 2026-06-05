@@ -1,0 +1,2162 @@
+{
+    "pepper_sweet_red_raw": {
+        "co2e_per_kg": 0.656,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tomato_ripe_raw_origin_unknown": {
+        "co2e_per_kg": 0.449,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "squash_raw": {
+        "co2e_per_kg": 0.528,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "aubergine_raw": {
+        "co2e_per_kg": 0.606,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tomato_dried": {
+        "co2e_per_kg": 2.654,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pumpkin_raw": {
+        "co2e_per_kg": 0.528,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cucumber_raw": {
+        "co2e_per_kg": 0.426,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "gherkin_cucumber_raw": {
+        "co2e_per_kg": 0.426,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pepper_hot_chili_raw": {
+        "co2e_per_kg": 0.656,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_topside_cap_off_raw": {
+        "co2e_per_kg": 63.366,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_fillet_defatted_raw": {
+        "co2e_per_kg": 212.922,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_mince_10-15%_fat_raw": {
+        "co2e_per_kg": 44.84,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_rump_raw": {
+        "co2e_per_kg": 63.366,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_mince_15-20%_fat_raw": {
+        "co2e_per_kg": 42.454,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_t-bone_steak_raw": {
+        "co2e_per_kg": 112.903,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_mince_5-10%_fat_raw": {
+        "co2e_per_kg": 47.228,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beer_lager_alc._4.4_%_by_vol.": {
+        "co2e_per_kg": 0.693,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beer_danish_household_low_alcohol": {
+        "co2e_per_kg": 0.693,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beer_strong_alc._7.6_%_by_vol.": {
+        "co2e_per_kg": 0.693,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "biscuit_sweet": {
+        "co2e_per_kg": 3.109,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "biscuit_wholemeal_digestive_type": {
+        "co2e_per_kg": 2.967,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "butter_cookie_wheat_danish_industrially_produced": {
+        "co2e_per_kg": 3.427,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "american_inspired_cookie": {
+        "co2e_per_kg": 2.967,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "granola_bar": {
+        "co2e_per_kg": 6.027,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wafer_sticks": {
+        "co2e_per_kg": 2.79,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bread-crumbs": {
+        "co2e_per_kg": 2.302,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "crispbread_knackebrot_rye_coarse": {
+        "co2e_per_kg": 2.53,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wheat_bread_for_toasting_industrially_produced": {
+        "co2e_per_kg": 1.454,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bread_white_for_sausages": {
+        "co2e_per_kg": 1.454,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bread_white_roll_coarse_grain": {
+        "co2e_per_kg": 1.454,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rye_bread_dark_whole_grains_industrially_produced": {
+        "co2e_per_kg": 1.603,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rye_bread_crumbs_with_brown_sugar_average_values": {
+        "co2e_per_kg": 2.77,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "corn_flakes_average_values": {
+        "co2e_per_kg": 2.482,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "breakfast_cereal_mã¼sli_average_values": {
+        "co2e_per_kg": 2.677,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "breakfast_cereal_guldkorn": {
+        "co2e_per_kg": 2.957,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "breakfast_cereal_havrefras": {
+        "co2e_per_kg": 2.408,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "butter_salt_added": {
+        "co2e_per_kg": 3.299,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "blended_spread_75%_fat": {
+        "co2e_per_kg": 3.233,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "plain_cake_chocolate_cake": {
+        "co2e_per_kg": 2.376,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "danish_pastry_kanelsnegl": {
+        "co2e_per_kg": 2.084,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "plain_cake_average_values": {
+        "co2e_per_kg": 2.376,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cream_pastry_layer_cake": {
+        "co2e_per_kg": 2.376,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cookie_truffle_product_/_unbaked_industrially_produced": {
+        "co2e_per_kg": 4.018,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bacon_frying_raw": {
+        "co2e_per_kg": 6.365,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sausage_salami": {
+        "co2e_per_kg": 5.832,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_ham_boiled_sliced": {
+        "co2e_per_kg": 4.243,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "roastbeef_sliced": {
+        "co2e_per_kg": 63.524,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_sausage_danish_raw": {
+        "co2e_per_kg": 2.71,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_liver_paste_danish": {
+        "co2e_per_kg": 4.395,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_flank_spiced_cooked": {
+        "co2e_per_kg": 4.243,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_sausage_thã¼ringer_bratwurst": {
+        "co2e_per_kg": 2.144,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_breast_boiled_sliced": {
+        "co2e_per_kg": 5.24,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_leg_flesh_and_skin_raw": {
+        "co2e_per_kg": 2.152,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_drumstick_flesh_and_skin_raw": {
+        "co2e_per_kg": 2.041,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_breast_flesh_and_skin_raw": {
+        "co2e_per_kg": 5.702,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_sausage": {
+        "co2e_per_kg": 2.08,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_hen_flesh_and_skin_raw": {
+        "co2e_per_kg": 3.576,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tea_leaves": {
+        "co2e_per_kg": 19.687,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "coffee_instant_powder": {
+        "co2e_per_kg": 16.891,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "coffee_bean_roasted_ground": {
+        "co2e_per_kg": 7.057,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cocoa_instant_without_milk_powder": {
+        "co2e_per_kg": 16.731,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cocoa_powder": {
+        "co2e_per_kg": 16.731,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lamb_flank_spiced_cooked": {
+        "co2e_per_kg": 34.876,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sausage_beef_salami": {
+        "co2e_per_kg": 46.187,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_saddle_smoked_boiled": {
+        "co2e_per_kg": 4.243,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salad_dressing_oil_and_vinegar": {
+        "co2e_per_kg": 3.439,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salad_dressing_thousand_island": {
+        "co2e_per_kg": 3.147,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "water_tap_drinking_average_values": {
+        "co2e_per_kg": 0.001,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "duck_flesh_only_raw": {
+        "co2e_per_kg": 3.574,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "goose_flesh_only_raw": {
+        "co2e_per_kg": 3.574,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mackerel_mayonnaise_salad": {
+        "co2e_per_kg": 2.354,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sauce_gravad_lax": {
+        "co2e_per_kg": 1.678,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "italian_mayonnaise_salad": {
+        "co2e_per_kg": 3.075,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "curry_mayonnaise_salad": {
+        "co2e_per_kg": 3.075,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "yogurt_plain_whole_milk": {
+        "co2e_per_kg": 0.731,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cream_cultured_18_%_fat": {
+        "co2e_per_kg": 1.562,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "skyr_0.2_%_fat": {
+        "co2e_per_kg": 1.059,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_firm_danbo_45_%_fidm.": {
+        "co2e_per_kg": 5.96,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_hard_parmesan_32_%_fidm.": {
+        "co2e_per_kg": 5.96,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_semihard_mozzarella_30_%_fidm.": {
+        "co2e_per_kg": 5.96,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "herring_pickled_canned": {
+        "co2e_per_kg": 5.454,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fish_balls_canned": {
+        "co2e_per_kg": 2.011,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fish_pudding_raw": {
+        "co2e_per_kg": 2.741,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cod_liver_canned": {
+        "co2e_per_kg": 10.83,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cod_roe_canned": {
+        "co2e_per_kg": 4.284,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "shrimps_canned": {
+        "co2e_per_kg": 9.815,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cod_fillet_breaded_raw": {
+        "co2e_per_kg": 2.302,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "caviar_danish_(roe_lump-sucker)": {
+        "co2e_per_kg": 3.448,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fish_cake_fried": {
+        "co2e_per_kg": 3.235,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cod_liver_smoked": {
+        "co2e_per_kg": 3.242,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cod_liver_raw": {
+        "co2e_per_kg": 2.466,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lobster_canned": {
+        "co2e_per_kg": 6.71,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mussels_in_water_canned": {
+        "co2e_per_kg": 2.056,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tuna_in_tomato_sauce_canned": {
+        "co2e_per_kg": 3.362,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cod_roe_raw": {
+        "co2e_per_kg": 3.426,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "crab_claws_meat_raw": {
+        "co2e_per_kg": 9.76,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "caviar_made_from_capelin_roe": {
+        "co2e_per_kg": 3.426,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tuna_in_water_canned": {
+        "co2e_per_kg": 2.891,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "halibut_greenland_smoked": {
+        "co2e_per_kg": 2.558,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fish_fillet_breaded_deepfried": {
+        "co2e_per_kg": 2.668,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fish_fingers_breaded_frozen": {
+        "co2e_per_kg": 2.445,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rye_flour_dark_whole_meal": {
+        "co2e_per_kg": 1.818,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wheat_flour_wholemeal": {
+        "co2e_per_kg": 1.492,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rye_kernels_whole/cracked": {
+        "co2e_per_kg": 1.818,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wheat_kernels_whole/cracked": {
+        "co2e_per_kg": 1.492,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rice_flour": {
+        "co2e_per_kg": 4.326,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "corn_flour": {
+        "co2e_per_kg": 1.574,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "eggs_chicken_free-range_hens_(indoor)_raw": {
+        "co2e_per_kg": 1.075,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "burbot_raw": {
+        "co2e_per_kg": 6.825,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "perch_raw": {
+        "co2e_per_kg": 3.942,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pikeperch_raw": {
+        "co2e_per_kg": 3.54,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pike_raw": {
+        "co2e_per_kg": 3.54,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bream_raw": {
+        "co2e_per_kg": 7.681,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "charr_raw": {
+        "co2e_per_kg": 6.644,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "trout_raw": {
+        "co2e_per_kg": 1.338,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "whitefish_raw": {
+        "co2e_per_kg": 6.821,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fruit_juice_mixed_sweetened_concentrated": {
+        "co2e_per_kg": 2.412,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "elderberry_juice_concentrated_sugar_added": {
+        "co2e_per_kg": 3.869,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "olives_green_pickled_canned": {
+        "co2e_per_kg": 2.008,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pear_canned": {
+        "co2e_per_kg": 0.81,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "nut_paste_with_cacao_spreads": {
+        "co2e_per_kg": 5.215,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "orange_juice_canned": {
+        "co2e_per_kg": 1.368,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pineapple_canned": {
+        "co2e_per_kg": 1.094,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "strawberry_jam": {
+        "co2e_per_kg": 1.912,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "raisins_seedless": {
+        "co2e_per_kg": 3.549,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "raspberry_marmalade": {
+        "co2e_per_kg": 1.912,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "hare_raw": {
+        "co2e_per_kg": 3.574,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rabbit_flesh_only_raw": {
+        "co2e_per_kg": 3.574,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pheasant_flesh_and_skin_raw": {
+        "co2e_per_kg": 3.574,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "squab_(pigeon)_raw": {
+        "co2e_per_kg": 3.574,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "barley_groats_raw": {
+        "co2e_per_kg": 2.055,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "oats_rolled_not_enriched": {
+        "co2e_per_kg": 2.446,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rice_groats_raw": {
+        "co2e_per_kg": 4.298,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "parsley_raw": {
+        "co2e_per_kg": 0.419,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "dill_raw": {
+        "co2e_per_kg": 0.419,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "garlic_raw": {
+        "co2e_per_kg": 1.165,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chives_raw": {
+        "co2e_per_kg": 0.447,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cress_garden_raw": {
+        "co2e_per_kg": 0.419,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "olives_black_without_stones_in_brine": {
+        "co2e_per_kg": 2.008,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "hazelnut_dried": {
+        "co2e_per_kg": 7.954,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sunflower_seeds_decorticated_dried": {
+        "co2e_per_kg": 3.352,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sesame_seeds_decorticated": {
+        "co2e_per_kg": 7.46,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "walnuts_dried": {
+        "co2e_per_kg": 4.908,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cashew_nuts_dry_roasted": {
+        "co2e_per_kg": 13.718,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pumpkin_seeds_dried": {
+        "co2e_per_kg": 4.908,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "honey": {
+        "co2e_per_kg": 0.72,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "ice_cream_dairy_(wholemilk_based)": {
+        "co2e_per_kg": 2.775,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "ice_cream_dairy_(cream_based)": {
+        "co2e_per_kg": 2.775,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "ice_popsickle_lemonade": {
+        "co2e_per_kg": 1.271,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vinegar": {
+        "co2e_per_kg": 1.509,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salt_table": {
+        "co2e_per_kg": 0.363,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rhubarb_raw": {
+        "co2e_per_kg": 0.368,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "celery_raw": {
+        "co2e_per_kg": 0.368,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cauliflower_all_varieties_raw": {
+        "co2e_per_kg": 0.539,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "broccoli_raw": {
+        "co2e_per_kg": 0.539,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "kale_raw": {
+        "co2e_per_kg": 0.324,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cabbage_white_raw": {
+        "co2e_per_kg": 0.324,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "brussels_sprouts_raw": {
+        "co2e_per_kg": 0.324,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cabbage_red_raw": {
+        "co2e_per_kg": 0.324,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cabbage_spring_raw": {
+        "co2e_per_kg": 0.324,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "spinach_raw": {
+        "co2e_per_kg": 0.471,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "artichoke_raw": {
+        "co2e_per_kg": 0.967,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "asparagus_green_raw": {
+        "co2e_per_kg": 1.123,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lettuce_iceberg_(incl._crisphead_types)_raw": {
+        "co2e_per_kg": 0.437,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lettuce_looseleaf_raw": {
+        "co2e_per_kg": 0.437,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cabbage_chinese_pak-choi_raw": {
+        "co2e_per_kg": 0.324,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cabbage_savoy_raw": {
+        "co2e_per_kg": 0.324,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cauliflower_frozen": {
+        "co2e_per_kg": 0.783,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "leek_raw": {
+        "co2e_per_kg": 0.447,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "spinach_chopped_frozen": {
+        "co2e_per_kg": 0.698,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "broccoli_frozen": {
+        "co2e_per_kg": 0.783,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beans_wax_raw": {
+        "co2e_per_kg": 0.857,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "peas_green_raw": {
+        "co2e_per_kg": 1.261,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "green_lentils_dried": {
+        "co2e_per_kg": 3.527,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "peas_chick/garbanzo_dry_raw": {
+        "co2e_per_kg": 3.405,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beans_green_raw": {
+        "co2e_per_kg": 0.857,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bean_sprouts_mung_raw": {
+        "co2e_per_kg": 0.857,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bean_sprouts_average_values_raw": {
+        "co2e_per_kg": 0.857,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sugar_pea_(snow_pea_mangetout)_raw": {
+        "co2e_per_kg": 1.311,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beans_soy_dried_raw": {
+        "co2e_per_kg": 1.754,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "peas_green_frozen": {
+        "co2e_per_kg": 1.682,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "water_bottled_carbonated": {
+        "co2e_per_kg": 0.198,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "soft_drink_sugar_added": {
+        "co2e_per_kg": 0.541,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "apple_juice_canned_or_bottled": {
+        "co2e_per_kg": 1.564,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sherry_dry": {
+        "co2e_per_kg": 2.715,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "liqueur_coffee_with_cream": {
+        "co2e_per_kg": 3.286,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "margarine_70_%_fat_table_use_soft_vegetable_fat": {
+        "co2e_per_kg": 2.524,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "garfish_raw": {
+        "co2e_per_kg": 2.322,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salmon_atlantic_wild_raw": {
+        "co2e_per_kg": 1.915,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mackerel_raw": {
+        "co2e_per_kg": 1.83,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "plaice_raw": {
+        "co2e_per_kg": 2.463,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "herring_raw": {
+        "co2e_per_kg": 2.016,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "saithe_raw": {
+        "co2e_per_kg": 2.463,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cod_fillet_raw": {
+        "co2e_per_kg": 2.466,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "plaice_fillet_breaded_dybfrost": {
+        "co2e_per_kg": 2.438,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "saithe_(uk)_pollock_(us)_fillet_frozen": {
+        "co2e_per_kg": 2.471,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tuna_raw": {
+        "co2e_per_kg": 2.696,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salmon_atlantic_aquaculture_cold_smoked": {
+        "co2e_per_kg": 2.73,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salmon_atlantic_aquaculture_hot_smoked": {
+        "co2e_per_kg": 3.037,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salmon_atlantic_aquaculture_raw": {
+        "co2e_per_kg": 1.913,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mayonnaise_low_fat": {
+        "co2e_per_kg": 1.053,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mayonnaise": {
+        "co2e_per_kg": 3.075,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "remoulade_average_values": {
+        "co2e_per_kg": 1.789,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "oyster_raw": {
+        "co2e_per_kg": 0.823,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mussel_raw": {
+        "co2e_per_kg": 0.181,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "octopus_raw": {
+        "co2e_per_kg": 0.349,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mushroom_raw": {
+        "co2e_per_kg": 0.321,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "oyster_mushroom": {
+        "co2e_per_kg": 0.321,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "almondmilk_unfortified": {
+        "co2e_per_kg": 0.738,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "ricemilk_with_added_calcium": {
+        "co2e_per_kg": 1.222,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "oatmilk_with_added_calcium": {
+        "co2e_per_kg": 0.472,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "soymilk_with_added_calcium": {
+        "co2e_per_kg": 0.389,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bouillon_chicken_prepared": {
+        "co2e_per_kg": 0.398,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "meat_balls_canned": {
+        "co2e_per_kg": 15.201,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bouillon_beef_prepared": {
+        "co2e_per_kg": 0.582,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "meat_balls_average_values": {
+        "co2e_per_kg": 15.201,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "dumplings_average_values": {
+        "co2e_per_kg": 1.398,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "meat_balls_frozen": {
+        "co2e_per_kg": 15.035,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "soup_tomato_ready_to_eat": {
+        "co2e_per_kg": 2.144,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bouillon_beef_concentrated_cube": {
+        "co2e_per_kg": 9.24,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "dumplings_frozen": {
+        "co2e_per_kg": 1.522,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_grilled_fast_food": {
+        "co2e_per_kg": 5.471,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_nuggets_deepfried_ready_meals": {
+        "co2e_per_kg": 5.058,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_tomato_and_cheese_ready_meals": {
+        "co2e_per_kg": 2.556,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_seafood_tomato_and_cheese_ready_meals": {
+        "co2e_per_kg": 3.737,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_salami_tomato_and_cheese_ready_meals": {
+        "co2e_per_kg": 3.238,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_vegetables_fruit_tomato_and_cheese_ready_meals": {
+        "co2e_per_kg": 2.461,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_meat_tomato_and_cheese_ready_meals": {
+        "co2e_per_kg": 4.583,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_meat_and_seafood_tomato_and_cheese_ready_meals": {
+        "co2e_per_kg": 4.158,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "veal_and_pork_mince_15-20%_fat_raw": {
+        "co2e_per_kg": 20.69,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "goat_milk": {
+        "co2e_per_kg": 1.341,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "marzipan": {
+        "co2e_per_kg": 16.56,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "syrup_kitchen": {
+        "co2e_per_kg": 1.682,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pasta_raw": {
+        "co2e_per_kg": 2.338,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "apple_raw_all_varieties": {
+        "co2e_per_kg": 0.535,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pear_raw": {
+        "co2e_per_kg": 0.444,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "grape_raw": {
+        "co2e_per_kg": 0.82,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_collar_with_rind_raw": {
+        "co2e_per_kg": 4.59,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_ham_topside_(m._semimembranosus)_lean_raw": {
+        "co2e_per_kg": 4.59,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_loin_lean_raw": {
+        "co2e_per_kg": 5.478,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_tenderloin_trimmed_raw": {
+        "co2e_per_kg": 7.253,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_mince_5-10%_fat_raw": {
+        "co2e_per_kg": 3.635,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_collar_defatted_raw": {
+        "co2e_per_kg": 4.646,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_mince_15-20%_fat_raw": {
+        "co2e_per_kg": 3.705,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "minced_meat_spaghetti_sauce_type_average_values_ready_meals": {
+        "co2e_per_kg": 18.63,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turtle_fake_average_values_ready_meals": {
+        "co2e_per_kg": 24.678,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "spring_roll_frozen_ready_meals": {
+        "co2e_per_kg": 3.193,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_in_curry_sauce_frozen_ready_meals": {
+        "co2e_per_kg": 4.858,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_romana_frozen_ready_meals": {
+        "co2e_per_kg": 2.923,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "liver_pig_in_cream_sauce_frozen_ready_meals": {
+        "co2e_per_kg": 3.167,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_napolitana_frozen_ready_meals": {
+        "co2e_per_kg": 2.661,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "spring_roll_deepfried_ready_meals": {
+        "co2e_per_kg": 3.193,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_broccoli_frozen_ready_meals": {
+        "co2e_per_kg": 2.566,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_with_tuna_frozen_ready_meals": {
+        "co2e_per_kg": 2.492,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pork_minced_and_bound_with_flour_and_egg_boiled_frozen_ready_meals": {
+        "co2e_per_kg": 2.469,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_raw": {
+        "co2e_per_kg": 0.442,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "carrot_raw": {
+        "co2e_per_kg": 0.285,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "radish_raw": {
+        "co2e_per_kg": 0.419,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beet_red_raw": {
+        "co2e_per_kg": 0.316,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "celeriac_celery_root_raw": {
+        "co2e_per_kg": 0.368,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "ginger_root_raw": {
+        "co2e_per_kg": 1.2,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fennel_root_raw": {
+        "co2e_per_kg": 0.153,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turnip_raw": {
+        "co2e_per_kg": 0.285,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "onions_chopped_frozen": {
+        "co2e_per_kg": 0.477,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "carrot_frozen": {
+        "co2e_per_kg": 0.466,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "onion_raw": {
+        "co2e_per_kg": 0.294,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "onions_spring_raw": {
+        "co2e_per_kg": 0.715,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cassava_raw": {
+        "co2e_per_kg": 0.881,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "parsley_root_raw": {
+        "co2e_per_kg": 1.076,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_semihard_feta_40_%_fidm": {
+        "co2e_per_kg": 1.361,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_danish_blue_50_%_fidm.": {
+        "co2e_per_kg": 5.96,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lamb_leg_unspecified__raw": {
+        "co2e_per_kg": 38.779,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lamb_meat_average_values_raw": {
+        "co2e_per_kg": 38.779,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "crayfish_raw": {
+        "co2e_per_kg": 2.453,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "shrimps_boiled_shell_removed": {
+        "co2e_per_kg": 8.108,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lobster_raw": {
+        "co2e_per_kg": 2.453,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "crab_boiled": {
+        "co2e_per_kg": 4.35,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "prawn_giant_tiger_aquaculture_boiled_frozen": {
+        "co2e_per_kg": 9.912,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "shrimp_boiled_in_brine": {
+        "co2e_per_kg": 8.117,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pop_corn_oil_and_salt_added_traditional": {
+        "co2e_per_kg": 1.48,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "peanuts_oilroasted_and_salted": {
+        "co2e_per_kg": 3.33,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "strawberry_raw": {
+        "co2e_per_kg": 0.482,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "raspberry_raw": {
+        "co2e_per_kg": 1.258,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "currant_black_raw": {
+        "co2e_per_kg": 1.149,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "blueberries_raw": {
+        "co2e_per_kg": 1.074,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "blackberry_raw": {
+        "co2e_per_kg": 1.366,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rose_hip_raw": {
+        "co2e_per_kg": 1.024,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "elderberry_raw": {
+        "co2e_per_kg": 1.366,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "currant_red_raw": {
+        "co2e_per_kg": 1.149,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "gooseberry_raw": {
+        "co2e_per_kg": 1.261,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "strawberries_frozen_unsweetened": {
+        "co2e_per_kg": 0.572,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cranberry_raw": {
+        "co2e_per_kg": 0.81,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "blueberry_frozen_unsweetened": {
+        "co2e_per_kg": 1.162,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "raspberry_frozen": {
+        "co2e_per_kg": 1.583,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_cream_60_%_fidm.": {
+        "co2e_per_kg": 5.96,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_brie_45_%_fidm.": {
+        "co2e_per_kg": 1.361,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cheese_cottage_20_%_fidm.": {
+        "co2e_per_kg": 1.361,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bulgur_parboiled_raw": {
+        "co2e_per_kg": 2.254,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sweetcorn_kernels_canned": {
+        "co2e_per_kg": 0.565,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rice_parboiled_raw": {
+        "co2e_per_kg": 4.309,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "quinoa_black_raw": {
+        "co2e_per_kg": 4.748,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pepper_black": {
+        "co2e_per_kg": 4.52,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mustard_yellow_ready_made": {
+        "co2e_per_kg": 1.583,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "curry_powder": {
+        "co2e_per_kg": 5.064,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bitter_gammel_dansk_bitter_dram": {
+        "co2e_per_kg": 3.385,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "brandy_cognac": {
+        "co2e_per_kg": 5.617,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vodka": {
+        "co2e_per_kg": 3.385,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "aquavit_40_%_vol._average_values": {
+        "co2e_per_kg": 3.385,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "plum_raw": {
+        "co2e_per_kg": 0.58,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cherry_raw": {
+        "co2e_per_kg": 1.168,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chestnut_raw": {
+        "co2e_per_kg": 3.426,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "prune_dried_plum": {
+        "co2e_per_kg": 2.72,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "apricot_dried": {
+        "co2e_per_kg": 2.72,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "apricot_raw": {
+        "co2e_per_kg": 0.695,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "peach_raw": {
+        "co2e_per_kg": 0.581,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "nectarine_raw": {
+        "co2e_per_kg": 0.581,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "avocado_raw": {
+        "co2e_per_kg": 1.077,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sugar_sucrose_white": {
+        "co2e_per_kg": 2.393,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sugar_brown": {
+        "co2e_per_kg": 2.21,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chocolate_milk": {
+        "co2e_per_kg": 5.365,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "nougat": {
+        "co2e_per_kg": 6.599,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chewing_gum_no_sugar_added_all_types": {
+        "co2e_per_kg": 5.266,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "toffees_mixed": {
+        "co2e_per_kg": 2.98,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chocolate_bitter": {
+        "co2e_per_kg": 8.163,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "liquorice_salt": {
+        "co2e_per_kg": 2.528,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fruit_gums": {
+        "co2e_per_kg": 2.528,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "banana_raw": {
+        "co2e_per_kg": 0.842,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lemon_raw": {
+        "co2e_per_kg": 0.616,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "watermelon_raw": {
+        "co2e_per_kg": 0.369,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "orange_raw": {
+        "co2e_per_kg": 0.529,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "melon_honeydew_raw": {
+        "co2e_per_kg": 0.401,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lime_raw": {
+        "co2e_per_kg": 0.565,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pineapple_raw": {
+        "co2e_per_kg": 0.701,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mango_raw": {
+        "co2e_per_kg": 1.077,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "grapefruit_raw": {
+        "co2e_per_kg": 0.611,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tangerine_raw": {
+        "co2e_per_kg": 0.583,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "kiwi_fruit_raw": {
+        "co2e_per_kg": 0.725,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turkey_breast_boiled/smoked_sliced": {
+        "co2e_per_kg": 4.77,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turkey_flesh_only_raw": {
+        "co2e_per_kg": 5.18,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turkey_mince_5-10%_fat_raw": {
+        "co2e_per_kg": 5.111,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "milk_whole_conventional_(not_organic)_3.5_%_fat": {
+        "co2e_per_kg": 0.537,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "milk_partly_skimmed_conventional_(not_organic)_1.5_%_fat": {
+        "co2e_per_kg": 0.485,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "milk_skimmed_0.5_%_fat": {
+        "co2e_per_kg": 0.451,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "milk_skimmed_with_chocolate_(uht)": {
+        "co2e_per_kg": 0.761,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cream_whipping_38_%_fat": {
+        "co2e_per_kg": 1.731,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "veal_medium_fat_raw": {
+        "co2e_per_kg": 69.927,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "peanut_butter": {
+        "co2e_per_kg": 3.71,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sunflower_oil": {
+        "co2e_per_kg": 2.808,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "olive_oil": {
+        "co2e_per_kg": 5.809,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "oil_rape_seed_(no_eruca_acid)": {
+        "co2e_per_kg": 3.392,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "onions_chopped_and_deepfried": {
+        "co2e_per_kg": 4.236,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_crisps_coarse": {
+        "co2e_per_kg": 3.052,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tofu_soy_bean_curd": {
+        "co2e_per_kg": 1.411,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lentils_sprouted_raw": {
+        "co2e_per_kg": 3.424,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cabbage_red_canned_no_sugar_added": {
+        "co2e_per_kg": 0.698,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tomatojuice_canned": {
+        "co2e_per_kg": 0.879,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "gherkin_pickled": {
+        "co2e_per_kg": 2.88,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potatoes_mashed_instant_powder_with_dry_milk": {
+        "co2e_per_kg": 5.632,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pepper_hot_chili_canned": {
+        "co2e_per_kg": 1.376,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cucumber_large_pickled": {
+        "co2e_per_kg": 2.88,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tomato_peeled_canned": {
+        "co2e_per_kg": 0.879,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beet_red_canned": {
+        "co2e_per_kg": 0.685,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_canned": {
+        "co2e_per_kg": 0.887,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_crisps": {
+        "co2e_per_kg": 3.052,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bamboo_shoots_canned_nonsalted": {
+        "co2e_per_kg": 1.679,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mushroom_canned": {
+        "co2e_per_kg": 0.456,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "french_fries_deepfried_fast_food": {
+        "co2e_per_kg": 2.058,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tomato_paste_concentrated": {
+        "co2e_per_kg": 2.432,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tomato_ketchup_bottled": {
+        "co2e_per_kg": 1.903,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beans_baked_i_tomato_sauce_canned": {
+        "co2e_per_kg": 1.773,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_flour": {
+        "co2e_per_kg": 1.769,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "peas_green_canned": {
+        "co2e_per_kg": 2.197,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "soya_sauce": {
+        "co2e_per_kg": 1.511,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sauce_barbeque": {
+        "co2e_per_kg": 1.915,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wine_white_average_values": {
+        "co2e_per_kg": 1.595,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wine_rosã©": {
+        "co2e_per_kg": 1.595,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wine_red": {
+        "co2e_per_kg": 1.595,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "wine_white_sparkling_champagne": {
+        "co2e_per_kg": 1.595,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "yeast_baker`s_compressed": {
+        "co2e_per_kg": 0.793,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cocktail_sausages": {
+        "co2e_per_kg": 2.144,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pesto": {
+        "co2e_per_kg": 4.153,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lasagne_beef_ready_meals": {
+        "co2e_per_kg": 11.592,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lasagne_vegetarian_ready_meals": {
+        "co2e_per_kg": 1.687,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "daal_ready_meals": {
+        "co2e_per_kg": 2.119,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sushi_ready_meals": {
+        "co2e_per_kg": 2.164,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "minced_chicken": {
+        "co2e_per_kg": 6.284,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizza_dough": {
+        "co2e_per_kg": 1.227,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fresh_pasta_fettucine_spinach": {
+        "co2e_per_kg": 1.787,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tuna_salad": {
+        "co2e_per_kg": 1.908,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "egg_salad": {
+        "co2e_per_kg": 1.569,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "meatballs": {
+        "co2e_per_kg": 3.739,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "hummus_done": {
+        "co2e_per_kg": 2.239,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "lasagne_vegan_ready_meals": {
+        "co2e_per_kg": 1.623,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pancakes_ready_meals": {
+        "co2e_per_kg": 2.713,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_gratin_/_cream_potatoes": {
+        "co2e_per_kg": 1.24,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "kebab": {
+        "co2e_per_kg": 50.474,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "icetea_peach": {
+        "co2e_per_kg": 0.891,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "energy_drink": {
+        "co2e_per_kg": 0.56,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "alcoholic_soda_4%": {
+        "co2e_per_kg": 0.855,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salsa_hot": {
+        "co2e_per_kg": 1.022,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tortilla_bread_wheat": {
+        "co2e_per_kg": 1.454,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pizzasauce": {
+        "co2e_per_kg": 1.579,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pastasauce": {
+        "co2e_per_kg": 1.579,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "coconut_milk": {
+        "co2e_per_kg": 6.639,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "garlic_baguette_frozen": {
+        "co2e_per_kg": 1.747,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "muesli_bar_chocolate": {
+        "co2e_per_kg": 3.379,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cup_noodles_chicken": {
+        "co2e_per_kg": 2.108,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sliced_mushrooms": {
+        "co2e_per_kg": 0.266,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "microwave_popcorn": {
+        "co2e_per_kg": 1.759,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "thai_meal_panang_curry_chicken": {
+        "co2e_per_kg": 3.688,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "french_fries_frost": {
+        "co2e_per_kg": 0.917,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pancake_puffs": {
+        "co2e_per_kg": 1.784,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chickpeas_canned": {
+        "co2e_per_kg": 0.977,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "green_beans_frost": {
+        "co2e_per_kg": 2.155,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tortilla_chips_cheese": {
+        "co2e_per_kg": 2.39,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "asparagus_slices": {
+        "co2e_per_kg": 1.697,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "corn_cob": {
+        "co2e_per_kg": 0.935,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "arugula_salad_rinsed": {
+        "co2e_per_kg": 0.507,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "olive_tapenade": {
+        "co2e_per_kg": 2.694,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "stuffed_fresh_pasta": {
+        "co2e_per_kg": 2.051,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pepperoni": {
+        "co2e_per_kg": 5.832,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "kidney_beans": {
+        "co2e_per_kg": 1.152,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chicken_whole": {
+        "co2e_per_kg": 3.576,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chorizo_sliced": {
+        "co2e_per_kg": 5.793,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_salad": {
+        "co2e_per_kg": 1.281,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cider_4.5%": {
+        "co2e_per_kg": 1.059,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "falafel_frost": {
+        "co2e_per_kg": 2.184,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_hotchpotch_beef_ready_meals": {
+        "co2e_per_kg": 17.686,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "potato_hotchpotch_mixed_meat_ready_meals": {
+        "co2e_per_kg": 11.582,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegetable_steaks": {
+        "co2e_per_kg": 1.671,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "spring_rolls_vegetables_ready_meals": {
+        "co2e_per_kg": 3.193,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "spring_rolls_chicken_ready_meals": {
+        "co2e_per_kg": 3.12,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "spring_rolls_beef_ready_meals": {
+        "co2e_per_kg": 5.636,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "meatballs_in_curry_with_rice_and_curry_sauce_ready_meals": {
+        "co2e_per_kg": 2.463,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "leek_pie_with_bacon_ready_meals": {
+        "co2e_per_kg": 1.725,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "croque_monsieur_ready_meals": {
+        "co2e_per_kg": 1.728,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "capers": {
+        "co2e_per_kg": 0.805,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "baby_corn": {
+        "co2e_per_kg": 0.565,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "black_beans": {
+        "co2e_per_kg": 1.152,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "half_peaches_in_juice": {
+        "co2e_per_kg": 1.51,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "marinated_artichokes": {
+        "co2e_per_kg": 3.901,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cornichons": {
+        "co2e_per_kg": 2.88,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "garlic_in_oil": {
+        "co2e_per_kg": 2.215,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "half_pears_in_juice": {
+        "co2e_per_kg": 1.219,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "marinated_grilled_peppers": {
+        "co2e_per_kg": 2.244,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tahin_sesame_paste": {
+        "co2e_per_kg": 7.783,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sundried_tomatoes": {
+        "co2e_per_kg": 2.654,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "red_lentils_dried": {
+        "co2e_per_kg": 3.527,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "ajvar_relish": {
+        "co2e_per_kg": 2.165,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_bean_paste": {
+        "co2e_per_kg": 1.959,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "plant_paste_pea_protein_and_mushroom": {
+        "co2e_per_kg": 0.831,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chilli_cheese_tops": {
+        "co2e_per_kg": 1.546,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mozarella_sticks": {
+        "co2e_per_kg": 1.361,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chili_con_carne_ready_meals": {
+        "co2e_per_kg": 28.982,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_balls_soy_based": {
+        "co2e_per_kg": 0.699,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_schnitzels_soy_based": {
+        "co2e_per_kg": 1.445,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_burgers_soy_based": {
+        "co2e_per_kg": 0.719,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_minced_pea_based": {
+        "co2e_per_kg": 0.93,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_sausages_soy_based": {
+        "co2e_per_kg": 0.997,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_nuggets_soy_based": {
+        "co2e_per_kg": 1.665,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_pulled_beans": {
+        "co2e_per_kg": 1,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pulled_pork": {
+        "co2e_per_kg": 4.596,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pulled_beef": {
+        "co2e_per_kg": 52.806,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_chorizo": {
+        "co2e_per_kg": 1.396,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rice_noodles": {
+        "co2e_per_kg": 4.246,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "jalapenos": {
+        "co2e_per_kg": 1.376,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "taco_shells": {
+        "co2e_per_kg": 2.331,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mango_chutney": {
+        "co2e_per_kg": 2.925,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "green_curry_paste": {
+        "co2e_per_kg": 1.522,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "noodles_eggs": {
+        "co2e_per_kg": 2.084,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rice_pancakes": {
+        "co2e_per_kg": 4.082,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_ice_cream_oats": {
+        "co2e_per_kg": 2.397,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_mayo": {
+        "co2e_per_kg": 2.598,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mushroom_burger": {
+        "co2e_per_kg": 1.124,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_cold_cuts": {
+        "co2e_per_kg": 2.774,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_block": {
+        "co2e_per_kg": 2.644,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "magarine": {
+        "co2e_per_kg": 2.524,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_bacon": {
+        "co2e_per_kg": 0.325,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_fillet_pieces": {
+        "co2e_per_kg": 1.205,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "falafel_mince": {
+        "co2e_per_kg": 2.06,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pea_drink": {
+        "co2e_per_kg": 0.699,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "portobello_mushroom": {
+        "co2e_per_kg": 0.232,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "food_grain_kamut": {
+        "co2e_per_kg": 2.254,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "chili_sauce": {
+        "co2e_per_kg": 1.61,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "red_onion": {
+        "co2e_per_kg": 0.715,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "basil_fresh": {
+        "co2e_per_kg": 0.368,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "basil_dried": {
+        "co2e_per_kg": 2.144,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cold_buttermilk_soup": {
+        "co2e_per_kg": 0.887,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "beef_low_fat": {
+        "co2e_per_kg": 49.625,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "grilled_sausages": {
+        "co2e_per_kg": 2.144,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "apple_juice": {
+        "co2e_per_kg": 1.564,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "minced_lamb": {
+        "co2e_per_kg": 36.955,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "burger_buns": {
+        "co2e_per_kg": 1.454,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "blue_cheese": {
+        "co2e_per_kg": 1.361,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "goat_cheese": {
+        "co2e_per_kg": 1.361,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "vegan_cheese_grated_or_sliced": {
+        "co2e_per_kg": 1.128,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "samosa_vegetarian_frost": {
+        "co2e_per_kg": 1.543,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cold_chocolate": {
+        "co2e_per_kg": 5.365,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "nutella_nut_cream": {
+        "co2e_per_kg": 5.215,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "smoothie_strawberry_blueberry": {
+        "co2e_per_kg": 1.72,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "average_pork": {
+        "co2e_per_kg": 4.642,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "average_chicken": {
+        "co2e_per_kg": 3.576,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "average_beef": {
+        "co2e_per_kg": 69.927,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "gazpacho": {
+        "co2e_per_kg": 0.707,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "tortilla_de_patatas": {
+        "co2e_per_kg": 1.507,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "churros_frozen": {
+        "co2e_per_kg": 1.469,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turron_hard": {
+        "co2e_per_kg": 19.536,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turron_soft": {
+        "co2e_per_kg": 20.678,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "turron_egg_yolk": {
+        "co2e_per_kg": 12.148,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "serrano_dry_-cured_ham_sliced": {
+        "co2e_per_kg": 15.057,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "iberian_dry-cured_ham_sliced": {
+        "co2e_per_kg": 8.777,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sobrasada": {
+        "co2e_per_kg": 4.141,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "anchovy_fillets_in_olive_oil": {
+        "co2e_per_kg": 9.343,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "salmorejo": {
+        "co2e_per_kg": 1.372,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "seafood_paella_frozen": {
+        "co2e_per_kg": 2.32,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "mixed_salad_ready_meal": {
+        "co2e_per_kg": 1.566,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "bottled_still_water": {
+        "co2e_per_kg": 0.357,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "horchata": {
+        "co2e_per_kg": 1.871,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "croissants": {
+        "co2e_per_kg": 2.155,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "camembert": {
+        "co2e_per_kg": 1.488,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pã¢tã©": {
+        "co2e_per_kg": 5.436,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "crã¨me_brã»lã©e": {
+        "co2e_per_kg": 1.656,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "cassoulet_canned": {
+        "co2e_per_kg": 5.229,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "pain_au_chocolat": {
+        "co2e_per_kg": 2.683,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "white_ham": {
+        "co2e_per_kg": 4.369,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "smoked_ham": {
+        "co2e_per_kg": 6.53,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "sausages_like_chipolatas": {
+        "co2e_per_kg": 3.904,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "dry_sausage": {
+        "co2e_per_kg": 7.111,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "madeleine": {
+        "co2e_per_kg": 4.003,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "baguette": {
+        "co2e_per_kg": 1.58,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "foie_gras_terrine": {
+        "co2e_per_kg": 3.623,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "foie_gras_cru": {
+        "co2e_per_kg": 3.025,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "hagelslag": {
+        "co2e_per_kg": 5.476,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "volkoren_bread": {
+        "co2e_per_kg": 1.421,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "dropjes": {
+        "co2e_per_kg": 2.631,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "speculaas": {
+        "co2e_per_kg": 3.465,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "gouda_cheese": {
+        "co2e_per_kg": 6.062,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "fruit_syrup": {
+        "co2e_per_kg": 2.515,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "rookworst": {
+        "co2e_per_kg": 2.246,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    },
+    "herring_in_nl": {
+        "co2e_per_kg": 0.904,
+        "sumber": "The Big Climate Database (CONCITO - Average)"
+    }
+}
